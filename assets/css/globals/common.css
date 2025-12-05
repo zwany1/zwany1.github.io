@@ -9,12 +9,23 @@
     word-wrap: break-word;
     -webkit-tap-highlight-color: transparent;
     -webkit-font-smoothing: antialiased;
-    -webkit-backface-visibility: hidden
+    -webkit-backface-visibility: hidden;
+    background-color: #0a0a0f;
+    background-image: radial-gradient(circle at top right, #3a1c71, #d76d77, #ffaf7b);
+    background-size: cover;
+    background-attachment: fixed;
+    color: #e0e0ff;
 }
 
-@font-face {
-    font-family:octicons;src:font-url(../fonts/octicons.eot?#iefix) format("embedded-opentype"),font-url(../fonts/octicons.woff) format("woff"),font-url(../fonts/octicons.ttf) format("truetype"),font-url(../fonts/octicons.svg#octicons) format("svg");font-weight:400;font-style:normal
-}
+    @font-face {
+        font-family: octicons;
+        src: url(../fonts/octicons.eot?#iefix) format("embedded-opentype"),
+             url(../fonts/octicons.woff) format("woff"),
+             url(../fonts/octicons.ttf) format("truetype"),
+             url(../fonts/octicons.svg#octicons) format("svg");
+        font-weight: 400;
+        font-style: normal;
+    }
 
 .pagination {
     padding: 20px 0
@@ -40,7 +51,9 @@
     padding-top: 20px;
     padding-bottom: 20px;
     margin-bottom: 20px;
-    border-bottom: 1px solid #eee
+    border-bottom: 1px solid #8a2be2;
+    background-color: rgba(10, 10, 15, 0.8);
+    backdrop-filter: blur(10px);
 }
 
 .site-header .account-switcher {
@@ -134,7 +147,9 @@
     padding: 6px 10px 15px;
     margin-left: 1.25rem;
     font-size: 1rem;
-    color: #777
+    color: #00ffff;
+    text-shadow: 0 0 5px #00ffff;
+    transition: all 0.3s ease;
 }
 
 .site-footer:after,.site-footer:before {
@@ -143,8 +158,9 @@
 }
 
 .site-header-nav-item:hover {
-    color: #333;
-    text-decoration: none
+    color: #ff6b9d;
+    text-decoration: none;
+    text-shadow: 0 0 10px #ff6b9d;
 }
 
 .site-header-nav-item.selected {
@@ -152,6 +168,7 @@
     padding: 6px 10px 13px;
     border-bottom: 2px solid #00ffff;
     text-shadow: 0 0 15px #00ffff;
+    background: rgba(138, 43, 226, 0.2);
 }
 
 .site-header-nav-item+.btn-outline {
@@ -337,7 +354,8 @@
 
 .markdown-body h6 {
     font-size: 1em;
-    color: #777
+    color: #ff6b9d;
+    text-shadow: 0 0 5px #ff6b9d;
 }
 
 .markdown-body blockquote,.markdown-body dl,.markdown-body ol,.markdown-body p,.markdown-body pre,.markdown-body table,.markdown-body ul {
@@ -451,7 +469,9 @@
     padding: 7px;
     margin: 13px 0 0;
     overflow: hidden;
-    border: 1px solid #ddd
+    border: 1px solid #8a2be2;
+    background-color: rgba(10, 10, 15, 0.8);
+    box-shadow: 0 0 10px rgba(138, 43, 226, 0.5);
 }
 
 .markdown-body span.frame span img {
@@ -463,7 +483,7 @@
     display: block;
     padding: 5px 0 0;
     clear: both;
-    color: #333
+    color: #e0e0ff
 }
 
 .markdown-body span.align-center {
