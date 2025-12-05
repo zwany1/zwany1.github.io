@@ -1,14 +1,14 @@
 ---
 layout: page
-title: About
+title: about
 description: 打码改变世界
-keywords: Zhuang Ma, 马壮
+keywords: 朱, zwany1
 comments: true
 menu: 关于
 permalink: /about/
 ---
 
-我是马壮，码而生，码而立。
+我是朱，一名热爱编程的开发者。
 
 仰慕「优雅编码的艺术」。
 
