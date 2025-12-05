@@ -1,0 +1,112 @@
+<!DOCTYPE html><html lang="zh-cmn-Hans" prefix="og: http://ogp.me/ns#" class="han-init"><head><meta charset="utf-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" /><title>科技奇趣｜为什么 Excel 认为 1900 年是闰年？ &mdash; 朱</title><link rel="stylesheet" href="https://zwany1.github.io/assets/vendor/primer-css/css/primer.css"><link rel="stylesheet" href="https://zwany1.github.io/assets/css/components/collection.css"><link rel="stylesheet" href="https://zwany1.github.io/assets/css/components/repo-card.css"><link rel="stylesheet" href="https://zwany1.github.io/assets/css/sections/repo-list.css"><link rel="stylesheet" href="https://zwany1.github.io/assets/css/components/boxed-group.css"><link rel="stylesheet" href="https://zwany1.github.io/assets/css/globals/common.css"><link rel="stylesheet" href="https://zwany1.github.io/assets/css/globals/responsive.css"><link rel="stylesheet" href="https://zwany1.github.io/assets/css/posts/index.css"><link rel="stylesheet" href="https://zwany1.github.io/assets/vendor/octicons/octicons/octicons.css"><link rel="stylesheet" href="https://mazhuang.org/rouge-themes/dist/github.css"><link rel="canonical" href="https://zwany1.github.io/2024/03/14/excel-consider-1900-leap-year/"><link rel="alternate" type="application/atom+xml" title="朱" href="https://zwany1.github.io/feed.xml"><link rel="shortcut icon" href="https://zwany1.github.io/favicon.ico"><meta property="og:title" content="科技奇趣｜为什么 Excel 认为 1900 年是闰年？"><meta name="keywords" content="Python, Excel, 科技奇趣"><meta name="og:keywords" content="Python, Excel, 科技奇趣"><meta name="description" content="我们先来看一下现象："><meta name="og:description" content="我们先来看一下现象："><meta property="og:url" content="https://zwany1.github.io/2024/03/14/excel-consider-1900-leap-year/"><meta property="og:site_name" content="朱"><meta property="og:type" content="article"><meta property="og:locale" content="zh_CN" /><meta property="article:published_time" content="2024-03-14"> <script src="https://zwany1.github.io/assets/vendor/jquery/dist/jquery.min.js"></script> <script src="https://zwany1.github.io/assets/js/main.js"></script></head><body class="" data-mz=""><header class="site-header"><div class="container">
+<h1><a href="https://zwany1.github.io/" title="朱"><span class="octicon octicon-mark-github"></span> 朱</a></h1>
+<button class="collapsed mobile-visible" type="button" onclick="toggleMenu();"> <span class="icon-bar"></span> <span class="icon-bar"></span> <span class="icon-bar"></span> </button><nav class="site-header-nav" role="navigation"> <a href="https://zwany1.github.io/" class="site-header-nav-item" target="" title="首页">首页</a> <a href="https://zwany1.github.io/categories/" class="site-header-nav-item" target="" title="分类">分类</a> <a href="https://zwany1.github.io/archives/" class="mobile-hidden site-header-nav-item" target="" title="归档">归档</a> <a href="https://zwany1.github.io/open-source/" class="mobile-hidden site-header-nav-item" target="" title="开源">开源</a> <a href="https://zwany1.github.io/fragments/" class="site-header-nav-item" target="" title="片段">片段</a> <a href="https://zwany1.github.io/wiki/" class="site-header-nav-item" target="" title="维基">维基</a> <a href="https://zwany1.github.io/links/" class="mobile-hidden site-header-nav-item" target="" title="链接">链接</a> <a href="https://zwany1.github.io/about/" class="site-header-nav-item" target="" title="关于">关于</a> <a class="mobile-hidden" href="https://zwany1.github.io/feed.xml"><span class="octicon octicon-rss" style="color:orange;"></span></a></nav>
+</div></header><section class="collection-head small geopattern" data-pattern-id="科技奇趣｜为什么 Excel "><div class="container"><div class="columns">
+<div class="column three-fourths"><div class="collection-title">
+<h1 class="collection-header">科技奇趣｜为什么 Excel 认为 1900 年是闰年？</h1>
+<div class="collection-info"> <span class="meta-info"> <span class="octicon octicon-calendar"></span> 2024/03/14 </span> <span class="meta-info"> <span class="octicon octicon-file-directory"></span> <a href="https://zwany1.github.io/categories/#%E7%A7%91%E6%8A%80%E5%A5%87%E8%B6%A3" title="科技奇趣">科技奇趣</a> </span> <span class="meta-info"> <span class="octicon octicon-clock"></span> 共 2629 字，约 8 分钟 </span>
+</div>
+</div></div>
+<div class="column one-fourth mobile-hidden"><div class="collection-title"> <img style="height:72px;width:72px" src="https://zwany1.github.io/assets/images/qrcode.jpg" alt="朱猪写作">
+</div></div>
+</div></div></section><section class="container content"><div class="columns">
+<div class="column three-fourths">
+<article class="article-content markdown-body"><p>我们先来看一下现象：</p>
+<p><img src="https://zwany1.github.io/images/posts/python/excel-1900-leap-year.gif" alt=""></p>
+<p>实际上 <strong>1900 年不是闰年</strong>，没有 2 月 29 日，所以很明显 <strong>这是 Excel 的一个 Bug</strong>。</p>
+<h2 id="发现">发现</h2>
+<p>我之所以会留意到这个，是因为最近在做一个绩效核对的小工具，需要用 Python 读取和处理销售交上来的 Excel。</p>
+<p>销售交上来的东西总是稀奇古怪，比如有一列是要填日期，交上来的表格里，有的读出来是日期类型，有的读出来是字符串类型，这都还好说，日期类型直接用，字符串按格式解析成日期，就好了。但这天发现有个销售交上来的表格里，这一列读出来是数字类型。</p>
+<p>比如 <code class="language-plaintext highlighter-rouge">2024-02-01</code>，读出来对应数字 <code class="language-plaintext highlighter-rouge">45323</code>。</p>
+<p>怎么将这个数字转换成日期呢？</p>
+<p>首先搜索了微软的官方文档，找到关于 <a href="https://support.microsoft.com/en-us/office/date-systems-in-excel-e7fe7167-48a9-4b96-bb53-5612a800b487">Date systems in Excel</a> 的说明：</p>
+<blockquote><p>Excel supports two date systems, the 1900 date system and the 1904 date system. Each date system uses a unique starting date from which all other workbook dates are calculated. All versions of Excel for Windows calculate dates based on the 1900 date system. Excel 2008 for Mac and earlier Excel for Mac versions calculate dates based on the 1904 date system. Excel 2016 for Mac and Excel for Mac 2011 use the 1900 date system, which guarantees date compatibility with Excel for Windows. … In the 1900 date system, dates are calculated by using January 1, 1900, as a starting point. When you enter a date, it is converted into a serial number that represents the number of days elapsed since January 1, 1900.</p></blockquote>
+<p>就是说，除了 Excel for Mac 的早期版本外，都是默认采用 1900 date system，以 <code class="language-plaintext highlighter-rouge">1900-01-01</code> 作为起点（第 1 天）。</p>
+<p>于是根据这个信息写一个函数来将数字转换成日期，但是 <strong>翻车了</strong>……</p>
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">datetime</span><span class="p">,</span> <span class="n">timedelta</span>
+
+<span class="k">def</span> <span class="nf">int_to_date</span><span class="p">(</span><span class="n">s</span><span class="p">):</span>
+    <span class="n">date_zero</span> <span class="o">=</span> <span class="n">datetime</span><span class="p">(</span><span class="mi">1900</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="n">delta</span> <span class="o">=</span> <span class="n">timedelta</span><span class="p">(</span><span class="n">days</span> <span class="o">=</span> <span class="n">s</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">date_zero</span> <span class="o">+</span> <span class="n">delta</span>
+
+<span class="k">print</span><span class="p">(</span><span class="n">int_to_date</span><span class="p">(</span><span class="mi">45323</span><span class="p">))</span>
+
+<span class="c1"># 输出 2024-02-02 00:00:00
+</span></code></pre></div></div>
+<p>Excel 表格里是 <code class="language-plaintext highlighter-rouge">2024-02-01</code>，读出来是 <code class="language-plaintext highlighter-rouge">45323</code>，咋按 <code class="language-plaintext highlighter-rouge">1900-01-01</code> 作为第一天，反算出来 <code class="language-plaintext highlighter-rouge">45323</code> 却是 <code class="language-plaintext highlighter-rouge">2024-02-02</code> 了呢？</p>
+<h2 id="探究">探究</h2>
+<p>于是一番搜索，先是找到了 OpenOffice 论坛里的讨论 <a href="https://forum.openoffice.org/en/forum/viewtopic.php?t=108820">Why the base date is 1899-12-30 instead of 1899-12-31?</a>，里面有如下信息：</p>
+<blockquote><p>The earliest date Excel handles sensibly is 1900-01-01, which is “day 1” (not zero). This makes “Excel epoch” (day zero) 1899-12-31. However, Excel inherited an error from previous spreadsheet apps which assumed that 1900 was a leap year. The nonexistent 29th of February 1900 is counted in Excel time spans, just like it used to be in Lotus 123 and (IIRC) SuperCalc, and probably in most other relevant spreadsheet apps.</p></blockquote>
+<p>有意思了……于是继续在维基百科的 <a href="https://zh.wikipedia.org/wiki/Microsoft_Excel">Microsoft Excel</a> 词条上找到了佐证信息：</p>
+<blockquote><p>Excel的时间系统中，会认为1900年2月29日是有效日期，也就是1900年为闰年，但实际上并不是。这是源于模仿早期竞品Lotus 1-2-3上的缺陷而引入的特性，由于Lotus 1-2-3的时间纪元以1900年起始，之后的时间为差值累加，导致其时间体系一开始就认为1900年是闰年，而Excel为了兼容Lotus 1-2-3的文件格式，也保留了这个缺陷作为特性而不进行修复，即使至今最新版本已不需要兼容Lotus 1-2-3。</p></blockquote>
+<p>里面还给出了微软官方的相关解释链接：<a href="https://learn.microsoft.com/en-US/office/troubleshoot/excel/wrongly-assumes-1900-is-leap-year">Excel incorrectly assumes that the year 1900 is a leap year</a>，并且讲述了 Excel 的发展历史，挺有趣的，可以一读。</p>
+<p>至此，就破案了。</p>
+<h2 id="数字到日期的换算">数字到日期的换算</h2>
+<p>我们上面提供的数字到日期的换算的方案，做个小修正就能使用了：</p>
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">datetime</span><span class="p">,</span> <span class="n">timedelta</span>
+
+<span class="k">def</span> <span class="nf">int_to_date</span><span class="p">(</span><span class="n">s</span><span class="p">):</span>
+    <span class="n">date_zero</span> <span class="o">=</span> <span class="n">datetime</span><span class="p">(</span><span class="mi">1899</span><span class="p">,</span> <span class="mi">12</span><span class="p">,</span> <span class="mi">30</span><span class="p">)</span>
+    <span class="n">delta</span> <span class="o">=</span> <span class="n">timedelta</span><span class="p">(</span><span class="n">days</span> <span class="o">=</span> <span class="n">s</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">date_zero</span> <span class="o">+</span> <span class="n">delta</span>
+
+<span class="k">print</span><span class="p">(</span><span class="n">int_to_date</span><span class="p">(</span><span class="mi">45323</span><span class="p">))</span>
+
+<span class="c1"># 输出 2024-02-01 00:00:00
+</span></code></pre></div></div>
+<p>当然这个程序并不完美，比如计算 60 以内的数字，算出来的就与 Excel 上显示的日期不一致，但 who cares……毕竟 Excel 上有 <code class="language-plaintext highlighter-rouge">1900-02-29</code> 这种你永远不会用到的日期 <img class="emoji" title=":laughing:" alt=":laughing:" src="https://github.githubassets.com/images/icons/emoji/unicode/1f606.png" height="20" width="20"></p>
+<h2 id="参考链接">参考链接</h2>
+<ul>
+<li><a href="https://support.microsoft.com/en-us/office/date-systems-in-excel-e7fe7167-48a9-4b96-bb53-5612a800b487">https://support.microsoft.com/en-us/office/date-systems-in-excel-e7fe7167-48a9-4b96-bb53-5612a800b487</a></li>
+<li><a href="https://forum.openoffice.org/en/forum/viewtopic.php?t=108820">https://forum.openoffice.org/en/forum/viewtopic.php?t=108820</a></li>
+<li><a href="https://zh.wikipedia.org/wiki/Microsoft_Excel">https://zh.wikipedia.org/wiki/Microsoft_Excel</a></li>
+<li><a href="https://learn.microsoft.com/en-US/office/troubleshoot/excel/wrongly-assumes-1900-is-leap-year">https://learn.microsoft.com/en-US/office/troubleshoot/excel/wrongly-assumes-1900-is-leap-year</a></li>
+</ul>
+<div style="margin-top:2em;padding:0 1.5em;border:1px solid #d3d3d3;background-color:#deebf7">
+<h3>文档信息</h3>
+<ul>
+<li>本文作者：<a href="https://zwany1.github.io" target="_blank">朱</a>
+</li>
+<li>本文链接：<a href="https://zwany1.github.io/2024/03/14/excel-consider-1900-leap-year/" target="_blank">https://zwany1.github.io/2024/03/14/excel-consider-1900-leap-year/</a>
+</li>
+<li>版权声明：自由转载-非商用-非衍生-保持署名（<a href="http://creativecommons.org/licenses/by-nc-nd/3.0/deed.zh" target="_blank">创意共享3.0许可证</a>）</li>
+</ul>
+</div></article><div class="share"></div>
+<div class="comment"></div>
+</div>
+<div class="column one-fourth">
+<h3>Search</h3>
+<div id="site_search"> <input style="width:96%" type="text" id="search_box" placeholder="Search">
+</div>
+<ul id="search_results" style="font-size:14px;list-style-type:none;padding-top:10px;padding-left:10px;"></ul>
+<script src="https://zwany1.github.io/assets/js/simple-jekyll-search.min.js"></script> <script type="text/javascript"> SimpleJekyllSearch({ searchInput: document.getElementById('search_box'), resultsContainer: document.getElementById('search_results'), json: 'https://zwany1.github.io/assets/search_data.json?v=1764926890', searchResultTemplate: '<li><a href="{url}" title="{title}">{title}</a></li>', noResultsText: 'No results found', limit: 10, fuzzy: false, exclude: ['Welcome'] }) </script><h3 class="post-directory-title mobile-hidden">Table of Contents</h3>
+<div id="post-directory-module" class="mobile-hidden"><section class="post-directory"><dl></dl></section></div>
+<script src="https://zwany1.github.io/assets/js/jquery.toc.js"></script>
+</div>
+</div></section><footer class="container"><div class="site-footer" role="contentinfo">
+<div class="copyright left mobile-block"> © 2025 <span title="朱">朱</span> <a href="javascript:window.scrollTo(0,0)" class="right mobile-visible">TOP</a>
+</div>
+<ul class="site-footer-links right mobile-hidden"><li> <a href="javascript:window.scrollTo(0,0)">TOP</a>
+</li></ul>
+<a href="https://github.com/zwany1/zwany1.github.io" target="_blank" aria-label="view source code"> <span class="mega-octicon octicon-mark-github" title="GitHub"></span> </a><ul class="site-footer-links mobile-hidden">
+<li> <a href="https://zwany1.github.io/" title="首页" target="">首页</a>
+</li>
+<li> <a href="https://zwany1.github.io/categories/" title="分类" target="">分类</a>
+</li>
+<li> <a href="https://zwany1.github.io/archives/" title="归档" target="">归档</a>
+</li>
+<li> <a href="https://zwany1.github.io/open-source/" title="开源" target="">开源</a>
+</li>
+<li> <a href="https://zwany1.github.io/fragments/" title="片段" target="">片段</a>
+</li>
+<li> <a href="https://zwany1.github.io/wiki/" title="维基" target="">维基</a>
+</li>
+<li> <a href="https://zwany1.github.io/links/" title="链接" target="">链接</a>
+</li>
+<li> <a href="https://zwany1.github.io/about/" title="关于" target="">关于</a>
+</li>
+<li><a href="https://zwany1.github.io/feed.xml"><span class="octicon octicon-rss" style="color:orange;"></span></a></li>
+</ul>
+</div></footer><div class="tools-wrapper"> <a class="gotop" href="#" title="回到顶部"><span class="octicon octicon-arrow-up"></span></a>
+</div><script src="https://zwany1.github.io/assets/js/geopattern.js"></script> <script> jQuery(document).ready(function($) { $('.geopattern').each(function(){ $(this).geopattern($(this).data('pattern-id')); }); /* hljs.initHighlightingOnLoad(); */ }); </script></body></html>
