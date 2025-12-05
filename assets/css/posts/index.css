@@ -4,12 +4,13 @@
 
 .post-directory {
     font-size: 14px;
-    background: #fff;
+    background: rgba(10, 10, 15, 0.95);
     overflow: hidden;
     width: 300px;
     padding-bottom: 1em;
-    border: 1px solid #efefef;
-    color: #999;
+    border: 1px solid #8a2be2;
+    color: #e0e0ff;
+    box-shadow: 0 0 15px rgba(138, 43, 226, 0.5);
 }
 
 .post-directory ul,
@@ -19,24 +20,29 @@
 }
 
 .post-directory strong {
-    border-left: 5px solid #999;
+    border-left: 5px solid #00ffff;
     padding: 2px 5px 2px 15px;
+    color: #00ffff;
+    text-shadow: 0 0 10px #00ffff;
 }
 
 .post-directory a {
     text-decoration: none;
-    color: #bababa;
+    color: #ff6b9d;
+    text-shadow: 0 0 5px #ff6b9d;
+    transition: all 0.3s ease;
 }
 
 .post-directory a:hover,
 .post-directory a:active,
 .post-directory a.on {
-    color: #4183c4;
+    color: #00ffff;
+    text-shadow: 0 0 15px #00ffff;
 }
 
 .posts-list {
     line-height: 2;
-    color: #555;
+    color: #e0e0ff;
     list-style-type:disc;
 }
 
@@ -48,9 +54,10 @@
     width: 6px;
     height: 6px;
     margin-left: -4px;
-    background: #bbb;
+    background: #00ffff;
     border-radius: 50%;
-    border: 1px solid #fff;
+    border: 1px solid #00ffff;
+    box-shadow: 0 0 10px #00ffff;
     transition-duration: 0.2s;
     transition-timing-function: ease-in-out;
     transition-delay: 0s;
@@ -58,7 +65,7 @@
 }
 
 .posts-list-item {
-    border-bottom: 1px dashed #ccc;
+    border-bottom: 1px dashed #8a2be2;
     margin: 10px;
     padding: 0;
 }
@@ -68,15 +75,18 @@
     font-weight: normal;
     font-family: Lato, "PingFang SC", "Microsoft YaHei", sans-serif;
     line-height: inherit;
-    color: #666;
+    color: #00ffff;
+    text-shadow: 0 0 10px #00ffff;
+    transition: all 0.3s ease;
 }
 
 .posts-list-meta {
     font-size: 12px;
     font-family: Lato, "PingFang SC", "Microsoft YaHei", sans-serif;
     line-height: 2;
-    color: #555;
-    background: #fff;
+    color: #ff6b9d;
+    background: rgba(10, 10, 15, 0.95);
+    text-shadow: 0 0 5px #ff6b9d;
 }
 
 .list-group {
@@ -89,8 +99,10 @@
     display: block;
     padding: 10px 15px;
     margin-bottom: -1px;
-    background-color: #fff;
-    border: 1px solid #ddd;
+    background-color: rgba(10, 10, 15, 0.95);
+    border: 1px solid #8a2be2;
+    color: #e0e0ff;
+    transition: all 0.3s ease;
 }
 
 
@@ -116,10 +128,12 @@
     font-size: 12px;
     font-weight: 700;
     line-height: 1;
-    color: #fff;
+    color: #0a0a0f;
     text-align: center;
     white-space: nowrap;
     vertical-align: middle;
-    background-color: #777;
+    background-color: #00ffff;
     border-radius: 10px;
+    box-shadow: 0 0 10px #00ffff;
+    text-shadow: 0 0 5px #00ffff;
 }

@@ -148,9 +148,10 @@
 }
 
 .site-header-nav-item.selected {
-    color: #333;
+    color: #00ffff;
     padding: 6px 10px 13px;
-    border-bottom: 2px solid #d26911
+    border-bottom: 2px solid #00ffff;
+    text-shadow: 0 0 15px #00ffff;
 }
 
 .site-header-nav-item+.btn-outline {
@@ -171,7 +172,9 @@
 
 .markdown-body h1,.markdown-body h2 {
     padding-bottom: .3em;
-    border-bottom: 1px solid #eee
+    border-bottom: 1px solid #8a2be2;
+    color: #00ffff;
+    text-shadow: 0 0 10px #00ffff;
 }
 
 .site-footer .copyright {
@@ -236,6 +239,19 @@
     color: #c00
 }
 
+.markdown-body a {
+    color: #00ffff;
+    text-decoration: none;
+    text-shadow: 0 0 5px #00ffff;
+    transition: all 0.3s ease;
+}
+
+.markdown-body a:hover {
+    text-decoration: none;
+    color: #ff6b9d;
+    text-shadow: 0 0 15px #ff6b9d;
+}
+
 .markdown-body .anchor {
     position: absolute;
     top: 0;
@@ -255,7 +271,9 @@
     margin-top: 1em;
     margin-bottom: 16px;
     font-weight: 700;
-    line-height: 1.4
+    line-height: 1.4;
+    color: #ff6b9d;
+    text-shadow: 0 0 5px #ff6b9d;
 }
 
 .markdown-body h1 .octicon-link,.markdown-body h2 .octicon-link,.markdown-body h3 .octicon-link,.markdown-body h4 .octicon-link,.markdown-body h5 .octicon-link,.markdown-body h6 .octicon-link {
@@ -328,11 +346,12 @@
 }
 
 .markdown-body hr {
-    height: 4px;
+    height: 2px;
     padding: 0;
     margin: 16px 0;
-    background-color: #e7e7e7;
-    border: 0
+    background: linear-gradient(90deg, transparent, #8a2be2, transparent);
+    border: 0;
+    box-shadow: 0 0 10px #8a2be2;
 }
 
 .markdown-body ol,.markdown-body ul {
@@ -371,8 +390,10 @@
 
 .markdown-body blockquote {
     padding: 0 15px;
-    color: #777;
-    border-left: 4px solid #ddd
+    color: #00ffff;
+    border-left: 4px solid #00ffff;
+    background-color: rgba(138, 43, 226, 0.1);
+    box-shadow: 0 0 10px rgba(138, 43, 226, 0.3);
 }
 
 .markdown-body blockquote>:first-child {
@@ -393,16 +414,18 @@
 
 .markdown-body table td,.markdown-body table th {
     padding: 6px 13px;
-    border: 1px solid #ddd
+    border: 1px solid #8a2be2;
+    color: #e0e0ff;
 }
 
 .markdown-body table tr {
-    background-color: #fff;
-    border-top: 1px solid #ccc
+    background-color: rgba(10, 10, 15, 0.8);
+    border-top: 1px solid #8a2be2;
+    color: #e0e0ff;
 }
 
 .markdown-body table tr:nth-child(2n) {
-    background-color: #f8f8f8
+    background-color: rgba(138, 43, 226, 0.1);
 }
 
 .markdown-body img {
@@ -506,14 +529,15 @@
 
 .markdown-body code,.markdown-body tt {
     font-family: monospace, Consolas, "Liberation Mono", Menlo, Courier;
-    padding: 0 2px 0 2px;
+    padding: 0 4px;
     margin: 0;
     font-size: 100%;
-    background-color: #f8f8f8;
-    color: #393a34;
+    background-color: rgba(138, 43, 226, 0.2);
+    color: #00ffff;
     -webkit-border-radius: 3px;
     border-radius: 3px;
-    border: solid 1px #dddddd;
+    border: solid 1px #00ffff;
+    box-shadow: 0 0 5px rgba(0, 255, 255, 0.5);
 }
 
 .markdown-body code br,.markdown-body tt br {
@@ -543,8 +567,9 @@
     overflow: auto;
     font-size: 85%;
     line-height: 1.45;
-    /* background-color: #f7f7f7; */
-    /* border-radius: 3px */
+    background-color: rgba(10, 10, 15, 0.95);
+    border: 1px solid #8a2be2;
+    box-shadow: 0 0 15px rgba(138, 43, 226, 0.5);
 }
 
 .markdown-body .highlight pre {
@@ -553,7 +578,10 @@
 }
 
 .markdown-body pre {
-    word-wrap: normal
+    word-wrap: normal;
+    background-color: rgba(10, 10, 15, 0.95);
+    border: 1px solid #8a2be2;
+    box-shadow: 0 0 15px rgba(138, 43, 226, 0.5);
 }
 
 .markdown-body pre code,.markdown-body pre tt {
@@ -565,7 +593,8 @@
     line-height: inherit;
     word-wrap: normal;
     background-color: transparent;
-    border: 0
+    border: 0;
+    color: #e0e0ff;
 }
 
 .markdown-body pre code:after,.markdown-body pre code:before,.markdown-body pre tt:after,.markdown-body pre tt:before {
