@@ -5,9 +5,9 @@ baseurl:
 url: https://zwany1.github.io
 date_format: "ordinal"
 title: 朱
-subtitle: "公众号：闷骚的程序员"
-description: "朱的个人博客，公众号：闷骚的程序员"
-keywords: 朱, zwany1, 闷骚的程序员
+subtitle: "公众号：朱猪写作"
+description: "朱的个人博客，公众号：朱猪写作"
+keywords: 朱, zwany1, 朱猪写作
 timezone: Asia/Shanghai
 encoding: "utf-8"
 # 页面左下角显示的年份
@@ -40,7 +40,7 @@ components:
     # 修改图片请替换 assets/images/qrcode.jpg
     qrcode:
         enabled: true
-        image_alt: 闷骚的程序员
+        image_alt: 朱猪写作
     # 维基索引页使用哪种视图，支持 列表（list）/分类（cate）
     wiki:
         view: cate
