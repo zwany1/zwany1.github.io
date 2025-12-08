@@ -12,6 +12,11 @@ description: "Best Friend Memoir"
 
 这是我最好的朋友的故事。我们一起经历了许多难忘的时光，分享了无数的欢乐和泪水。
 
+<video width="100%" controls>
+  <source src="{{ site.baseurl }}/assets/images/111.mp4" type="video/mp4">
+  您的浏览器不支持视频播放。
+</video>
+
 ## 相识
 
 我们是在高中时认识的，............................
