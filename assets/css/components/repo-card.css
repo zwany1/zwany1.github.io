@@ -20,11 +20,11 @@
 .card-image h3 {
     margin: 0;
     font-size: 1.5em;
-    color: white;
+    color: #7a6a4a;
 }
 
 .card-image a {
-    color: #fff;
+    color: #7a6a4a;
 }
 
 .card-description {
@@ -38,10 +38,10 @@
 }
 
 .card .thumbnail {
-    border: 1px solid rgba(0,0,0,0.075);
-    border-bottom-color: rgba(0,0,0,0.125);
+    border: 1px solid rgba(199,183,153,0.3);
+    border-bottom-color: rgba(199,183,153,0.5);
     border-radius: 4px;
-    box-shadow: 0 1px 2px rgba(0,0,0,0.05),0 5px 10px rgba(0,0,0,0.05);
+    box-shadow: 0 1px 2px rgba(199,183,153,0.1),0 5px 10px rgba(199,183,153,0.1);
     -webkit-transition: border-color 0.1s ease-in-out, box-shadow 0.1s ease-in-out;
     transition: border-color 0.1s ease-in-out, box-shadow 0.1s ease-in-out;
     opacity: 0.8;
@@ -49,13 +49,13 @@
 }
 
 .card .thumbnail:hover{
-    border-color:rgba(0,0,0,0.1) rgba(0,0,0,0.1) rgba(0,0,0,0.15);
-    box-shadow:0 2px 4px rgba(0,0,0,0.05),0 10px 18px rgba(0,0,0,0.1);
+    border-color:rgba(199,183,153,0.5) rgba(199,183,153,0.5) rgba(199,183,153,0.7);
+    box-shadow:0 2px 4px rgba(199,183,153,0.1),0 10px 18px rgba(199,183,153,0.2);
     opacity: 1;
 }
 
 .card .thumbnail:hover .card-title a{
-    color:#000;
+    color:#7a6a4a;
     text-decoration:none;
 }
 
@@ -64,8 +64,8 @@
   padding: 4px;
   margin-bottom: 20px;
   line-height: 1.42857143;
-  background-color: #fff;
-  border: 1px solid #ddd;
+  background-color: #f5f2e8;
+  border: 1px solid #c8b593;
   border-radius: 4px;
   -webkit-transition: border .2s ease-in-out;
   -o-transition: border .2s ease-in-out;
@@ -74,7 +74,7 @@
 
 .thumbnail .caption {
   padding: 9px;
-  color: #333;
+  color: #7a6a4a;
 }
 
 .card-text {

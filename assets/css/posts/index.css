@@ -4,13 +4,12 @@
 
 .post-directory {
     font-size: 14px;
-    background: rgba(10, 10, 15, 0.95);
+    background: rgba(245, 242, 232, 0.95);
     overflow: hidden;
     width: 300px;
     padding-bottom: 1em;
-    border: 1px solid #8a2be2;
-    color: #e0e0ff;
-    box-shadow: 0 0 15px rgba(138, 43, 226, 0.5);
+    border: 1px solid #c8b593;
+    color: #5a4a3a;
 }
 
 .post-directory ul,
@@ -20,29 +19,28 @@
 }
 
 .post-directory strong {
-    border-left: 5px solid #00ffff;
+    border-left: 5px solid #c8b593;
     padding: 2px 5px 2px 15px;
-    color: #00ffff;
-    text-shadow: 0 0 10px #00ffff;
+    color: #5a4a3a;
+    font-weight: 600;
 }
 
 .post-directory a {
     text-decoration: none;
-    color: #ff6b9d;
-    text-shadow: 0 0 5px #ff6b9d;
+    color: #7a6a4a;
     transition: all 0.3s ease;
 }
 
 .post-directory a:hover,
 .post-directory a:active,
 .post-directory a.on {
-    color: #00ffff;
-    text-shadow: 0 0 15px #00ffff;
+    color: #8b6f47;
+    text-decoration: underline;
 }
 
 .posts-list {
     line-height: 2;
-    color: #e0e0ff;
+    color: #5a4a3a;
     list-style-type:disc;
 }
 
@@ -54,10 +52,9 @@
     width: 6px;
     height: 6px;
     margin-left: -4px;
-    background: #00ffff;
+    background: #c8b593;
     border-radius: 50%;
-    border: 1px solid #00ffff;
-    box-shadow: 0 0 10px #00ffff;
+    border: 1px solid #c8b593;
     transition-duration: 0.2s;
     transition-timing-function: ease-in-out;
     transition-delay: 0s;
@@ -65,7 +62,7 @@
 }
 
 .posts-list-item {
-    border-bottom: 1px dashed #8a2be2;
+    border-bottom: 1px dashed #c8b593;
     margin: 10px;
     padding: 0;
 }
@@ -75,8 +72,7 @@
     font-weight: normal;
     font-family: Lato, "PingFang SC", "Microsoft YaHei", sans-serif;
     line-height: inherit;
-    color: #00ffff;
-    text-shadow: 0 0 10px #00ffff;
+    color: #5a4a3a;
     transition: all 0.3s ease;
 }
 
@@ -84,9 +80,8 @@
     font-size: 12px;
     font-family: Lato, "PingFang SC", "Microsoft YaHei", sans-serif;
     line-height: 2;
-    color: #ff6b9d;
-    background: rgba(10, 10, 15, 0.95);
-    text-shadow: 0 0 5px #ff6b9d;
+    color: #7a6a4a;
+    background: rgba(245, 242, 232, 0.95);
 }
 
 .list-group {
@@ -99,9 +94,9 @@
     display: block;
     padding: 10px 15px;
     margin-bottom: -1px;
-    background-color: rgba(10, 10, 15, 0.95);
-    border: 1px solid #8a2be2;
-    color: #e0e0ff;
+    background-color: rgba(245, 242, 232, 0.95);
+    border: 1px solid #c8b593;
+    color: #5a4a3a;
     transition: all 0.3s ease;
 }
 
@@ -128,12 +123,10 @@
     font-size: 12px;
     font-weight: 700;
     line-height: 1;
-    color: #0a0a0f;
+    color: #5a4a3a;
     text-align: center;
     white-space: nowrap;
     vertical-align: middle;
-    background-color: #00ffff;
+    background-color: #c8b593;
     border-radius: 10px;
-    box-shadow: 0 0 10px #00ffff;
-    text-shadow: 0 0 5px #00ffff;
 }
