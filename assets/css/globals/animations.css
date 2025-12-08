@@ -9,12 +9,12 @@ a, button {
 
 a:hover, button:hover {
     transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(138, 43, 226, 0.3);
+    box-shadow: 0 4px 12px rgba(122, 106, 74, 0.3);
 }
 
 a:active, button:active {
     transform: translateY(0);
-    box-shadow: 0 2px 6px rgba(138, 43, 226, 0.3);
+    box-shadow: 0 2px 6px rgba(122, 106, 74, 0.3);
 }
 
 /* 卡片悬停效果 */
@@ -26,8 +26,8 @@ a:active, button:active {
 
 .boxed-group:hover, .repo-card:hover, .post-item:hover {
     transform: translateY(-4px);
-    box-shadow: 0 8px 24px rgba(138, 43, 226, 0.3);
-    background-color: rgba(255, 255, 255, 0.05);
+    box-shadow: 0 8px 24px rgba(122, 106, 74, 0.2);
+    background-color: rgba(255, 255, 255, 0.95);
 }
 
 /* 滚动动画 */
@@ -95,7 +95,7 @@ a:active, button:active {
     left: 0;
     right: 0;
     bottom: 0;
-    background: radial-gradient(circle at center, rgba(138, 43, 226, 0.2) 0%, transparent 70%);
+    background: radial-gradient(circle at center, rgba(200, 181, 147, 0.3) 0%, transparent 70%);
     opacity: 0;
     transition: opacity 0.3s ease;
     z-index: -1;
@@ -113,15 +113,15 @@ html {
 /* 输入框聚焦效果 */
 input, textarea {
     transition: all 0.3s ease;
-    border: 1px solid #8a2be2;
-    background-color: rgba(10, 10, 15, 0.5);
-    color: #e0e0ff;
+    border: 1px solid #c8b593;
+    background-color: rgba(255, 255, 255, 0.95);
+    color: #7a6a4a;
 }
 
 input:focus, textarea:focus {
     outline: none;
-    border-color: #d76d77;
-    box-shadow: 0 0 0 2px rgba(215, 109, 119, 0.2);
+    border-color: #8b6f47;
+    box-shadow: 0 0 0 2px rgba(139, 111, 71, 0.2);
     transform: scale(1.02);
 }
 
@@ -152,7 +152,7 @@ input:focus, textarea:focus {
     left: -2px;
     right: -2px;
     bottom: -2px;
-    background: linear-gradient(45deg, #3a1c71, #d76d77, #ffaf7b);
+    background: linear-gradient(45deg, #c8b593, #e8e3d8, #f5f2e8);
     border-radius: 6px;
     z-index: -1;
     opacity: 0;
