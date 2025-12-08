@@ -9,245 +9,414 @@ permalink: /about/
 ---
 
 <style>
-/* 贪吃蛇游戏样式 */
-.snake-container {
+/* 全局样式 */
+body {
+    font-family: 'Arial', sans-serif;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    margin: 0;
+    padding: 0;
+    color: white;
+    overflow-x: hidden;
+}
+
+.about-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+/* 头部区域 */
+.header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 40px;
+}
+
+.avatar {
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    background-color: white;
+    margin-right: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+}
+
+.avatar img {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.title-section h1 {
+    font-size: 48px;
+    margin: 0;
+    color: white;
+    font-weight: bold;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.title-section h1 span {
+    color: #ffd700;
+}
+
+.title-section p {
+    font-size: 18px;
+    margin: 10px 0;
+    color: rgba(255, 255, 255, 0.9);
+}
+
+/* 职业信息 */
+职业信息 {
+    margin-bottom: 20px;
+}
+
+职业信息 p {
+    font-size: 16px;
+    margin: 5px 0;
+}
+
+职业信息 p:first-child {
+    color: #ffd700;
+    font-weight: bold;
+}
+
+/* 社交图标 */
+social-icons {
+    margin-top: 20px;
+}
+
+social-icons a {
+    color: white;
+    font-size: 24px;
+    margin-right: 15px;
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+social-icons a:hover {
+    color: #ffd700;
+}
+
+/* 网格图案 */
+grid-section {
+    margin: 40px 0;
     display: flex;
     flex-direction: column;
     align-items: center;
-    margin: 20px 0;
 }
 
-.snake-game {
-    border: 2px solid #333;
-    background-color: #f0f0f0;
-    display: block;
+.grid {
+    display: grid;
+    grid-template-columns: repeat(50, 8px);
+    grid-template-rows: repeat(5, 8px);
+    gap: 2px;
+    margin-bottom: 10px;
 }
 
-.snake-info {
-    margin-top: 10px;
-    font-size: 18px;
-    font-weight: bold;
-    color: #333;
+.grid-item {
+    width: 8px;
+    height: 8px;
+    background-color: rgba(255, 255, 255, 0.2);
+    border-radius: 2px;
+}
+
+.grid-item.green {
+    background-color: #4CAF50;
+}
+
+.grid-item.purple {
+    background-color: #9C27B0;
 }
 
 .progress-bar {
-    width: 300px;
-    height: 20px;
-    background-color: #ddd;
-    border-radius: 10px;
-    margin: 10px 0;
+    width: 100%;
+    height: 4px;
+    background-color: rgba(255, 255, 255, 0.3);
+    border-radius: 2px;
     overflow: hidden;
 }
 
-.progress {
+.progress-fill {
     height: 100%;
+    width: 70%;
     background-color: #4CAF50;
-    width: 0%;
-    transition: width 0.3s ease;
 }
 
-/* 保持原有内容样式 */
-.about-content {
-    margin-top: 30px;
-    text-align: center;
+/* 切片和项目 */
+slices-projects {
+    display: flex;
+    justify-content: space-between;
+    margin: 40px 0;
+    flex-wrap: wrap;
 }
 
-.btn-inline {
-    margin-bottom: 15px;
+slice-section, .project-section {
+    flex: 1;
+    min-width: 300px;
+    margin: 10px;
+}
+
+slice-section h3, .project-section h3 {
+    font-size: 18px;
+    margin-bottom: 20px;
+    color: #ffd700;
+}
+
+.slice-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.slice-tag {
+    background-color: rgba(255, 255, 255, 0.2);
+    padding: 5px 15px;
+    border-radius: 20px;
+    font-size: 14px;
+}
+
+.slice-links, .project-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+}
+
+.slice-link, .project-link {
+    background-color: rgba(255, 255, 255, 0.2);
+    padding: 10px 15px;
+    border-radius: 5px;
+    text-decoration: none;
+    color: white;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.3s ease;
+}
+
+.slice-link:hover, .project-link:hover {
+    background-color: rgba(255, 255, 255, 0.3);
+    transform: translateY(-2px);
+}
+
+.slice-link i, .project-link i {
+    font-size: 18px;
+}
+
+/* 技能部分 */
+skills-section {
+    margin: 40px 0;
+}
+
+skills-section h3 {
+    font-size: 18px;
+    margin-bottom: 20px;
+    color: #ffd700;
+}
+
+.skills-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+    justify-content: center;
+}
+
+.skill-icon {
+    background-color: rgba(255, 255, 255, 0.2);
+    padding: 15px;
+    border-radius: 10px;
+    font-size: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 60px;
+    height: 60px;
+    transition: all 0.3s ease;
+}
+
+.skill-icon:hover {
+    background-color: rgba(255, 255, 255, 0.3);
+    transform: scale(1.1);
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+    .header {
+        flex-direction: column;
+        text-align: center;
+    }
+    
+    .avatar {
+        margin-right: 0;
+        margin-bottom: 20px;
+    }
+    
+    .title-section h1 {
+        font-size: 36px;
+    }
+    
+    .slices-projects {
+        flex-direction: column;
+    }
+    
+    .grid {
+        grid-template-columns: repeat(25, 8px);
+    }
 }
 </style>
 
-<div class="snake-container">
-    <h2>贪吃蛇游戏</h2>
-    <canvas id="snake" class="snake-game" width="400" height="400"></canvas>
-    <div class="snake-info">
-        <div>得分: <span id="score">0</span></div>
-        <div class="progress-bar">
-            <div id="progress" class="progress"></div>
+<div class="about-container">
+    <!-- 头部区域 -->
+    <div class="header">
+        <div class="avatar">
+            <!-- 这里可以放置你的头像图片 -->
+            <div style="font-size: 80px;">🐱</div>
         </div>
-        <div>进度: <span id="progressText">0%</span></div>
+        <div class="title-section">
+            <h1>Hello I'm <span>Zyyo</span></h1>
+            <职业信息>
+                <p>Full Stack Developer</p>
+                <p>The only way to do great is to love what you do.</p>
+            </职业信息>
+            <p style="color: #ffd700; margin-top: 10px;">📍 China-Henan</p>
+            <social-icons>
+                <a href="#" title="GitHub"><i class="fab fa-github"></i></a>
+                <a href="#" title="Email"><i class="fas fa-envelope"></i></a>
+                <a href="#" title="Weibo"><i class="fab fa-weibo"></i></a>
+                <a href="#" title="Blog"><i class="fas fa-blog"></i></a>
+                <a href="#" title="Light"><i class="fas fa-lightbulb"></i></a>
+            </social-icons>
+        </div>
     </div>
+    
+    <!-- 网格图案 -->
+    <grid-section>
+        <div class="grid">
+            <!-- 这里可以根据需要生成网格图案 -->
+            {% for i in (1..250) %}
+                {% if i % 7 == 0 %}
+                    <div class="grid-item green"></div>
+                {% elsif i % 31 == 0 %}
+                    <div class="grid-item purple"></div>
+                {% else %}
+                    <div class="grid-item"></div>
+                {% endif %}
+            {% endfor %}
+        </div>
+        <div class="progress-bar">
+            <div class="progress-fill"></div>
+        </div>
+    </grid-section>
+    
+    <!-- 切片和项目 -->
+    <slices-projects>
+        <slice-section>
+            <h3>🗂️ slice</h3>
+            <div class="slice-tags">
+                <div class="slice-tag">前端</div>
+                <div class="slice-tag">小学生</div>
+                <div class="slice-tag">大一</div>
+                <div class="slice-tag">阅读</div>
+                <div class="slice-tag">linux</div>
+                <div class="slice-tag">配置</div>
+                <div class="slice-tag">游戏</div>
+                <div class="slice-tag">旅行</div>
+            </div>
+            <div class="slice-links">
+                <a href="#" class="slice-link">
+                    <i class="fas fa-book"></i>
+                    动态字符
+                </a>
+                <a href="#" class="slice-link">
+                    <i class="fas fa-server"></i>
+                    CDN动态加速
+                </a>
+                <a href="#" class="slice-link">
+                    <i class="fas fa-code"></i>
+                    202403
+                </a>
+                <a href="#" class="slice-link">
+                    <i class="fas fa-calendar"></i>
+                    202402
+                </a>
+                <a href="#" class="slice-link">
+                    <i class="fas fa-bullhorn"></i>
+                    出站不掉...
+                </a>
+            </div>
+        </slice-section>
+        
+        <slice-section>
+            <h3>📚 slice</h3>
+            <div class="slice-links">
+                <a href="#" class="slice-link">
+                    <i class="fas fa-book"></i>
+                    博客密
+                </a>
+                <a href="#" class="slice-link">
+                    <i class="fas fa-globe"></i>
+                    文档站
+                </a>
+                <a href="#" class="slice-link">
+                    <i class="fas fa-cat"></i>
+                    测试
+                </a>
+                <a href="#" class="slice-link">
+                    <i class="fas fa-heart"></i>
+                    测试
+                </a>
+                <a href="#" class="slice-link">
+                    <i class="fas fa-ribbon"></i>
+                    测试
+                </a>
+            </div>
+            
+            <h3 style="margin-top: 30px;">💼 project</h3>
+            <div class="project-links">
+                <a href="#" class="project-link">
+                    <i class="fas fa-home"></i>
+                    zyyo主页
+                </a>
+                <a href="#" class="project-link">
+                    <i class="fas fa-palette"></i>
+                    zyyo主题
+                </a>
+            </div>
+        </slice-section>
+    </slices-projects>
+    
+    <!-- 技能部分 -->
+    <skills-section>
+        <h3>⚡ skills</h3>
+        <div class="skills-grid">
+            <div class="skill-icon" title="HTML"><i class="fab fa-html5"></i></div>
+            <div class="skill-icon" title="CSS"><i class="fab fa-css3-alt"></i></div>
+            <div class="skill-icon" title="JavaScript"><i class="fab fa-js"></i></div>
+            <div class="skill-icon" title="React"><i class="fab fa-react"></i></div>
+            <div class="skill-icon" title="Vue"><i class="fab fa-vuejs"></i></div>
+            <div class="skill-icon" title="Node.js"><i class="fab fa-node-js"></i></div>
+            <div class="skill-icon" title="Python"><i class="fab fa-python"></i></div>
+            <div class="skill-icon" title="Java"><i class="fab fa-java"></i></div>
+            <div class="skill-icon" title="Git"><i class="fab fa-git"></i></div>
+            <div class="skill-icon" title="GitHub"><i class="fab fa-github"></i></div>
+            <div class="skill-icon" title="Linux"><i class="fab fa-linux"></i></div>
+            <div class="skill-icon" title="Docker"><i class="fab fa-docker"></i></div>
+            <div class="skill-icon" title="MySQL"><i class="fas fa-database"></i></div>
+            <div class="skill-icon" title="MongoDB"><i class="fas fa-leaf"></i></div>
+            <div class="skill-icon" title="AWS"><i class="fab fa-aws"></i></div>
+            <div class="skill-icon" title="Photoshop"><i class="fab fa-adobe"></i></div>
+            <div class="skill-icon" title="VS Code"><i class="fab fa-vscode"></i></div>
+            <div class="skill-icon" title="Sass"><i class="fab fa-sass"></i></div>
+            <div class="skill-icon" title="TypeScript"><i class="fab fa-js-square"></i></div>
+            <div class="skill-icon" title="Webpack"><i class="fab fa-wpexplorer"></i></div>
+        </div>
+    </skills-section>
 </div>
 
-<div class="about-content">
-    <h2>关于我</h2>
-    <p>我是朱，一名热爱编程的开发者。</p>
-    <p>仰慕「优雅编码的艺术」。</p>
-    <p>坚信熟能生巧，努力改变人生。</p>
-
-    <h3>联系</h3>
-    <ul style="list-style-type: none; padding-left: 0;">
-    {% for website in site.data.social %}
-    <li>{{website.sitename }}：<a href="{{ website.url }}" target="_blank">@{{ website.name }}</a></li>
-    {% endfor %}
-    {% if site.url contains 'mazhuang.org' %}
-    <li>
-    微信公众号：<br />
-    <img style="height:192px;width:192px;border:1px solid lightgrey;" src="{{ site.url }}/assets/images/qrcode.jpg" alt="朱猪写作" />
-    </li>
-    {% endif %}
-    </ul>
-
-    <h3>Skill Keywords</h3>
-    {% for skill in site.data.skills %}
-    <h4>{{ skill.name }}</h4>
-    <div class="btn-inline">
-    {% for keyword in skill.keywords %}
-    <button class="btn btn-outline" type="button">{{ keyword }}</button>
-    {% endfor %}
-    </div>
-    {% endfor %}
-</div>
-
-<script>
-// 贪吃蛇游戏代码
-const canvas = document.getElementById('snake');
-const ctx = canvas.getContext('2d');
-const scoreElement = document.getElementById('score');
-const progressElement = document.getElementById('progress');
-const progressTextElement = document.getElementById('progressText');
-
-// 游戏设置
-const gridSize = 20;
-const tileCount = canvas.width / gridSize;
-const maxProgress = 100;
-
-// 蛇的初始位置和速度
-let snake = [{x: 10, y: 10}];
-let velocity = {x: 1, y: 0};
-let food = {x: 15, y: 15};
-let score = 0;
-let progress = 0;
-let gameLoop = null;
-let gameSpeed = 150;
-
-// 开始游戏
-startGame();
-
-function startGame() {
-    // 重置游戏状态
-    snake = [{x: 10, y: 10}];
-    velocity = {x: 1, y: 0};
-    food = {x: 15, y: 15};
-    score = 0;
-    progress = 0;
-    updateScore();
-    updateProgress();
-    
-    // 启动游戏循环
-    if (gameLoop) clearInterval(gameLoop);
-    gameLoop = setInterval(update, gameSpeed);
-}
-
-function update() {
-    // 移动蛇头
-    const head = {x: snake[0].x + velocity.x, y: snake[0].y + velocity.y};
-    
-    // 检查边界碰撞
-    if (head.x < 0 || head.x >= tileCount || head.y < 0 || head.y >= tileCount) {
-        changeDirection();
-        return;
-    }
-    
-    // 检查自身碰撞
-    for (let segment of snake) {
-        if (segment.x === head.x && segment.y === head.y) {
-            changeDirection();
-            return;
-        }
-    }
-    
-    // 添加新头部
-    snake.unshift(head);
-    
-    // 检查食物碰撞
-    if (head.x === food.x && head.y === food.y) {
-        score++;
-        progress++;
-        updateScore();
-        updateProgress();
-        
-        // 生成新食物
-        generateFood();
-        
-        // 检查是否完成100%
-        if (progress >= maxProgress) {
-            startGame(); // 重新开始游戏
-        }
-    } else {
-        // 移除尾部
-        snake.pop();
-    }
-    
-    // 绘制游戏
-    draw();
-}
-
-function draw() {
-    // 清空画布
-    ctx.fillStyle = '#f0f0f0';
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
-    
-    // 绘制蛇
-    ctx.fillStyle = '#4CAF50';
-    for (let segment of snake) {
-        ctx.fillRect(segment.x * gridSize, segment.y * gridSize, gridSize - 2, gridSize - 2);
-    }
-    
-    // 绘制食物
-    ctx.fillStyle = '#FF5722';
-    ctx.fillRect(food.x * gridSize, food.y * gridSize, gridSize - 2, gridSize - 2);
-}
-
-function generateFood() {
-    // 生成随机位置
-    let newFood;
-    while (!newFood || isSnakeOnFood(newFood)) {
-        newFood = {
-            x: Math.floor(Math.random() * tileCount),
-            y: Math.floor(Math.random() * tileCount)
-        };
-    }
-    food = newFood;
-}
-
-function isSnakeOnFood(pos) {
-    for (let segment of snake) {
-        if (segment.x === pos.x && segment.y === pos.y) {
-            return true;
-        }
-    }
-    return false;
-}
-
-function changeDirection() {
-    // 随机改变方向
-    const directions = [
-        {x: 1, y: 0},  // 右
-        {x: -1, y: 0}, // 左
-        {x: 0, y: 1},  // 下
-        {x: 0, y: -1}  // 上
-    ];
-    
-    // 过滤掉相反方向
-    const validDirections = directions.filter(dir => 
-        !(dir.x === -velocity.x && dir.y === -velocity.y)
-    );
-    
-    // 随机选择一个方向
-    velocity = validDirections[Math.floor(Math.random() * validDirections.length)];
-}
-
-function updateScore() {
-    scoreElement.textContent = score;
-}
-
-function updateProgress() {
-    const progressPercent = Math.min((progress / maxProgress) * 100, 100);
-    progressElement.style.width = progressPercent + '%';
-    progressTextElement.textContent = Math.round(progressPercent) + '%';
-}
-
-// 自动改变方向（使游戏更有趣）
-setInterval(changeDirection, 2000);
-</script>
+<!-- 添加Font Awesome图标库 -->
+<script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
