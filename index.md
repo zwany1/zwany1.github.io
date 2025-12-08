@@ -403,7 +403,7 @@ comments: false
             <ol class="repo-list">
               {% for post in site.posts %}
               {% if paginator.page == 1 %}
-              {% if post.topmost == true %}
+              {% if post.topmost %}
               <li class="repo-list-item">
                 <h3 class="repo-list-name">
                   <a href="{{ site.url }}{{ post.url }}"><span class="top-most-flag">[置顶]</span>{{ post.title }}</a>
@@ -428,7 +428,7 @@ comments: false
               {% endfor %}
 
               {% for post in paginator.posts %}
-              {% if post.topmost != true %}
+              {% unless post.topmost %}
               <li class="repo-list-item">
                 <h3 class="repo-list-name">
                   <a href="{{ site.url }}{{ post.url }}">{{ post.title }}</a>
@@ -448,7 +448,7 @@ comments: false
                 {% endfor %}
                 </p>
               </li>
-              {% endif %}
+              {% endunless %}
               {% endfor %}
             </ol>
         </div>
