@@ -2,25 +2,35 @@
   width: auto;
   max-width: 1020px;
   padding-left: 20px;
-  padding-right: 20px
+  padding-right: 20px;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .mobile-visible {
-  display: none
+  display: none;
+}
+
+/* 移动端触摸反馈增强 */
+@media (max-width:50em) {
+  * {
+    -webkit-tap-highlight-color: rgba(139, 111, 71, 0.2);
+  }
 }
 
 @media (max-width:60em) {
   .collection-card {
-    width: 45%;
-    height: 225px
+    width: 48%;
+    height: 200px;
+    margin: 1%;
   }
 }
 
 @media (max-width:35em) {
   .collection-card {
-    width: 100%;
-    max-width: 350px;
-    margin: 10px auto
+    width: 98%;
+    max-width: none;
+    margin: 10px auto;
   }
 }
 
@@ -36,7 +46,7 @@
     display: inline-block
   }
   .mobile-md-section {
-    padding: 10px 0
+    padding: 15px 0
   }
   .column,
   .one-third-column {
@@ -44,50 +54,72 @@
     float: none;
   }
   .home .banner .collection-head {
-    padding: 1rem 1rem 1rem 0;
+    padding: 1.5rem 1rem 1.5rem 0;
+    text-align: center;
   }
   .home .collection-head .collection-title {
     padding: 0;
   }
   .collection-head .collection-header {
-    line-height: 1;
+    line-height: 1.1;
   }
   .collection-head.small .collection-title h1.collection-header {
-    font-size: 1.25em;
+    font-size: 1.5em;
   }
   .collection-head .collection-info .meta-info,
   .collection-head .collection-info .meta-info .octicon {
-    font-size: 0.75em;
+    font-size: 0.85em;
   }
   .site-header {
-    padding-bottom: 0;
-    padding-top: 5px;
+    padding-bottom: 10px;
+    padding-top: 10px;
   }
   .site-header h1, .site-header h1 .octicon {
-    font-size: 1em;
+    font-size: 1.2em;
   }
   .site-header .site-header-nav {
     float: right;
     display: none;
     margin-bottom: 0;
+    position: absolute;
+    top: 100%;
+    right: 0;
+    background: rgba(245, 242, 232, 0.98);
+    backdrop-filter: blur(10px);
+    border: 1px solid #c8b593;
+    border-radius: 8px;
+    padding: 10px;
+    box-shadow: 0 4px 20px rgba(139, 111, 71, 0.15);
+    z-index: 1000;
   }
   .site-header .site-header-nav .site-header-nav-item {
-    padding: 0 .5rem;
+    display: block;
+    padding: 10px 15px;
     margin-left: 0;
+    margin-bottom: 5px;
     font-size: 1rem;
     text-align: right;
+    border-radius: 6px;
+  }
+  .site-header .site-header-nav .site-header-nav-item:last-child {
+    margin-bottom: 0;
   }
   .collapsed {
     float: right;
     display: block;
-    width: 22px;
-    height: 2em;
+    width: 28px;
+    height: 2.5em;
     background-color: transparent;
     background-image: none;
     border: none;
     padding: 0;
     cursor: pointer;
     outline: none;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+  }
+  .collapsed:hover {
+    background: rgba(200, 181, 147, 0.2);
   }
   .collapsed:active {
     border: 1px solid transparent;
@@ -95,47 +127,100 @@
 
   .collapsed .icon-bar {
     display: block;
-    width: 22px;
-    height: 2px;
-    border-radius: 1px;
+    width: 24px;
+    height: 3px;
+    border-radius: 2px;
     background-color: #7a6a4a;
+    transition: all 0.3s ease;
   }
 
   .collapsed .icon-bar + .icon-bar {
-    margin-top: 4px;
+    margin-top: 5px;
   }
 
   .mini-repo-list-item .owner.css-truncate-target,
   .mini-repo-list-item .repo-and-owner.css-truncate-target {
-    max-width: 300px
+    max-width: 200px
   }
+  
+  /* 改进移动端文章卡片样式 */
+  .repo-list-item {
+    padding: 15px;
+    margin-bottom: 15px;
+  }
+  
+  .repo-list-item h3 {
+    font-size: 1.3rem;
+  }
+  
+  /* 优化移动端代码块显示 */
+  .markdown-body pre {
+    padding: 15px;
+    font-size: 80%;
+    overflow-x: auto;
+  }
+  
+  /* 优化移动端表格显示 */
+  .markdown-body table {
+    display: block;
+    overflow-x: auto;
+  }
+  
+  /* 改进移动端标题大小 */
   .markdown-body h1 {
     font-size: 2rem
   }
   .markdown-body h2 {
-    font-size: 1.4rem
+    font-size: 1.6rem
   }
   .markdown-body h3 {
-    font-size: 1.2rem
+    font-size: 1.4rem
   }
   .markdown-body h4 {
-    font-size: 1.1em
+    font-size: 1.2em
   }
   .markdown-body h5 {
-    font-size: 1em
+    font-size: 1.1em
   }
 
   .tools-wrapper {
     bottom: 1em;
+    right: 1em;
+  }
+  
+  /* 优化移动端按钮大小和间距 */
+  .btn {
+    padding: 12px 20px;
+    font-size: 14px;
+    margin: 5px 0;
+    width: 100%;
   }
 }
 
 @media (max-width:20em) {
   .site-header-nav .site-header-nav-item {
-    min-width: 20%
+    display: block;
+    min-width: 100%;
+    margin-bottom: 5px;
+    text-align: left;
   }
   .collection-head .collection-info .meta-info {
     display: block;
     margin-top: 15px
+  }
+  
+  /* 超小屏幕优化 */
+  .container {
+    padding-left: 10px;
+    padding-right: 10px;
+  }
+  
+  .markdown-body h1 {
+    font-size: 1.8rem;
+  }
+  
+  .markdown-body pre {
+    padding: 10px;
+    font-size: 75%;
   }
 }
