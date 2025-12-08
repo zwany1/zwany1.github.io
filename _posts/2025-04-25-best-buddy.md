@@ -5,7 +5,7 @@ date: 2025-04-25 10:00:00 +0800
 categories: life
 tags: [friendship, life]
 topmost: true
-description: "关于我最好的朋友的故事"
+description: "Best Friend Memoir"
 ---
 
 # Best buddy
