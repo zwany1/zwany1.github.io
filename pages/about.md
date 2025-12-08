@@ -319,7 +319,6 @@ skills-section h3 {
             <div class="slice-tags">
                 <div class="slice-tag">前端</div>
                 <div class="slice-tag">小学生</div>
-                <div class="slice-tag">大一</div>
                 <div class="slice-tag">阅读</div>
                 <div class="slice-tag">linux</div>
                 <div class="slice-tag">配置</div>
@@ -365,25 +364,19 @@ skills-section h3 {
                     <i class="fas fa-cat"></i>
                     测试
                 </a>
-                <a href="#" class="slice-link">
-                    <i class="fas fa-heart"></i>
-                    测试
-                </a>
-                <a href="#" class="slice-link">
-                    <i class="fas fa-ribbon"></i>
-                    测试
-                </a>
+
+            
             </div>
             
             <h3 style="margin-top: 30px;">💼 project</h3>
             <div class="project-links">
                 <a href="#" class="project-link">
                     <i class="fas fa-home"></i>
-                    zyyo主页
+                    z.w.yi主页
                 </a>
                 <a href="#" class="project-link">
                     <i class="fas fa-palette"></i>
-                    zyyo主题
+                    z.w.yi主题
                 </a>
             </div>
         </slice-section>
@@ -396,23 +389,30 @@ skills-section h3 {
             <div class="skill-icon" title="HTML"><i class="fab fa-html5"></i></div>
             <div class="skill-icon" title="CSS"><i class="fab fa-css3-alt"></i></div>
             <div class="skill-icon" title="JavaScript"><i class="fab fa-js"></i></div>
+            <div class="skill-icon" title="TypeScript"><i class="fab fa-typescript"></i></div>
             <div class="skill-icon" title="React"><i class="fab fa-react"></i></div>
             <div class="skill-icon" title="Vue"><i class="fab fa-vuejs"></i></div>
+            <div class="skill-icon" title="Angular"><i class="fab fa-angular"></i></div>
             <div class="skill-icon" title="Node.js"><i class="fab fa-node-js"></i></div>
+            <div class="skill-icon" title="Express"><i class="fab fa-express"></i></div>
             <div class="skill-icon" title="Python"><i class="fab fa-python"></i></div>
             <div class="skill-icon" title="Java"><i class="fab fa-java"></i></div>
+            <div class="skill-icon" title="PHP"><i class="fab fa-php"></i></div>
+            <div class="skill-icon" title="C++"><i class="fab fa-cuttlefish"></i></div>
             <div class="skill-icon" title="Git"><i class="fab fa-git"></i></div>
             <div class="skill-icon" title="GitHub"><i class="fab fa-github"></i></div>
             <div class="skill-icon" title="Linux"><i class="fab fa-linux"></i></div>
             <div class="skill-icon" title="Docker"><i class="fab fa-docker"></i></div>
             <div class="skill-icon" title="MySQL"><i class="fas fa-database"></i></div>
-            <div class="skill-icon" title="MongoDB"><i class="fas fa-leaf"></i></div>
+            <div class="skill-icon" title="MongoDB"><i class="fab fa-mongodb"></i></div>
+            <div class="skill-icon" title="Redis"><i class="fab fa-redis"></i></div>
             <div class="skill-icon" title="AWS"><i class="fab fa-aws"></i></div>
+            <div class="skill-icon" title="Nginx"><i class="fab fa-nginx"></i></div>
             <div class="skill-icon" title="Photoshop"><i class="fab fa-adobe"></i></div>
             <div class="skill-icon" title="VS Code"><i class="fab fa-vscode"></i></div>
             <div class="skill-icon" title="Sass"><i class="fab fa-sass"></i></div>
-            <div class="skill-icon" title="TypeScript"><i class="fab fa-js-square"></i></div>
-            <div class="skill-icon" title="Webpack"><i class="fab fa-wpexplorer"></i></div>
+            <div class="skill-icon" title="Webpack"><i class="fab fa-webpack"></i></div>
+            <div class="skill-icon" title="Jest"><i class="fab fa-jest"></i></div>
         </div>
     </skills-section>
 </div>
