@@ -274,11 +274,10 @@ skills-section h3 {
     <!-- 头部区域 -->
     <div class="header">
         <div class="avatar">
-            <!-- 这里可以放置你的头像图片 -->
-            <div style="font-size: 80px;">🐱</div>
+            <img src="{{ site.url }}/assets/images/d56012bab88f5aabe76bb1fc7eeeb9c6.jpg" alt="Z.w.YI" />
         </div>
         <div class="title-section">
-            <h1>Hello I'm <span>Zyyo</span></h1>
+            <h1>Hello I'm <span>Z.w.YI</span></h1>
             <职业信息>
                 <p>Full Stack Developer</p>
                 <p>The only way to do great is to love what you do.</p>
