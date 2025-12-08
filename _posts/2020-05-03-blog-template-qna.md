@@ -157,5 +157,5 @@ _config.yml 里的 components.qrcode 这一段用于控制二维码。
 
 参考 GitHub 的官方说明：<https://docs.github.com/zh/pages/configuring-a-custom-domain-for-your-github-pages-site/about-custom-domains-and-github-pages>
 
-[1]: https://mazhuang.org/about/
-[2]: https://mazhuang.org/links/
+[1]: https://zwany1.github.io/about/
+[2]: https://zwany1.github.io/links/
