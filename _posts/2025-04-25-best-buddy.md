@@ -1,7 +1,7 @@
 ---
 layout: post
 title: "Best buddy"
-date: 2025-04-25 10:00:00 +0800
+date: 2025-12-8 17:56:55 +0800
 categories: life
 tags: [friendship, life]
 topmost: true
