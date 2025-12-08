@@ -133,7 +133,7 @@ jQuery(function() {
     .ripple {
       position: absolute;
       border-radius: 50%;
-      background: rgba(255, 255, 255, 0.3);
+      background: rgba(122, 106, 74, 0.2);
       transform: scale(0);
       animation: ripple-animation 0.6s linear;
       pointer-events: none;
@@ -153,7 +153,7 @@ jQuery(function() {
       width: 10px;
       height: 10px;
       border-radius: 50%;
-      background: rgba(138, 43, 226, 0.6);
+      background: rgba(122, 106, 74, 0.6);
       pointer-events: none;
       z-index: 9999;
       transition: transform 0.1s ease;
@@ -161,7 +161,7 @@ jQuery(function() {
     
     .cursor-active {
       transform: scale(1.5);
-      background: rgba(215, 109, 119, 0.8);
+      background: rgba(139, 111, 71, 0.8);
     }
     
     /* 滚动进度指示器 */
@@ -170,7 +170,7 @@ jQuery(function() {
       top: 0;
       left: 0;
       height: 3px;
-      background: linear-gradient(90deg, #3a1c71, #d76d77, #ffaf7b);
+      background: linear-gradient(90deg, #c8b593, #8b6f47, #7a6a4a);
       z-index: 9999;
       transition: width 0.1s ease;
     }
