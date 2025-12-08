@@ -1,0 +1,525 @@
+---
+layout: default
+class: home
+comments: false
+---
+
+<style>
+/* 增强首页横幅和导航栏的视觉效果 */
+.home .banner,
+.home .site-header,
+.home .banner .collection-head,
+.home .banner .collection-head a,
+.home .site-header h1 a,
+.home .site-header .site-header-nav-item:hover {
+  color: {{ site.index.banner.color | default: '#ffffff' }};
+}
+
+.home .site-header .site-header-nav-item {
+  color: {{ site.index.banner.nav-color | default: 'rgba(255, 255, 255, 0.7)' }};
+  transition: all 0.3s ease;
+}
+
+/* 渐变背景效果 */
+.home .banner {
+  background: linear-gradient(135deg, {{ site.index.banner.background-color | default: '#4183c4' }} 0%, {{ site.index.banner.secondary-color | default: '#357abd' }} 50%, {{ site.index.banner.tertiary-color | default: '#2968a0' }} 100%);
+  position: relative;
+  overflow: hidden;
+}
+
+/* 添加动态背景元素 - 增强版 */
+.home .banner::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"><defs><pattern id="grid" width="10" height="10" patternUnits="userSpaceOnUse"><path d="M 10 0 L 0 0 0 10" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="0.5"/></pattern></defs><rect width="100" height="100" fill="url(%23grid)"/></svg>');
+    opacity: 0.5;
+    animation: gridMove 20s linear infinite;
+}
+
+@keyframes gridMove {
+    0% { transform: translate(0, 0); }
+    100% { transform: translate(10px, 10px); }
+}
+
+/* 添加粒子效果 */
+.home .banner::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: 
+        radial-gradient(circle at 25% 25%, rgba(255,255,255,0.15) 0%, transparent 50%),
+        radial-gradient(circle at 75% 75%, rgba(255,255,255,0.15) 0%, transparent 50%),
+        radial-gradient(circle at 50% 50%, rgba(255,255,255,0.08) 0%, transparent 50%);
+    opacity: 0.8;
+    z-index: 1;
+    animation: pulse 8s ease-in-out infinite;
+}
+
+@keyframes pulse {
+    0%, 100% { opacity: 0.8; transform: scale(1); }
+    50% { opacity: 1; transform: scale(1.05); }
+}
+
+/* 添加浮动元素 */
+.banner .floating-elements {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1;
+    overflow: hidden;
+}
+
+.banner .floating-element {
+    position: absolute;
+    background: rgba(255,255,255,0.08);
+    border-radius: 50%;
+    animation: floatRandom 20s infinite ease-in-out;
+    box-shadow: 0 0 20px rgba(255,255,255,0.2);
+    backdrop-filter: blur(5px);
+    opacity: 0.8;
+}
+
+@keyframes floatRandom {
+    0%, 100% { 
+        transform: translateY(0px) translateX(0px) rotate(0deg); 
+        opacity: 0.5;
+    }
+    25% { 
+        transform: translateY(-30px) translateX(20px) rotate(90deg); 
+        opacity: 0.8;
+    }
+    50% { 
+        transform: translateY(-10px) translateX(-20px) rotate(180deg); 
+        opacity: 1;
+    }
+    75% { 
+        transform: translateY(-40px) translateX(10px) rotate(270deg); 
+        opacity: 0.6;
+    }
+}
+
+{% if site.index.banner.background-image %}
+.home .banner {
+    background-image: url("{{ site.index.banner.background-image }}");
+    background-repeat: {{ site.index.banner.background-repeat | default: 'no-repeat' }};
+    background-size: {{ site.index.banner.background-size | default: 'cover' }};
+    background-blend-mode: overlay;
+}
+{% endif %}
+
+.home .site-header {
+    background-color: {{ site.index.banner.background-color | default: '#4183c4' }};
+    border-bottom: none;
+    backdrop-filter: blur(10px);
+    background: rgba(65, 131, 196, 0.9);
+}
+
+.home .banner .collection-head {
+    background: 0 0;
+    box-shadow: none;
+    -webkit-box-shadow: none;
+    position: relative;
+    z-index: 2;
+}
+
+/* 增强标题视觉效果 */
+.home .collection-head .collection-header {
+    font-size: 3.5rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+    letter-spacing: -0.5px;
+    animation: fadeInUp 1s ease forwards;
+}
+
+.home .collection-head .collection-header span {
+    display: inline-block;
+    animation: slideIn 1s ease forwards;
+    opacity: 0;
+    transform: translateX(-20px);
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateX(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+/* 增强元信息的视觉效果 */
+.home .collection-info .meta-info {
+    display: inline-block;
+    margin-right: 1.5rem;
+    margin-bottom: 0.5rem;
+    padding: 0.5rem 1rem;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 20px;
+    backdrop-filter: blur(5px);
+    transition: all 0.3s ease;
+}
+
+.home .collection-info .meta-info:hover {
+    background: rgba(255, 255, 255, 0.2);
+    transform: translateY(-2px);
+}
+
+.home .collection-info .meta-info a {
+    transition: all 0.3s ease;
+}
+
+.home .collection-info .meta-info a:hover {
+    color: {{ site.index.banner.color | default: '#ffffff' }};
+    text-decoration: underline;
+}
+
+/* 文章卡片设计与动画效果增强 */
+.repo-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.repo-list-item {
+    background: #fff;
+    border-radius: 12px;
+    padding: 2rem;
+    margin-bottom: 1.5rem;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    border: 1px solid rgba(0, 0, 0, 0.05);
+    position: relative;
+    overflow: hidden;
+}
+
+/* 卡片悬停效果 */
+.repo-list-item:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.15);
+    border-color: rgba(0, 0, 0, 0.1);
+}
+
+/* 卡片进入视口动画 */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.repo-list-item {
+    animation: fadeInUp 0.6s ease-out forwards;
+    opacity: 0;
+}
+
+/* 为不同卡片添加交错动画延迟 */
+.repo-list-item:nth-child(1) { animation-delay: 0.1s; }
+.repo-list-item:nth-child(2) { animation-delay: 0.2s; }
+.repo-list-item:nth-child(3) { animation-delay: 0.3s; }
+.repo-list-item:nth-child(4) { animation-delay: 0.4s; }
+.repo-list-item:nth-child(5) { animation-delay: 0.5s; }
+
+/* 文章标题样式增强 */
+.repo-list-name {
+    margin-top: 0;
+    margin-bottom: 1rem;
+    font-size: 1.5rem;
+    font-weight: 700;
+}
+
+.repo-list-name a {
+    color: #24292e;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    position: relative;
+}
+
+.repo-list-name a:hover {
+    color: #0366d6;
+}
+
+/* 置顶文章特殊样式 */
+.top-most-flag {
+    color: #e74c3c;
+    font-weight: 600;
+    margin-right: 0.5rem;
+    font-size: 0.9rem;
+}
+
+/* 文章描述样式 */
+.repo-list-description {
+    color: #586069;
+    line-height: 1.6;
+    margin-bottom: 1.2rem;
+    font-size: 0.95rem;
+}
+
+/* 文章元信息样式增强 */
+.repo-list-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    margin: 0;
+    padding-top: 1rem;
+    border-top: 1px solid #eaecef;
+}
+
+.repo-list-meta .meta-info {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    color: #586069;
+    font-size: 0.85rem;
+    transition: all 0.3s ease;
+}
+
+.repo-list-meta .meta-info:hover {
+    color: #0366d6;
+}
+
+.repo-list-meta .meta-info a {
+    color: inherit;
+    text-decoration: none;
+    transition: all 0.3s ease;
+}
+
+.repo-list-meta .meta-info a:hover {
+    color: #0366d6;
+    text-decoration: underline;
+}
+
+/* 响应式设计优化 */
+@media (max-width:50em) {
+    .home .collapsed .icon-bar {
+        background-color: white;
+    }
+
+    .home .collection-head .collection-header {
+        font-size: 2rem;
+    }
+
+    .home .collection-info .meta-info {
+        margin-right: 0.5rem;
+        padding: 0.3rem 0.8rem;
+        font-size: 0.9rem;
+    }
+    
+    /* 移动端文章卡片优化 */
+    .repo-list-item {
+        padding: 1.5rem;
+        margin-bottom: 1.2rem;
+    }
+    
+    .repo-list-name {
+        font-size: 1.3rem;
+    }
+    
+    .repo-list-meta {
+        gap: 0.8rem;
+    }
+}
+</style>
+
+{% assign assets_base_url = site.url %}
+{% if site.cdn.jsdelivr.enabled %}
+{% assign assets_base_url = "https://fastly.jsdelivr.net/gh/" | append: site.repository | append: '@master' %}
+{% endif %}
+<section class="banner">
+    <!-- 浮动元素容器 -->
+    <div class="floating-elements">
+        <div class="floating-element" style="width: 40px; height: 40px; left: 10%; top: 20%; animation-delay: 0s;"></div>
+        <div class="floating-element" style="width: 60px; height: 60px; left: 80%; top: 30%; animation-delay: 2s;"></div>
+        <div class="floating-element" style="width: 30px; height: 30px; left: 30%; top: 70%; animation-delay: 1s;"></div>
+        <div class="floating-element" style="width: 50px; height: 50px; left: 70%; top: 60%; animation-delay: 3s;"></div>
+        <div class="floating-element" style="width: 20px; height: 20px; left: 50%; top: 40%; animation-delay: 0.5s;"></div>
+        <div class="floating-element" style="width: 35px; height: 35px; left: 20%; top: 80%; animation-delay: 1.5s;"></div>
+        <div class="floating-element" style="width: 45px; height: 45px; left: 60%; top: 25%; animation-delay: 2.5s;"></div>
+        <div class="floating-element" style="width: 25px; height: 25px; left: 90%; top: 75%; animation-delay: 3.5s;"></div>
+    </div>
+    <div class="collection-head">
+      <div class="container">
+        <div class="columns">
+          <div class="column two-thirds">
+            <div class="collection-title">
+              <h1 class="collection-header" id="sub-title"><span>{{ site.subtitle }}</span></h1>
+              <div class="collection-info">
+                <span class="meta-info mobile-hidden">
+                  <span class="octicon octicon-location"></span>
+                  {{ site.location }}
+                </span>
+                {% if site.organization %}
+                <span class="meta-info">
+                  <span class="octicon octicon-organization"></span>
+                  <a href="{{ site.organization_url }}" target="_blank">{{ site.organization }}</a>
+                </span>
+                {% endif %}
+                <span class="meta-info">
+                  <span class="octicon octicon-mark-github"></span>
+                  <a href="https://github.com/{{ site.github_username }}" target="_blank">{{ site.github_username }}</a>
+                </span>
+              </div>
+            </div>
+          </div>
+          <div class="column one-third mobile-hidden">
+            <div class="collection-title">
+              {% include sidebar-qrcode.html %}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+</section>
+<!-- /.banner -->
+<section class="container content">
+    <div class="columns">
+        <div class="column two-thirds" >
+            <ol class="repo-list">
+              {% for post in site.posts %}
+              {% if paginator.page == 1 %}
+              {% if post.topmost == true %}
+              <li class="repo-list-item">
+                <h3 class="repo-list-name">
+                  <a href="{{ site.url }}{{ post.url }}"><span class="top-most-flag">[置顶]</span>{{ post.title }}</a>
+                </h3>
+                <p class="repo-list-description">
+                {{ post.excerpt | strip_html | strip }}
+                </p>
+                <p class="repo-list-meta">
+                <span class="meta-info">
+                  <span class="octicon octicon-calendar"></span> {{ post.date | date: "%Y/%m/%d" }}
+                </span>
+                {% for cat in post.categories %}
+                <span class="meta-info">
+                  <span class="octicon octicon-file-directory"></span>
+                  <a href="{{ site.url }}/categories/#{{ cat }}" title="{{ cat }}">{{ cat }}</a>
+                </span>
+                {% endfor %}
+                </p>
+              </li>
+              {% endif %}
+              {% endif %}
+              {% endfor %}
+
+              {% for post in paginator.posts %}
+              {% if post.topmost != true %}
+              <li class="repo-list-item">
+                <h3 class="repo-list-name">
+                  <a href="{{ site.url }}{{ post.url }}">{{ post.title }}</a>
+                </h3>
+                <p class="repo-list-description">
+                {{ post.excerpt | strip_html | strip }}
+                </p>
+                <p class="repo-list-meta">
+                <span class="meta-info">
+                  <span class="octicon octicon-calendar"></span> {{ post.date | date: "%Y/%m/%d" }}
+                </span>
+                {% for cat in post.categories %}
+                <span class="meta-info">
+                  <span class="octicon octicon-file-directory"></span>
+                  <a href="{{ site.url }}/categories/#{{ cat }}" title="{{ cat }}">{{ cat }}</a>
+                </span>
+                {% endfor %}
+                </p>
+              </li>
+              {% endif %}
+              {% endfor %}
+            </ol>
+        </div>
+        <div class="column one-third">
+            {% include sidebar-search.html %}
+            {% include sidebar-categories-cloud.html %}
+            {% include sidebar-ad.html %}
+            {% include sidebar-popular-repo.html %}
+        </div>
+    </div>
+    <div class="pagination text-align">
+      <div class="btn-group">
+        {% if paginator.previous_page %}
+          {% if paginator.previous_page == 1 %}
+              <a href="{{ site.url }}/" class="btn btn-outline">&laquo;</a>
+          {% else %}
+              <a href="{{ site.url }}/page{{paginator.previous_page}}"  class="btn btn-outline">&laquo;</a>
+          {% endif %}
+        {% else %}
+            <button disabled="disabled" href="javascript:;" class="btn btn-outline">&laquo;</button>
+        {% endif %}
+
+        {% if paginator.page == 1 %}
+            <a href="javascript:;" class="active btn btn-outline">1</a>
+        {% else %}
+            <a href="{{ site.url }}/"  class="btn btn-outline">1</a>
+        {% endif %}
+
+        {% assign aroundSize = 2 %}
+        {% assign midStartPage = paginator.page | minus: aroundSize %}
+        {% if 2 > midStartPage %}
+            {% assign midStartPage = 2 %}
+        {% endif %}
+        {% assign midEndPage = paginator.page | plus: aroundSize %}
+        {% if midEndPage >= paginator.total_pages %}
+            {% assign midEndPage = paginator.total_pages | minus:1 %}
+        {% endif %}
+        {% assign tmpPage = aroundSize | plus: 2 %}
+        {% if paginator.page > tmpPage %}
+          <button disabled="disabled" href="javascript:;" class="btn btn-outline">...</button>
+        {% endif %}
+
+        {% for count in (midStartPage..midEndPage) %}
+          {% if count == paginator.page %}
+            <a href="jaavascript:;" class="active btn btn-outline">{{count}}</a>
+          {% else %}
+            <a href="{{ site.url }}/page{{count}}"  class="btn btn-outline">{{count}}</a>
+          {% endif %}
+        {% endfor %}
+
+        {% assign tmpPage = paginator.page | plus: aroundSize | plus: 1 %}
+        {% if paginator.total_pages > tmpPage %}
+          <button disabled="disabled" href="javascript:;" class="btn btn-outline">...</button>
+        {% endif %}
+
+        {% if paginator.total_pages > 1 %}
+          {% if paginator.page == paginator.total_pages %}
+              <a href="jaavascript:;" class="active btn btn-outline">{{paginator.total_pages}}</a>
+          {% else %}
+              <a href="{{ site.url }}/page{{paginator.total_pages}}"  class="btn btn-outline">{{paginator.total_pages}}</a>
+          {% endif %}
+        {% endif %}
+
+        {% if paginator.next_page %}
+            <a href="{{ site.url }}/page{{paginator.next_page}}"  class="btn btn-outline">&raquo;</a>
+        {% else %}
+            <button disabled="disabled" href="javascript:;" class="btn btn-outline">&raquo;</button>
+        {% endif %}
+        </div>
+    </div>
+    <!-- /pagination -->
+</section>
+<!-- /section.content -->
+

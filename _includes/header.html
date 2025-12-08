@@ -6,14 +6,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
     <title>{% if page.title %}{{ page.title }} &mdash; {% endif %}{{ site.title }}</title>
     <link rel="stylesheet" href="{{ assets_base_url }}/assets/vendor/primer-css/css/primer.css">
-    <link rel="stylesheet" href="{{ assets_base_url }}/assets/css/components/collection.css">
-    <link rel="stylesheet" href="{{ assets_base_url }}/assets/css/components/repo-card.css">
-    <link rel="stylesheet" href="{{ assets_base_url }}/assets/css/sections/repo-list.css">
-    <link rel="stylesheet" href="{{ assets_base_url }}/assets/css/components/boxed-group.css">
     <link rel="stylesheet" href="{{ assets_base_url }}/assets/css/globals/common.css">
     <link rel="stylesheet" href="{{ assets_base_url }}/assets/css/globals/responsive.css">
-    <link rel="stylesheet" href="{{ assets_base_url }}/assets/css/posts/index.css">
-    <link rel="stylesheet" href="{{ assets_base_url }}/assets/css/globals/animations.css">
+    <link rel="stylesheet" href="{{ assets_base_url }}/assets/css/components/collection.css" media="print" onload="this.media='all'">
+    <link rel="stylesheet" href="{{ assets_base_url }}/assets/css/components/repo-card.css" media="print" onload="this.media='all'">
+    <link rel="stylesheet" href="{{ assets_base_url }}/assets/css/sections/repo-list.css" media="print" onload="this.media='all'">
+    <link rel="stylesheet" href="{{ assets_base_url }}/assets/css/components/boxed-group.css" media="print" onload="this.media='all'">
+    <link rel="stylesheet" href="{{ assets_base_url }}/assets/css/posts/index.css" media="print" onload="this.media='all'">
+    <link rel="stylesheet" href="{{ assets_base_url }}/assets/css/globals/animations.css" media="print" onload="this.media='all'">
     <link rel="stylesheet" href="{{ assets_base_url }}/assets/vendor/octicons/octicons/octicons.css">
     {% assign highlight_base_url = 'https://mazhuang.org/rouge-themes/dist' %}
     {% if site.cdn.jsdelivr.enabled %}
@@ -77,7 +77,7 @@
     {% endif %}
 
     <script src="{{ assets_base_url }}/assets/vendor/jquery/dist/jquery.min.js"></script>
-    <script src="{{ assets_base_url }}/assets/js/main.js"></script>
+    <script defer src="{{ assets_base_url }}/assets/js/main.js"></script>
 
     {% if site.google.adsense.enabled and site.url contains 'mazhuang.org' %}
     <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7093222719567591" crossorigin="anonymous"></script>
