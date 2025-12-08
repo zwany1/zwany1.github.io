@@ -385,34 +385,8 @@ skills-section h3 {
     <!-- 技能部分 -->
     <skills-section>
         <h3>⚡ skills</h3>
-        <div class="skills-grid">
-            <div class="skill-icon" title="HTML"><i class="fab fa-html5"></i></div>
-            <div class="skill-icon" title="CSS"><i class="fab fa-css3-alt"></i></div>
-            <div class="skill-icon" title="JavaScript"><i class="fab fa-js"></i></div>
-            <div class="skill-icon" title="TypeScript"><i class="fab fa-typescript"></i></div>
-            <div class="skill-icon" title="React"><i class="fab fa-react"></i></div>
-            <div class="skill-icon" title="Vue"><i class="fab fa-vuejs"></i></div>
-            <div class="skill-icon" title="Angular"><i class="fab fa-angular"></i></div>
-            <div class="skill-icon" title="Node.js"><i class="fab fa-node-js"></i></div>
-            <div class="skill-icon" title="Express"><i class="fab fa-express"></i></div>
-            <div class="skill-icon" title="Python"><i class="fab fa-python"></i></div>
-            <div class="skill-icon" title="Java"><i class="fab fa-java"></i></div>
-            <div class="skill-icon" title="PHP"><i class="fab fa-php"></i></div>
-            <div class="skill-icon" title="C++"><i class="fab fa-cuttlefish"></i></div>
-            <div class="skill-icon" title="Git"><i class="fab fa-git"></i></div>
-            <div class="skill-icon" title="GitHub"><i class="fab fa-github"></i></div>
-            <div class="skill-icon" title="Linux"><i class="fab fa-linux"></i></div>
-            <div class="skill-icon" title="Docker"><i class="fab fa-docker"></i></div>
-            <div class="skill-icon" title="MySQL"><i class="fas fa-database"></i></div>
-            <div class="skill-icon" title="MongoDB"><i class="fab fa-mongodb"></i></div>
-            <div class="skill-icon" title="Redis"><i class="fab fa-redis"></i></div>
-            <div class="skill-icon" title="AWS"><i class="fab fa-aws"></i></div>
-            <div class="skill-icon" title="Nginx"><i class="fab fa-nginx"></i></div>
-            <div class="skill-icon" title="Photoshop"><i class="fab fa-adobe"></i></div>
-            <div class="skill-icon" title="VS Code"><i class="fab fa-vscode"></i></div>
-            <div class="skill-icon" title="Sass"><i class="fab fa-sass"></i></div>
-            <div class="skill-icon" title="Webpack"><i class="fab fa-webpack"></i></div>
-            <div class="skill-icon" title="Jest"><i class="fab fa-jest"></i></div>
+        <div class="skills-grid" style="display: flex; justify-content: center; align-items: center; padding: 20px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 10px; overflow: hidden;">
+            <img src="{{ site.url }}/images/fragments/image.png" alt="Skills" style="max-width: 100%; max-height: 300px; object-fit: contain; border-radius: 5px;" />
         </div>
     </skills-section>
 </div>
