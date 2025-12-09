@@ -170,14 +170,41 @@ body {
 }
 
 .gradientText {
+    animation-delay: 0s;
+    animation-direction: normal;
+    animation-duration: 10s;
+    animation-fill-mode: none;
+    animation-iteration-count: infinite;
+    animation-name: backgroundSizeAnimation;
+    animation-play-state: running;
+    animation-timing-function: ease-in-out;
     background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-size: 300%;
+    background-image: linear-gradient(120deg, rgb(189, 52, 254), rgb(224, 50, 27) 30%, rgb(65, 209, 255) 60%);
+    background-position-x: 88.0322%;
+    background-position-y: 50%;
+    background-size: 200%;
+    box-sizing: border-box;
+    color: rgb(238, 238, 238);
+    display: inline;
     font-family: title;
-    background-image: linear-gradient(45deg, #ff6b6b, #4ecdc4, #45b7d1, #96ceb4, #ffeead);
-    background-position: 0% center;
-    animation: 8s ease-in-out 0s infinite normal none running backgroundSizeAnimation;
-    text-shadow: 0 0 5px rgba(255, 107, 107, 0.3);
+    font-size: 65px;
+    font-weight: 800;
+    height: auto;
+    margin-bottom: 0px;
+    margin-left: 0px;
+    margin-right: 0px;
+    margin-top: 0px;
+    padding-bottom: 0px;
+    padding-left: 0px;
+    padding-right: 0px;
+    padding-top: 0px;
+    transition-delay: 0s;
+    transition-duration: 0.2s;
+    transition-property: background-color;
+    transition-timing-function: ease;
+    user-select: none;
+    width: auto;
+    -webkit-text-fill-color: rgba(0, 0, 0, 0);
 }
 .welcome {
     font-size: 72px;
@@ -632,9 +659,7 @@ body {
                 <a href="#" class="site-link">
                     <i class="fas fa-heart"></i>
                     测试
-                </a>
-                <a href="#" class="site-link">
-          
+                </a>          
             </div>
         </div>
         
