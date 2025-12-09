@@ -12,7 +12,9 @@ permalink: /about/
 /* 全局样式 */
 body {
     font-family: 'Arial', sans-serif;
-    background: linear-gradient(135deg, #1a237e 0%, #3949ab 100%);
+    background: url('/assets/images/back.png') center center fixed;
+    background-size: cover;
+    background-repeat: no-repeat;
     margin: 0;
     padding: 0;
     color: white;
