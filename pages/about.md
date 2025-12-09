@@ -63,7 +63,7 @@ body {
     position: relative;
 }
 
-.avatar img {
+.avatar .main-avatar {
     width: 100%;
     height: 100%;
     border-radius: 50%;
@@ -172,13 +172,18 @@ body {
 }
 
 .gradientText {
-    -webkit-background-clip: text;
+    background-clip: text;
     -webkit-text-fill-color: transparent;
     background-size: 200%;
-    background-position: 0%;
-    font-family: "title";
-    animation: backgroundSizeAnimation 10s ease-in-out infinite;
+    font-family: title;
     background-image: var(--gradient);
+    background-position: 0% center;
+    animation: 10s ease-in-out 0s infinite normal none running backgroundSizeAnimation;
+}
+.welcome {
+    font-size: 65px;
+    font-weight: 800;
+    margin: 20px 0px;
 }
 
 @keyframes backgroundSizeAnimation {
@@ -317,17 +322,6 @@ body {
     color: #ffd700;
 }
 
-/* 链接列表部分 */
-.left-div {
-    flex-shrink: 0;
-    width: 100%;
-    border-radius: 13px;
-    margin-top: 15px;
-    padding: 20px;
-    backdrop-filter: blur(var(--card_filter));
-    -webkit-backdrop-filter: blur(var(--card_filter));
-    background: var(--item_bg_color);
-}
 
 #line {
     width: 100%;
@@ -451,7 +445,7 @@ body {
     <!-- 左侧边栏 -->
     <div class="sidebar">
         <div class="avatar">
-            <img src="{{ site.url }}/assets/images/d56012bab88f5aabe76bb1fc7eeeb9c6.jpg" alt="Zwy" />
+            <img src="{{ site.url }}/assets/images/d56012bab88f5aabe76bb1fc7eeeb9c6.jpg" alt="Zwy" class="main-avatar" />
             <img src="{{ site.url }}/assets/images/to.png" alt="Decoration" class="decoration" />
         </div>
         
@@ -490,7 +484,7 @@ body {
         <!-- 头部区域 -->
         <div class="header">
             <div class="title-section">
-                <h1 class="gradientText">Hello I'm <span>Zwy</span></h1>
+                <div class="welcome">Hello I'm <span class="gradientText">Zwy1</span></div>
                 <div class="职业信息">
                     <p><i class="fas fa-briefcase"></i> Full Stack Developer</p>
                     <p><i class="fas fa-quote-left"></i> The only way to do great is to love what you do.</p>
@@ -568,18 +562,6 @@ body {
         </div>
     </div>
     
-    <!-- 链接列表部分 -->
-    <div class="left-div">
-        <div id="line">
-            <ul>
-                <li>链接</li>
-                <li>动态字符</li>
-                <li>CDN动态加速</li>
-                <li>2024-3</li>
-                <li>出站不掉...</li>
-            </ul>
-        </div>
-    </div>
 
     <!-- 技能部分 -->
     <div class="skills-section">
