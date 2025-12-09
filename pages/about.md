@@ -170,41 +170,20 @@ body {
 }
 
 .gradientText {
-    animation-delay: 0s;
-    animation-direction: normal;
-    animation-duration: 10s;
-    animation-fill-mode: none;
-    animation-iteration-count: infinite;
-    animation-name: backgroundSizeAnimation;
-    animation-play-state: running;
-    animation-timing-function: ease-in-out;
+    /* 基本文字样式 */
+    font-family: Arial, sans-serif;
+    font-size: 72px;
+    font-weight: bold;
+    
+    /* 渐变效果 */
+    background: linear-gradient(135deg, rgb(120, 120, 255) 0%, rgb(0, 200, 255) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
     background-clip: text;
-    background-image: linear-gradient(120deg, rgb(189, 52, 254), rgb(224, 50, 27) 30%, rgb(65, 209, 255) 60%);
-    background-position-x: 88.0322%;
-    background-position-y: 50%;
-    background-size: 200%;
-    box-sizing: border-box;
-    color: rgb(238, 238, 238);
+    
+    /* 其他样式 */
     display: inline;
-    font-family: title;
-    font-size: 65px;
-    font-weight: 800;
-    height: auto;
-    margin-bottom: 0px;
-    margin-left: 0px;
-    margin-right: 0px;
-    margin-top: 0px;
-    padding-bottom: 0px;
-    padding-left: 0px;
-    padding-right: 0px;
-    padding-top: 0px;
-    transition-delay: 0s;
-    transition-duration: 0.2s;
-    transition-property: background-color;
-    transition-timing-function: ease;
-    user-select: none;
-    width: auto;
-    -webkit-text-fill-color: rgba(0, 0, 0, 0);
+    line-height: 1.2;
 }
 .welcome {
     font-size: 72px;
@@ -275,16 +254,16 @@ body {
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    border-radius: 10px;
     background-color: rgba(255, 255, 255, 0.1);
 }
 
 .social-icons a:hover {
-    color: #ffd700;
-    background-color: rgba(255, 215, 0, 0.2);
-    transform: translateY(-3px);
+    color: white;
+    background-color: rgba(255, 255, 255, 0.25);
+    transform: none;
 }
 
 /* 确保SVG图标与Font Awesome图标大小一致 */
