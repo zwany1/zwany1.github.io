@@ -70,16 +70,7 @@ body {
     object-fit: cover;
 }
 
-.avatar .decoration {
-    position: absolute;
-    top: -20px;
-    right: -20px;
-    width: 80px;
-    height: 80px;
-    border-radius: 50%;
-    object-fit: contain;
-    z-index: 10;
-}
+
 
 .tags-section {
     background-color: rgba(255, 255, 255, 0.1);
@@ -174,16 +165,19 @@ body {
 .gradientText {
     background-clip: text;
     -webkit-text-fill-color: transparent;
-    background-size: 200%;
+    background-size: 300%;
     font-family: title;
-    background-image: var(--gradient);
+    background-image: linear-gradient(45deg, #ff6b6b, #4ecdc4, #45b7d1, #96ceb4, #ffeead);
     background-position: 0% center;
-    animation: 10s ease-in-out 0s infinite normal none running backgroundSizeAnimation;
+    animation: 8s ease-in-out 0s infinite normal none running backgroundSizeAnimation;
+    text-shadow: 0 0 10px rgba(255, 107, 107, 0.5);
 }
 .welcome {
-    font-size: 65px;
-    font-weight: 800;
+    font-size: 72px;
+    font-weight: 900;
     margin: 20px 0px;
+    letter-spacing: 2px;
+    line-height: 1.2;
 }
 
 @keyframes backgroundSizeAnimation {
@@ -228,18 +222,36 @@ body {
 /* 社交图标 */
 .social-icons {
     margin-top: 15px;
+    display: flex;
+    align-items: center;
+    gap: 15px;
 }
 
 .social-icons a {
     color: white;
     font-size: 24px;
-    margin-right: 15px;
     text-decoration: none;
-    transition: color 0.3s ease;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background-color: rgba(255, 255, 255, 0.1);
 }
 
 .social-icons a:hover {
     color: #ffd700;
+    background-color: rgba(255, 215, 0, 0.2);
+    transform: translateY(-3px);
+}
+
+/* 确保SVG图标与Font Awesome图标大小一致 */
+.social-icons svg {
+    width: 24px;
+    height: 24px;
+    fill: currentColor;
 }
 
 /* 网格图案 */
@@ -446,7 +458,6 @@ body {
     <div class="sidebar">
         <div class="avatar">
             <img src="{{ site.url }}/assets/images/d56012bab88f5aabe76bb1fc7eeeb9c6.jpg" alt="Zwy" class="main-avatar" />
-            <img src="{{ site.url }}/assets/images/to.png" alt="Decoration" class="decoration" />
         </div>
         
         <div class="tags-section">
@@ -484,7 +495,7 @@ body {
         <!-- 头部区域 -->
         <div class="header">
             <div class="title-section">
-                <div class="welcome">Hello I'm <span class="gradientText">Zwy1</span></div>
+                <div class="welcome">Hello I'm <span class="gradientText">Zwy</span></div>
                 <div class="职业信息">
                     <p><i class="fas fa-briefcase"></i> Full Stack Developer</p>
                     <p><i class="fas fa-quote-left"></i> The only way to do great is to love what you do.</p>
@@ -494,8 +505,8 @@ body {
                     <p style="color: #ffd700; display: flex; align-items: center; gap: 5px;"><i class="fas fa-code"></i> Stas</p>
                 </div>
                 <div class="social-icons">
-                    <a href="#" title="Refresh"><i class="fas fa-sync-alt"></i></a>
-                    <a href="#" title="Email"><i class="fas fa-envelope"></i></a>
+                    <a href="https://github.com/zwany1" title="GitHub"><i class="fab fa-github"></i></a>
+                    <a href="mailto:your.email@example.com" title="Email"><i class="fas fa-envelope"></i></a>
                     <a href="#" title="Comment"><i class="fas fa-comment"></i></a>
                     <a href="#" title="Bookmark"><i class="fas fa-bookmark"></i></a>
                     <a href="#" title="Light"><i class="fas fa-lightbulb"></i></a>
