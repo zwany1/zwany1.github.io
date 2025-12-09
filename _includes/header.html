@@ -109,7 +109,7 @@
                 <!-- 首页链接 -->
                 <a href="{{ site.url }}/" class="site-header-nav-item" title="首页">首页</a>
                 
-                <!-- 页面下拉菜单 -->
+                <!-- 页面水平展开菜单 -->
                 <div class="dropdown mobile-hidden">
                     <a href="/pages/" class="site-header-nav-item dropdown-toggle" title="页面">页面▼</a>
                     <div class="dropdown-menu">
@@ -125,31 +125,32 @@
             
             <!-- 添加下拉菜单样式 -->
             <style>
-                /* 下拉菜单样式 */
+                /* 水平展开菜单样式 */
                 .dropdown {
                     position: relative;
                     display: inline-block;
-                    z-index: 10000; /* 确保下拉菜单容器层级足够高 */
+                    z-index: 10000; /* 确保菜单容器层级足够高 */
                 }
                 
                 .dropdown-toggle {
                     cursor: pointer;
+                    position: relative;
+                    z-index: 10002;
                 }
                 
                 .dropdown-menu {
                     display: none;
                     position: absolute;
-                    top: 100%;
-                    left: 0;
+                    top: 0;
+                    left: 100%;
                     background-color: white;
                     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
                     border-radius: 4px;
-                    padding: 8px 0;
-                    margin: 2px 0 0;
-                    min-width: 160px;
-                    z-index: 10001; /* 确保下拉菜单内容层级最高 */
+                    padding: 0;
+                    margin: 0;
+                    z-index: 10001; /* 确保菜单内容层级最高 */
                     border: 1px solid #e1e4e8;
-                    border-top: none;
+                    white-space: nowrap;
                 }
                 
                 .dropdown:hover .dropdown-menu {
@@ -157,14 +158,13 @@
                 }
                 
                 .dropdown-item {
-                    display: block;
+                    display: inline-block;
                     padding: 8px 16px;
                     color: #24292e;
                     text-decoration: none;
                     background-color: transparent;
                     border: none;
-                    width: 100%;
-                    text-align: left;
+                    text-align: center;
                     font-size: 14px;
                     line-height: 1.5;
                 }
