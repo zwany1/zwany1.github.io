@@ -70,10 +70,6 @@ navs:
     label: 首页
 
   -
-    href: /tags/
-    label: 标签
-
-  -
     href: /categories/
     label: 分类
 
