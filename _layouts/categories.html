@@ -25,6 +25,43 @@ layout: default
     <div class="columns">
         <div class="column two-thirds" >
             <article class="article-content markdown-body">
+                <style>
+                /* 分类标签样式 */
+                .category-tags {
+                    text-align: center;
+                    margin: 30px 0;
+                }
+                
+                .category-tag {
+                    display: inline-block;
+                    padding: 10px 20px;
+                    margin: 5px;
+                    background-color: #f5f5f5;
+                    color: #333;
+                    text-decoration: none;
+                    border-radius: 5px;
+                    transition: all 0.3s ease;
+                    font-size: 16px;
+                }
+                
+                .category-tag:hover {
+                    background-color: #4183c4;
+                    color: white;
+                    text-decoration: none;
+                    transform: translateY(-2px);
+                    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+                }
+                </style>
+                
+                <!-- 分类标签展示 -->
+                <div class="category-tags">
+                    {% for category in site.categories %}
+                    <a href="#{{ category[0] }}" class="category-tag">
+                        {{ category[0] }} ({{ category[1].size }})
+                    </a>
+                    {% endfor %}
+                </div>
+                
                 {{ content }}
             </article>
             <div class="share">

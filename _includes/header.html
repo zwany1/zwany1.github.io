@@ -105,11 +105,79 @@
               <span class="icon-bar"></span>
             </button>
             <nav class="site-header-nav" role="navigation">
-                {% for nav in site.navs %}
-                <a href="{{ site.url }}{{ nav.href }}" class="{% if nav.mobile-hidden %}mobile-hidden {% endif %}{% if page.menu == nav.label %}selected {% endif %}site-header-nav-item" target="{{ nav.target | default: _self }}" title="{{ nav.label }}">{{ nav.label }}</a>
-                {% endfor %}
+                <a href="/tags/" class="mobile-hidden site-header-nav-item" title="标签">标签</a>
+                
+                <!-- 分类下拉菜单 -->
+                <div class="dropdown mobile-hidden">
+                    <a href="/categories/" class="site-header-nav-item dropdown-toggle" title="分类">分类▼</a>
+                    <div class="dropdown-menu">
+                        <a href="/categories/#记录点滴" class="dropdown-item">记录点滴</a>
+                        <a href="/categories/#灵感相关" class="dropdown-item">灵感相关</a>
+                        <a href="/categories/#闲言碎语" class="dropdown-item">闲言碎语</a>
+                        <a href="/categories/#实用分享" class="dropdown-item">实用分享</a>
+                    </div>
+                </div>
+                
+                <!-- 页面下拉菜单 -->
+                <div class="dropdown mobile-hidden">
+                    <a href="/pages/" class="site-header-nav-item dropdown-toggle" title="页面">页面▼</a>
+                    <div class="dropdown-menu">
+                        <a href="/gallery/" class="dropdown-item">相册</a>
+                        <a href="/about/" class="dropdown-item">关于</a>
+                        <a href="/friends/" class="dropdown-item">友链</a>
+                        <a href="/message/" class="dropdown-item">留言</a>
+                    </div>
+                </div>
+                
                 <a class="mobile-hidden" href="{{ site.url }}{{ site.subscribe_rss }}"><span class="octicon octicon-rss" style="color:orange;"></span></a>
             </nav>
+            
+            <!-- 添加下拉菜单样式 -->
+            <style>
+                .dropdown {
+                    position: relative;
+                    display: inline-block;
+                }
+                
+                .dropdown-toggle {
+                    cursor: pointer;
+                }
+                
+                .dropdown-menu {
+                    display: none;
+                    position: absolute;
+                    top: 100%;
+                    left: 0;
+                    background-color: white;
+                    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+                    border-radius: 4px;
+                    padding: 8px 0;
+                    margin: 2px 0 0;
+                    min-width: 160px;
+                    z-index: 1000;
+                }
+                
+                .dropdown:hover .dropdown-menu {
+                    display: block;
+                }
+                
+                .dropdown-item {
+                    display: block;
+                    padding: 8px 16px;
+                    color: #24292e;
+                    text-decoration: none;
+                    background-color: transparent;
+                    border: none;
+                    width: 100%;
+                    text-align: left;
+                    font-size: 14px;
+                    line-height: 1.5;
+                }
+                
+                .dropdown-item:hover {
+                    background-color: #f6f8fa;
+                }
+            </style>
         </div>
     </header>
     <!-- / header -->
