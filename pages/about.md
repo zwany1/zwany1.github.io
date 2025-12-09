@@ -146,47 +146,28 @@ grid-section {
     background-color: #4CAF50;
 }
 
-/* 切片和项目 */
-slices-projects {
-    display: flex;
-    justify-content: space-between;
+/* 站点和项目 */
+sites-projects {
     margin: 40px 0;
-    flex-wrap: wrap;
 }
 
-slice-section, .project-section {
-    flex: 1;
-    min-width: 300px;
-    margin: 10px;
+.site-section, .project-section {
+    margin-bottom: 30px;
 }
 
-slice-section h3, .project-section h3 {
+.site-section h3, .project-section h3 {
     font-size: 18px;
     margin-bottom: 20px;
     color: #ffd700;
 }
 
-.slice-tags {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 10px;
-    margin-bottom: 20px;
-}
-
-.slice-tag {
-    background-color: rgba(255, 255, 255, 0.2);
-    padding: 5px 15px;
-    border-radius: 20px;
-    font-size: 14px;
-}
-
-.slice-links, .project-links {
+.site-links, .project-links {
     display: flex;
     flex-wrap: wrap;
     gap: 15px;
 }
 
-.slice-link, .project-link {
+.site-link, .project-link {
     background-color: rgba(255, 255, 255, 0.2);
     padding: 10px 15px;
     border-radius: 5px;
@@ -197,14 +178,16 @@ slice-section h3, .project-section h3 {
     align-items: center;
     gap: 8px;
     transition: all 0.3s ease;
+    min-width: 120px;
+    justify-content: center;
 }
 
-.slice-link:hover, .project-link:hover {
+.site-link:hover, .project-link:hover {
     background-color: rgba(255, 255, 255, 0.3);
     transform: translateY(-2px);
 }
 
-.slice-link i, .project-link i {
+.site-link i, .project-link i {
     font-size: 18px;
 }
 
@@ -222,20 +205,20 @@ skills-section h3 {
 .skills-grid {
     display: flex;
     flex-wrap: wrap;
-    gap: 15px;
+    gap: 10px;
     justify-content: center;
 }
 
 .skill-icon {
     background-color: rgba(255, 255, 255, 0.2);
-    padding: 15px;
-    border-radius: 10px;
-    font-size: 32px;
+    padding: 8px;
+    border-radius: 5px;
+    font-size: 24px;
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 60px;
-    height: 60px;
+    width: 40px;
+    height: 40px;
     transition: all 0.3s ease;
 }
 
@@ -260,12 +243,16 @@ skills-section h3 {
         font-size: 36px;
     }
     
-    .slices-projects {
+    .grid {
+        grid-template-columns: repeat(25, 8px);
+    }
+    
+    .site-links, .project-links {
         flex-direction: column;
     }
     
-    .grid {
-        grid-template-columns: repeat(25, 8px);
+    .site-link, .project-link {
+        justify-content: flex-start;
     }
 }
 </style>
@@ -274,10 +261,10 @@ skills-section h3 {
     <!-- 头部区域 -->
     <div class="header">
         <div class="avatar">
-            <img src="{{ site.url }}/assets/images/d56012bab88f5aabe76bb1fc7eeeb9c6.jpg" alt="Z.w.YI" />
+            <img src="{{ site.url }}/assets/images/d56012bab88f5aabe76bb1fc7eeeb9c6.jpg" alt="Zyyo" />
         </div>
         <div class="title-section">
-            <h1>Hello I'm <span>Z.w.YI</span></h1>
+            <h1>Hello I'm <span>Zyyo</span></h1>
             <职业信息>
                 <p>Full Stack Developer</p>
                 <p>The only way to do great is to love what you do.</p>
@@ -312,81 +299,79 @@ skills-section h3 {
         </div>
     </grid-section>
     
-    <!-- 切片和项目 -->
-    <slices-projects>
-        <slice-section>
-            <h3>🗂️ slice</h3>
-            <div class="slice-tags">
-                <div class="slice-tag">前端</div>
-                <div class="slice-tag">小学生</div>
-                <div class="slice-tag">阅读</div>
-                <div class="slice-tag">linux</div>
-                <div class="slice-tag">配置</div>
-                <div class="slice-tag">游戏</div>
-                <div class="slice-tag">旅行</div>
-            </div>
-            <div class="slice-links">
-                <a href="#" class="slice-link">
+    <!-- 站点和项目 -->
+    <sites-projects>
+        <site-section>
+            <h3>📦 site</h3>
+            <div class="site-links">
+                <a href="#" class="site-link">
+                    <i class="fas fa-home"></i>
+                    测试网站
+                </a>
+                <a href="#" class="site-link">
                     <i class="fas fa-book"></i>
-                    动态字符
-                </a>
-                <a href="#" class="slice-link">
-                    <i class="fas fa-server"></i>
-                    CDN动态加速
-                </a>
-                <a href="#" class="slice-link">
-                    <i class="fas fa-code"></i>
-                    202403
-                </a>
-                <a href="#" class="slice-link">
-                    <i class="fas fa-calendar"></i>
-                    202402
-                </a>
-                <a href="#" class="slice-link">
-                    <i class="fas fa-bullhorn"></i>
-                    出站不掉...
-                </a>
-            </div>
-        </slice-section>
-        
-        <slice-section>
-            <h3>📚 slice</h3>
-            <div class="slice-links">
-                <a href="#" class="slice-link">
-                    <i class="fas fa-book"></i>
-                    博客密
-                </a>
-                <a href="#" class="slice-link">
-                    <i class="fas fa-globe"></i>
                     文档站
                 </a>
-                <a href="#" class="slice-link">
+                <a href="#" class="site-link">
                     <i class="fas fa-cat"></i>
                     测试
                 </a>
-
-            
+                <a href="#" class="site-link">
+                    <i class="fas fa-heart"></i>
+                    测试
+                </a>
+                <a href="#" class="site-link">
+                    <i class="fas fa-heart"></i>
+                    测试
+                </a>
+                <a href="#" class="site-link">
+                    <i class="fas fa-heart"></i>
+                    测试
+                </a>
             </div>
-            
-            <h3 style="margin-top: 30px;">💼 project</h3>
+        </site-section>
+        
+        <project-section>
+            <h3>💼 project</h3>
             <div class="project-links">
                 <a href="#" class="project-link">
                     <i class="fas fa-home"></i>
-                    z.w.yi主页
+                    ZYYO主页
                 </a>
                 <a href="#" class="project-link">
                     <i class="fas fa-palette"></i>
-                    z.w.yi主题
+                    ZYYO主题
                 </a>
             </div>
-        </slice-section>
-    </slices-projects>
+        </project-section>
+    </sites-projects>
     
     <!-- 技能部分 -->
     <skills-section>
         <h3>⚡ skills</h3>
-        <div class="skills-grid" style="display: flex; justify-content: center; align-items: center; padding: 20px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 10px; overflow: hidden;">
-            <img src="{{ site.url }}/images/fragments/image.png" alt="Skills" style="max-width: 100%; max-height: 300px; object-fit: contain; border-radius: 5px;" />
+        <div class="skills-grid">
+            <div class="skill-icon" title="HTML"><i class="fab fa-html5"></i></div>
+            <div class="skill-icon" title="CSS"><i class="fab fa-css3-alt"></i></div>
+            <div class="skill-icon" title="JavaScript"><i class="fab fa-js"></i></div>
+            <div class="skill-icon" title="Python"><i class="fab fa-python"></i></div>
+            <div class="skill-icon" title="Java"><i class="fab fa-java"></i></div>
+            <div class="skill-icon" title="Git"><i class="fab fa-git"></i></div>
+            <div class="skill-icon" title="GitHub"><i class="fab fa-github"></i></div>
+            <div class="skill-icon" title="Linux"><i class="fab fa-linux"></i></div>
+            <div class="skill-icon" title="Docker"><i class="fab fa-docker"></i></div>
+            <div class="skill-icon" title="MySQL"><i class="fas fa-database"></i></div>
+            <div class="skill-icon" title="MongoDB"><i class="fab fa-mongodb"></i></div>
+            <div class="skill-icon" title="Redis"><i class="fab fa-redis"></i></div>
+            <div class="skill-icon" title="AWS"><i class="fab fa-aws"></i></div>
+            <div class="skill-icon" title="Nginx"><i class="fab fa-nginx"></i></div>
+            <div class="skill-icon" title="Photoshop"><i class="fab fa-adobe"></i></div>
+            <div class="skill-icon" title="VS Code"><i class="fab fa-vscode"></i></div>
+            <div class="skill-icon" title="Sass"><i class="fab fa-sass"></i></div>
+            <div class="skill-icon" title="React"><i class="fab fa-react"></i></div>
+            <div class="skill-icon" title="Vue"><i class="fab fa-vuejs"></i></div>
+            <div class="skill-icon" title="Node.js"><i class="fab fa-node-js"></i></div>
+            <div class="skill-icon" title="TypeScript"><i class="fab fa-typescript"></i></div>
+            <div class="skill-icon" title="Angular"><i class="fab fa-angular"></i></div>
         </div>
     </skills-section>
 </div>
