@@ -107,7 +107,7 @@
             <nav class="site-header-nav" role="navigation">
             
                 <!-- 首页链接 -->
-                <a href="{{ site.url }}/" class="site-header-nav-item mobile-hidden" title="首页">首页</a>
+                <a href="{{ site.url }}/" class="site-header-nav-item" title="首页">首页</a>
                 
                 <!-- 页面下拉菜单 -->
                 <div class="dropdown mobile-hidden">
@@ -129,7 +129,7 @@
                 .dropdown {
                     position: relative;
                     display: inline-block;
-                    z-index: 1001; /* 确保下拉菜单容器层级足够高 */
+                    z-index: 10000; /* 确保下拉菜单容器层级足够高 */
                 }
                 
                 .dropdown-toggle {
@@ -147,8 +147,9 @@
                     padding: 8px 0;
                     margin: 2px 0 0;
                     min-width: 160px;
-                    z-index: 1002; /* 确保下拉菜单内容层级最高 */
+                    z-index: 10001; /* 确保下拉菜单内容层级最高 */
                     border: 1px solid #e1e4e8;
+                    border-top: none;
                 }
                 
                 .dropdown:hover .dropdown-menu {
