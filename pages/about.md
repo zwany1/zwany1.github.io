@@ -23,25 +23,119 @@ body {
     max-width: 1200px;
     margin: 0 auto;
     padding: 20px;
+    display: flex;
+    gap: 30px;
 }
 
-/* 头部区域 */
-.header {
-    display: flex;
-    align-items: center;
-    margin-bottom: 40px;
+.sidebar {
+    width: 280px;
+    flex-shrink: 0;
+}
+
+.main-content {
+    flex: 1;
+}
+
+/* 左侧边栏 */
+.sidebar {
+    width: 280px;
+    flex-shrink: 0;
 }
 
 .avatar {
-    width: 150px;
-    height: 150px;
+    width: 200px;
+    height: 200px;
     border-radius: 50%;
     background-color: white;
-    margin-right: 30px;
+    margin: 0 auto 20px;
     display: flex;
     align-items: center;
     justify-content: center;
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    position: relative;
+}
+
+.avatar img {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.tags-section {
+    background-color: rgba(255, 255, 255, 0.1);
+    padding: 20px;
+    border-radius: 10px;
+    backdrop-filter: blur(10px);
+    margin-bottom: 20px;
+}
+
+.tags-section h4 {
+    font-size: 16px;
+    margin-bottom: 15px;
+    color: #ffd700;
+    text-align: center;
+}
+
+.tags-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+}
+
+.tag-item {
+    background-color: rgba(255, 255, 255, 0.2);
+    padding: 8px 12px;
+    border-radius: 6px;
+    font-size: 14px;
+    text-align: center;
+    transition: all 0.3s ease;
+}
+
+.tag-item:hover {
+    background-color: rgba(255, 255, 255, 0.3);
+    transform: translateY(-2px);
+}
+
+.links-section {
+    background-color: rgba(255, 255, 255, 0.1);
+    padding: 20px;
+    border-radius: 10px;
+    backdrop-filter: blur(10px);
+}
+
+.links-section h4 {
+    font-size: 16px;
+    margin-bottom: 15px;
+    color: #ffd700;
+    text-align: center;
+}
+
+.link-item {
+    display: block;
+    background-color: rgba(255, 255, 255, 0.2);
+    padding: 10px 15px;
+    border-radius: 6px;
+    margin-bottom: 10px;
+    text-decoration: none;
+    color: white;
+    font-size: 14px;
+    transition: all 0.3s ease;
+}
+
+.link-item:hover {
+    background-color: rgba(255, 255, 255, 0.3);
+    transform: translateX(5px);
+}
+
+/* 右侧主内容 */
+.main-content {
+    flex: 1;
+}
+
+/* 头部区域 */
+.header {
+    margin-bottom: 30px;
 }
 
 .avatar img {
@@ -244,17 +338,22 @@ body {
 }
 
 /* 响应式设计 */
-@media (max-width: 768px) {
-    .header {
+@media (max-width: 992px) {
+    .about-container {
         flex-direction: column;
-        text-align: center;
+    }
+    
+    .sidebar {
+        width: 100%;
     }
     
     .avatar {
         margin-right: 0;
         margin-bottom: 20px;
     }
-    
+}
+
+@media (max-width: 768px) {
     .title-section h1 {
         font-size: 36px;
     }
@@ -270,30 +369,69 @@ body {
 </style>
 
 <div class="about-container">
-    <!-- 头部区域 -->
-    <div class="header">
+    <!-- 左侧边栏 -->
+    <div class="sidebar">
         <div class="avatar">
             <img src="{{ site.url }}/assets/images/d56012bab88f5aabe76bb1fc7eeeb9c6.jpg" alt="Zyyo" />
         </div>
-        <div class="title-section">
-            <h1>Hello I'm <span>Zyyo</span></h1>
-            <div class="职业信息">
-                <p><i class="fas fa-briefcase"></i> Full Stack Developer</p>
-                <p><i class="fas fa-quote-left"></i> The only way to do great is to love what you do.</p>
-            </div>
-            <div style="display: flex; align-items: center; gap: 20px; margin: 15px 0;">
-                <p style="color: #ffd700; display: flex; align-items: center; gap: 5px;"><i class="fas fa-map-marker-alt"></i> China-Henan</p>
-                <p style="color: #ffd700; display: flex; align-items: center; gap: 5px;"><i class="fas fa-code"></i> Stas</p>
-            </div>
-            <div class="social-icons">
-                <a href="#" title="Refresh"><i class="fas fa-sync-alt"></i></a>
-                <a href="#" title="Email"><i class="fas fa-envelope"></i></a>
-                <a href="#" title="Comment"><i class="fas fa-comment"></i></a>
-                <a href="#" title="Bookmark"><i class="fas fa-bookmark"></i></a>
-                <a href="#" title="Light"><i class="fas fa-lightbulb"></i></a>
+        
+        <div class="tags-section">
+            <h4>标签</h4>
+            <div class="tags-grid">
+                <div class="tag-item">前端</div>
+                <div class="tag-item">小学生</div>
+                <div class="tag-item">阅读</div>
+                <div class="tag-item">linux</div>
+                <div class="tag-item">配置</div>
+                <div class="tag-item">游戏</div>
+                <div class="tag-item">收藏</div>
+                <div class="tag-item">旅行</div>
             </div>
         </div>
+        
+        <div class="links-section">
+            <h4>链接</h4>
+            <a href="#" class="link-item">
+                <i class="fas fa-book"></i> 动态字符
+            </a>
+            <a href="#" class="link-item">
+                <i class="fas fa-server"></i> CDN动态加速
+            </a>
+            <a href="#" class="link-item">
+                <i class="fas fa-code"></i> 2024-3
+            </a>
+            <a href="#" class="link-item">
+                <i class="fas fa-calendar"></i> 2024-2
+            </a>
+            <a href="#" class="link-item">
+                <i class="fas fa-bullhorn"></i> 出站不掉...
+            </a>
+        </div>
     </div>
+    
+    <!-- 右侧主内容 -->
+    <div class="main-content">
+        <!-- 头部区域 -->
+        <div class="header">
+            <div class="title-section">
+                <h1>Hello I'm <span>Zyyo</span></h1>
+                <div class="职业信息">
+                    <p><i class="fas fa-briefcase"></i> Full Stack Developer</p>
+                    <p><i class="fas fa-quote-left"></i> The only way to do great is to love what you do.</p>
+                </div>
+                <div style="display: flex; align-items: center; gap: 20px; margin: 15px 0;">
+                    <p style="color: #ffd700; display: flex; align-items: center; gap: 5px;"><i class="fas fa-map-marker-alt"></i> China-Henan</p>
+                    <p style="color: #ffd700; display: flex; align-items: center; gap: 5px;"><i class="fas fa-code"></i> Stas</p>
+                </div>
+                <div class="social-icons">
+                    <a href="#" title="Refresh"><i class="fas fa-sync-alt"></i></a>
+                    <a href="#" title="Email"><i class="fas fa-envelope"></i></a>
+                    <a href="#" title="Comment"><i class="fas fa-comment"></i></a>
+                    <a href="#" title="Bookmark"><i class="fas fa-bookmark"></i></a>
+                    <a href="#" title="Light"><i class="fas fa-lightbulb"></i></a>
+                </div>
+            </div>
+        </div>
     
     <!-- 网格图案 -->
     <div class="grid-section">
@@ -372,6 +510,7 @@ body {
             <img src="{{ site.url }}/images/fragments/image.png" alt="Skills" style="max-width: 100%; max-height: 300px; object-fit: contain; border-radius: 5px;" />
         </div>
     </div>
+</div>
 </div>
 
 <!-- 添加Font Awesome图标库 -->
