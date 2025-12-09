@@ -1,5 +1,17 @@
 .site-header,.site-header-actions .select-menu {
-    position: relative
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    background-color: rgba(255, 255, 255, 0.95);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    z-index: 999;
+    backdrop-filter: blur(10px);
+}
+
+/* 为主要内容添加顶部边距，避免被固定头部遮挡 */
+main {
+    margin-top: 80px;
 }
 
 .markdown-body,body {
