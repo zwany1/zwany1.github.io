@@ -99,6 +99,12 @@
     <header class="site-header">
         <div class="container">
             <h1><a href="{{ site.url }}/" title="{{ site.title }}"><span class="octicon octicon-mark-github"></span> {{ site.title }}</a></h1>
+            
+            <!-- 遨游世界链接 -->
+            <a href="https://www.travellings.cn/go-by-clouds.html" class="travel-link mobile-hidden" title="遨游世界" target="_blank">
+                <span class="octicon octicon-globe"></span>
+            </a>
+            
             <button class="collapsed mobile-visible" type="button" onclick="toggleMenu();">
               <span class="icon-bar"></span>
               <span class="icon-bar"></span>
@@ -124,7 +130,7 @@
                 <a class="mobile-hidden" href="{{ site.url }}{{ site.subscribe_rss }}"><span class="octicon octicon-rss" style="color:orange;"></span></a>
             </nav>
             
-            <!-- 添加下拉菜单样式 -->
+            <!-- 添加下拉菜单和遨游世界链接样式 -->
             <style>
                 /* 水平展开菜单样式 */
                 .dropdown {
@@ -172,6 +178,36 @@
                 
                 .dropdown-item:hover {
                     background-color: #f6f8fa;
+                }
+                
+                /* 遨游世界链接样式 */
+                .travel-link {
+                    display: inline-block;
+                    margin-right: 15px;
+                    padding: 8px;
+                    color: #7a6a4a;
+                    font-size: 20px;
+                    text-decoration: none;
+                    transition: all 0.3s ease;
+                    position: relative;
+                    z-index: 10000;
+                }
+                
+                .travel-link:hover {
+                    color: transparent;
+                }
+                
+                .travel-link:hover::after {
+                    content: '';
+                    position: absolute;
+                    top: 50%;
+                    left: 50%;
+                    transform: translate(-50%, -50%);
+                    width: 24px;
+                    height: 24px;
+                    background-image: url('/assets/images/aoy.png');
+                    background-size: contain;
+                    background-repeat: no-repeat;
                 }
             </style>
         </div>
