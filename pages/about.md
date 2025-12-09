@@ -544,16 +544,8 @@ body {
                     </div>
                 </div>
             </div>
-        </div>
-    
-    <!-- 网格图案 -->
-    <div class="grid-section">
-        <img src="/images/blog/snake-Light.svg" alt="Snake Grid" style="width: 100%; height: auto;">
-        <div class="progress-bar">
-            <div class="progress-fill"></div>
-        </div>
     </div>
-    
+
     <!-- 图片展示模态框 -->
     <div id="imageModal" class="modal" style="display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(0,0,0,0.9);">
         <span class="close" style="position: absolute; top: 20px; right: 35px; color: #f1f1f1; font-size: 40px; font-weight: bold; cursor: pointer;">&times;</span>
@@ -587,6 +579,14 @@ body {
             }
         }
     </script>
+    
+    <!-- 网格图案 -->
+    <div class="grid-section">
+        <img src="/images/blog/snake-Light.svg" alt="Snake Grid" style="width: 100%; height: auto;">
+        <div class="progress-bar">
+            <div class="progress-fill"></div>
+        </div>
+    </div>
 
     <!-- 站点和项目 -->
     <div class="sites-projects">
