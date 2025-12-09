@@ -251,11 +251,72 @@ function initFadeOutOnScroll() {
   fadeElements.forEach(el => observer.observe(el));
 }
 
+// 图片加载动画功能
+function initImageLoadingAnimation() {
+  const images = document.querySelectorAll('img');
+  
+  images.forEach(img => {
+    // 为图片创建包装器
+    const wrapper = document.createElement('div');
+    wrapper.className = 'image-loading-wrapper';
+    
+    // 创建加载动画元素
+    const loading = document.createElement('div');
+    loading.className = 'image-loading';
+    
+    // 保存原始图片信息
+    const src = img.src;
+    const alt = img.alt;
+    const title = img.title;
+    
+    // 清空图片src以触发加载事件
+    img.src = '';
+    
+    // 替换图片为包装器
+    img.parentNode.insertBefore(wrapper, img);
+    wrapper.appendChild(loading);
+    wrapper.appendChild(img);
+    
+    // 设置图片样式
+    img.style.opacity = '0';
+    img.style.transition = 'opacity 0.3s ease';
+    
+    // 加载完成后显示图片
+    img.onload = () => {
+      loading.style.display = 'none';
+      img.style.opacity = '1';
+    };
+    
+    // 恢复图片src
+    img.src = src;
+    if (alt) img.alt = alt;
+    if (title) img.title = title;
+  });
+}
+
 // 初始化所有微交互
 jQuery(function() {
   // 添加必要的CSS样式
   const style = document.createElement('style');
   style.textContent = `
+    /* 图片加载动画 */
+    .image-loading-wrapper {
+      position: relative;
+      display: inline-block;
+      line-height: 0;
+    }
+    
+    .image-loading {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: url('${window.location.origin}/loading.gif') center center no-repeat;
+      background-size: 50px 50px;
+      background-color: rgba(255, 255, 255, 0.1);
+    }
+    
     /* 波纹效果 */
     .ripple {
       position: absolute;
@@ -345,6 +406,7 @@ jQuery(function() {
   initHeaderScrollEffect();
   initParallaxEffect();
   initFadeOutOnScroll();
+  initImageLoadingAnimation(); // 初始化图片加载动画
   
   // 仅在桌面设备上启用动态背景效果
   if (window.innerWidth > 768) {
