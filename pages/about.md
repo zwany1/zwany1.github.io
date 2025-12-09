@@ -10,6 +10,10 @@ permalink: /about/
 
 <style>
 /* 全局样式 */
+:root {
+    --gradient: linear-gradient(90deg, #ff6b6b, #4ecdc4, #45b7d1, #96ceb4, #ffeaa7, #dfe6e9);
+}
+
 body {
     font-family: 'Arial', sans-serif;
     background: url('/assets/images/back.png') center center fixed;
@@ -148,11 +152,32 @@ body {
 }
 
 .title-section h1 {
-    font-size: 48px;
-    margin: 0;
-    color: white;
-    font-weight: bold;
+    font-size: 65px;
+    font-weight: 800;
+    margin: 20px 0;
     text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.gradientText {
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-size: 200%;
+    background-position: 0%;
+    font-family: "title";
+    animation: backgroundSizeAnimation 10s ease-in-out infinite;
+    background-image: var(--gradient);
+}
+
+@keyframes backgroundSizeAnimation {
+    0% {
+        background-position: 0%;
+    }
+    50% {
+        background-position: 100%;
+    }
+    100% {
+        background-position: 0%;
+    }
 }
 
 .title-section h1 span {
@@ -339,7 +364,7 @@ body {
 
 @media (max-width: 768px) {
     .title-section h1 {
-        font-size: 36px;
+        font-size: 45px;
     }
     
     .grid {
@@ -394,7 +419,7 @@ body {
         <!-- 头部区域 -->
         <div class="header">
             <div class="title-section">
-                <h1>Hello I'm <span>Zwy</span></h1>
+                <h1 class="gradientText">Hello I'm <span>Zwy</span></h1>
                 <div class="职业信息">
                     <p><i class="fas fa-briefcase"></i> Full Stack Developer</p>
                     <p><i class="fas fa-quote-left"></i> The only way to do great is to love what you do.</p>
