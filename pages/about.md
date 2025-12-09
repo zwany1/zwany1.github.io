@@ -70,6 +70,17 @@ body {
     object-fit: cover;
 }
 
+.avatar .decoration {
+    position: absolute;
+    top: -20px;
+    right: -20px;
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    object-fit: contain;
+    z-index: 10;
+}
+
 .tags-section {
     background-color: rgba(255, 255, 255, 0.1);
     padding: 20px;
@@ -441,6 +452,7 @@ body {
     <div class="sidebar">
         <div class="avatar">
             <img src="{{ site.url }}/assets/images/d56012bab88f5aabe76bb1fc7eeeb9c6.jpg" alt="Zwy" />
+            <img src="{{ site.url }}/assets/images/to.png" alt="Decoration" class="decoration" />
         </div>
         
         <div class="tags-section">
