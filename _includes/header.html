@@ -102,7 +102,7 @@
             
             <!-- 遨游世界链接 -->
             <a href="https://www.travellings.cn/go-by-clouds.html" class="travel-link mobile-hidden" title="遨游世界" target="_blank">
-                <span class="octicon octicon-globe"></span>
+                <span class="octicon octicon-globe"></span> 遨游世界
             </a>
             
             <button class="collapsed mobile-visible" type="button" onclick="toggleMenu();">
@@ -184,18 +184,25 @@
                 .travel-link {
                     display: inline-block;
                     margin-right: 15px;
-                    padding: 8px;
-                    color: #35ff35; /*  */
-                    font-size: 50px; /* 增大图标大小 */
+                    padding: 8px 12px;
+                    color: #35ff35; /* 绿色文字 */
+                    font-size: 18px; /* 适中的字体大小 */
+                    font-weight: bold;
                     text-decoration: none;
                     transition: all 0.3s ease;
                     position: relative;
                     z-index: 10000;
                 }
                 
+                .travel-link .octicon {
+                    margin-right: 5px; /* 图标与文字之间的间距 */
+                    font-size: 24px; /* 图标大小略大于文字 */
+                    vertical-align: middle;
+                }
+                
                 .travel-link:hover {
-                    color: #ff4500; /* 悬停时颜色更深更鲜艳 */
-                    transform: scale(1.1); /* 悬停时轻微放大 */
+                    color: #ff4500; /* 悬停时颜色变为橙色 */
+                    transform: scale(1.05); /* 悬停时轻微放大 */
                 }
                 
                 /* 移除悬停时显示图片的效果 */
