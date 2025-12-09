@@ -37,7 +37,7 @@
   
     {
       "title"    : "相册",
-      "url"      : "https://zwany1.github.io/pages/gallery/",
+      "url"      : "https://zwany1.github.io/gallery/",
       "keywords" : ""
     } ,
   
@@ -52,6 +52,14 @@
     } ,
   
   
+  
+  
+  
+    {
+      "title"    : "测试页面",
+      "url"      : "https://zwany1.github.io/test/",
+      "keywords" : ""
+    } ,
   
   
   
