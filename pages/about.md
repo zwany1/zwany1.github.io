@@ -12,6 +12,8 @@ permalink: /about/
 /* 全局样式 */
 :root {
     --gradient: linear-gradient(90deg, #ff6b6b, #4ecdc4, #45b7d1, #96ceb4, #ffeaa7, #dfe6e9);
+    --card_filter: 10px;
+    --item_bg_color: rgba(255, 255, 255, 0.1);
 }
 
 body {
@@ -304,9 +306,66 @@ body {
     color: #ffd700;
 }
 
+/* 链接列表部分 */
+.left-div {
+    flex-shrink: 0;
+    width: 100%;
+    border-radius: 13px;
+    margin-top: 15px;
+    padding: 20px;
+    backdrop-filter: blur(var(--card_filter));
+    -webkit-backdrop-filter: blur(var(--card_filter));
+    background: var(--item_bg_color);
+}
+
+#line {
+    width: 100%;
+    height: 200px;
+    font-size: 13px;
+    padding-left: 8px;
+    scroll-snap-type: y mandatory;
+    overflow-y: scroll;
+}
+
+#line ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+#line li {
+    padding: 15px 0 15px 15px;
+    position: relative;
+    border-left: 2px solid rgba(255, 255, 255, 0.3);
+    transition: all 0.3s ease;
+    scroll-snap-align: start;
+}
+
+#line li:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+#line li:first-child {
+    font-weight: bold;
+    font-size: 16px;
+    color: #ffd700;
+}
+
+.focus {
+    width: 8px;
+    height: 8px;
+    border-radius: 22px;
+    background-color: rgb(255 255 255);
+    border: 2px solid #fff;
+    position: absolute;
+    left: -5px;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
 /* 技能部分 */
 .skills-section {
-    margin: 30px 0;
+    margin-top: 30px;
     background-color: rgba(255, 255, 255, 0.1);
     padding: 20px;
     border-radius: 10px;
@@ -497,6 +556,19 @@ body {
         </div>
     </div>
     
+    <!-- 链接列表部分 -->
+    <div class="left-div">
+        <div id="line">
+            <ul>
+                <li>链接</li>
+                <li>动态字符</li>
+                <li>CDN动态加速</li>
+                <li>2024-3</li>
+                <li>出站不掉...</li>
+            </ul>
+        </div>
+    </div>
+
     <!-- 技能部分 -->
     <div class="skills-section">
         <h3>⚡ skills</h3>
