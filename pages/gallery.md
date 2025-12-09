@@ -1,26 +1,14 @@
 ---
-layout: gallery
+layout: page
 title: 相册
 description: 个人相册
+permalink: /gallery/
 ---
 
 # 相册
 
-<!-- 相册内容将在这里展示 -->
-<!-- 使用现有的gallery布局，支持点击放大预览 -->
-<!-- 一行展示三张照片 -->
-<a href="{{ site.url }}/assets/images/zanzu.jpg" title="示例照片1"><img src="{{ site.url }}/assets/images/zanzu.jpg" alt="示例照片1"></a>
-<a href="{{ site.url }}/assets/images/zanzu.jpg" title="示例照片2"><img src="{{ site.url }}/assets/images/zanzu.jpg" alt="示例照片2"></a>
-<a href="{{ site.url }}/assets/images/zanzu.jpg" title="示例照片3"><img src="{{ site.url }}/assets/images/zanzu.jpg" alt="示例照片3"></a>
-<a href="{{ site.url }}/assets/images/zanzu.jpg" title="示例照片4"><img src="{{ site.url }}/assets/images/zanzu.jpg" alt="示例照片4"></a>
-<a href="{{ site.url }}/assets/images/zanzu.jpg" title="示例照片5"><img src="{{ site.url }}/assets/images/zanzu.jpg" alt="示例照片5"></a>
-<a href="{{ site.url }}/assets/images/zanzu.jpg" title="示例照片6"><img src="{{ site.url }}/assets/images/zanzu.jpg" alt="示例照片6"></a>
-<a href="{{ site.url }}/assets/images/zanzu.jpg" title="示例照片7"><img src="{{ site.url }}/assets/images/zanzu.jpg" alt="示例照片7"></a>
-<a href="{{ site.url }}/assets/images/zanzu.jpg" title="示例照片8"><img src="{{ site.url }}/assets/images/zanzu.jpg" alt="示例照片8"></a>
-<a href="{{ site.url }}/assets/images/zanzu.jpg" title="示例照片9"><img src="{{ site.url }}/assets/images/zanzu.jpg" alt="示例照片9"></a>
-
 <style>
-/* 调整相册样式以实现一行三张照片的布局 */
+/* 相册样式 */
 .gallery {
   display: flex;
   flex-wrap: wrap;
@@ -30,7 +18,7 @@ description: 个人相册
 }
 
 .gallery a {
-  width: calc(33.333% - 8px); /* 一行三张，减去间隙 */
+  width: calc(33.333% - 8px);
   height: 200px;
   display: inline-block;
   overflow: hidden;
@@ -58,13 +46,26 @@ description: 个人相册
 /* 响应式设计 */
 @media (max-width: 768px) {
   .gallery a {
-    width: calc(50% - 8px); /* 小屏幕一行两张 */
+    width: calc(50% - 8px);
   }
 }
 
 @media (max-width: 480px) {
   .gallery a {
-    width: 100%; /* 超小屏幕一行一张 */
+    width: 100%;
   }
 }
 </style>
+
+<div class="gallery">
+  <!-- 相册内容 -->
+  <a href="{{ site.url }}/assets/images/zanzu.jpg" title="示例照片1"><img src="{{ site.url }}/assets/images/zanzu.jpg" alt="示例照片1"></a>
+  <a href="{{ site.url }}/assets/images/zanzu.jpg" title="示例照片2"><img src="{{ site.url }}/assets/images/zanzu.jpg" alt="示例照片2"></a>
+  <a href="{{ site.url }}/assets/images/zanzu.jpg" title="示例照片3"><img src="{{ site.url }}/assets/images/zanzu.jpg" alt="示例照片3"></a>
+  <a href="{{ site.url }}/assets/images/zanzu.jpg" title="示例照片4"><img src="{{ site.url }}/assets/images/zanzu.jpg" alt="示例照片4"></a>
+  <a href="{{ site.url }}/assets/images/zanzu.jpg" title="示例照片5"><img src="{{ site.url }}/assets/images/zanzu.jpg" alt="示例照片5"></a>
+  <a href="{{ site.url }}/assets/images/zanzu.jpg" title="示例照片6"><img src="{{ site.url }}/assets/images/zanzu.jpg" alt="示例照片6"></a>
+  <a href="{{ site.url }}/assets/images/zanzu.jpg" title="示例照片7"><img src="{{ site.url }}/assets/images/zanzu.jpg" alt="示例照片7"></a>
+  <a href="{{ site.url }}/assets/images/zanzu.jpg" title="示例照片8"><img src="{{ site.url }}/assets/images/zanzu.jpg" alt="示例照片8"></a>
+  <a href="{{ site.url }}/assets/images/zanzu.jpg" title="示例照片9"><img src="{{ site.url }}/assets/images/zanzu.jpg" alt="示例照片9"></a>
+</div>
