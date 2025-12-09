@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>图片弹出功能测试</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+        }
+        .image-link {
+            cursor: pointer;
+            color: blue;
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <h1>图片弹出功能测试</h1>
+    
+    <!-- 测试图片链接 -->
+    <p>点击下面的链接测试图片弹出功能：</p>
+    <a href="javascript:void(0)" onclick="showImage('/assets/images/qrcode.jpg', event)" class="image-link">显示二维码图片</a>
+    <br>
+    <a href="javascript:void(0)" onclick="showImage('/assets/images/zanzu.jpg', event)" class="image-link">显示赞赏图片</a>
+    
+    <!-- 图片展示模态框 -->
+    <div id="imageModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 1000; background-color: rgba(0, 0, 0, 0.8); cursor: pointer;">
+        <img id="modalImage" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); max-width: 90vw; max-height: 90vh;">
+    </div>
+
+    <!-- 图片展示JavaScript -->
+    <script>
+        function showImage(imageURL, event) {
+            if (event) event.preventDefault(); // 阻止默认链接行为
+            console.log('显示图片:', imageURL);
+            document.getElementById('modalImage').src = imageURL;
+            document.getElementById('imageModal').style.display = 'block';
+        }
+
+        // 点击模态框关闭
+        document.getElementById('imageModal').onclick = function() {
+            console.log('关闭模态框');
+            document.getElementById('imageModal').style.display = 'none';
+        };
+    </script>
+</body>
+</html>

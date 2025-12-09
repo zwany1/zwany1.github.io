@@ -560,16 +560,31 @@ body {
 
     <!-- 图片展示JavaScript -->
     <script>
+        // 简化的图片弹出功能
         function showImage(imageURL, event) {
             if (event) event.preventDefault(); // 阻止默认链接行为
-            document.getElementById('modalImage').src = imageURL;
-            document.getElementById('imageModal').style.display = 'block';
+            
+            // 确保模态框元素存在
+            var modal = document.getElementById('imageModal');
+            var modalImg = document.getElementById('modalImage');
+            
+            if (modal && modalImg) {
+                modalImg.src = imageURL;
+                modal.style.display = 'block';
+            } else {
+                console.error('模态框元素不存在');
+            }
         }
 
         // 点击模态框关闭
-        document.getElementById('imageModal').onclick = function() {
-            document.getElementById('imageModal').style.display = 'none';
-        };
+        document.addEventListener('DOMContentLoaded', function() {
+            var modal = document.getElementById('imageModal');
+            if (modal) {
+                modal.onclick = function() {
+                    modal.style.display = 'none';
+                };
+            }
+        });
     </script>
     
     <!-- 网格图案 -->
