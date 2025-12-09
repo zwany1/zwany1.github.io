@@ -205,27 +205,9 @@ body {
     align-items: center;
 }
 
-.grid {
-    display: grid;
-    grid-template-columns: repeat(60, 6px);
-    grid-template-rows: repeat(8, 6px);
-    gap: 1px;
+.grid-section img {
+    display: block;
     margin-bottom: 10px;
-}
-
-.grid-item {
-    width: 6px;
-    height: 6px;
-    background-color: rgba(255, 255, 255, 0.1);
-    border-radius: 1px;
-}
-
-.grid-item.green {
-    background-color: #4CAF50;
-}
-
-.grid-item.purple {
-    background-color: #9C27B0;
 }
 
 .progress-bar {
@@ -372,13 +354,13 @@ body {
     <!-- 左侧边栏 -->
     <div class="sidebar">
         <div class="avatar">
-            <img src="{{ site.url }}/assets/images/d56012bab88f5aabe76bb1fc7eeeb9c6.jpg" alt="Zyyo" />
+            <img src="{{ site.url }}/assets/images/d56012bab88f5aabe76bb1fc7eeeb9c6.jpg" alt="Zwy" />
         </div>
         
         <div class="tags-section">
             <h4>标签</h4>
             <div class="tags-grid">
-                <div class="tag-item">前端</div>
+                <div class="tag-item">后端</div>
                 <div class="tag-item">小学生</div>
                 <div class="tag-item">阅读</div>
                 <div class="tag-item">linux</div>
@@ -401,20 +383,16 @@ body {
                 <i class="fas fa-code"></i> 2024-3
             </a>
             <a href="#" class="link-item">
-                <i class="fas fa-calendar"></i> 2024-2
-            </a>
-            <a href="#" class="link-item">
                 <i class="fas fa-bullhorn"></i> 出站不掉...
             </a>
         </div>
     </div>
-    
     <!-- 右侧主内容 -->
     <div class="main-content">
         <!-- 头部区域 -->
         <div class="header">
             <div class="title-section">
-                <h1>Hello I'm <span>Zyyo</span></h1>
+                <h1>Hello I'm <span>Zwy</span></h1>
                 <div class="职业信息">
                     <p><i class="fas fa-briefcase"></i> Full Stack Developer</p>
                     <p><i class="fas fa-quote-left"></i> The only way to do great is to love what you do.</p>
@@ -435,18 +413,7 @@ body {
     
     <!-- 网格图案 -->
     <div class="grid-section">
-        <div class="grid">
-            <!-- 这里可以根据需要生成网格图案 -->
-            {% for i in (1..480) %}
-                {% if i % 5 == 0 or i % 7 == 0 or i % 11 == 0 %}
-                    <div class="grid-item green"></div>
-                {% elsif i % 13 == 0 or i % 17 == 0 %}
-                    <div class="grid-item purple"></div>
-                {% else %}
-                    <div class="grid-item"></div>
-                {% endif %}
-            {% endfor %}
-        </div>
+        <img src="/images/blog/snake-Light.svg" alt="Snake Grid" style="width: 100%; height: auto;">
         <div class="progress-bar">
             <div class="progress-fill"></div>
         </div>
@@ -489,11 +456,11 @@ body {
             <div class="project-links">
                 <a href="#" class="project-link">
                     <i class="fas fa-home"></i>
-                    ZYYO主页
+                    Zwy主页
                 </a>
                 <a href="#" class="project-link">
                     <i class="fas fa-palette"></i>
-                    ZYYO主题
+                    Zwy主题
                 </a>
                 <a href="#" class="project-link">
                     <i class="fas fa-palette"></i>
