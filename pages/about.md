@@ -63,11 +63,48 @@ body {
     position: relative;
 }
 
+.avatar .social-icons {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+    z-index: 2;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.avatar:hover .social-icons {
+    opacity: 1;
+}
+
+.avatar .social-icons a {
+    width: 32px;
+    height: 32px;
+    font-size: 18px;
+    background-color: rgba(255, 255, 255, 0.8);
+    color: #333;
+    margin: 0;
+}
+
+.avatar .social-icons a:hover {
+    background-color: rgba(255, 215, 0, 0.8);
+    color: #333;
+    transform: none;
+}
+
 .avatar .main-avatar {
     width: 100%;
     height: 100%;
     border-radius: 50%;
     object-fit: cover;
+    transition: opacity 0.3s ease;
+}
+
+.avatar:hover .main-avatar {
+    opacity: 0.6;
 }
 
 
@@ -170,7 +207,7 @@ body {
     background-image: linear-gradient(45deg, #ff6b6b, #4ecdc4, #45b7d1, #96ceb4, #ffeead);
     background-position: 0% center;
     animation: 8s ease-in-out 0s infinite normal none running backgroundSizeAnimation;
-    text-shadow: 0 0 10px rgba(255, 107, 107, 0.5);
+    text-shadow: 0 0 5px rgba(255, 107, 107, 0.3);
 }
 .welcome {
     font-size: 72px;
@@ -458,6 +495,34 @@ body {
     <div class="sidebar">
         <div class="avatar">
             <img src="{{ site.url }}/assets/images/d56012bab88f5aabe76bb1fc7eeeb9c6.jpg" alt="Zwy" class="main-avatar" />
+            <div class="social-icons">
+                <a href="https://github.com/zwany1" title="GitHub"><i class="fab fa-github"></i></a>
+                <a href="mailto:your.email@example.com" title="Email"><i class="fas fa-envelope"></i></a>
+                <a href="#" title="Comment"><i class="fas fa-comment"></i></a>
+                <a href="#" title="Bookmark"><i class="fas fa-bookmark"></i></a>
+                <a href="#" title="Light"><i class="fas fa-lightbulb"></i></a>
+                <!-- 自绘SVG图标 -->
+                <a href="#" title="Custom Icon 1" style="display: inline-block; width: 24px; height: 24px; vertical-align: middle;">
+                    <svg width="24" height="24" viewBox="0 0 1024 1024" fill="currentColor">
+                        <path d="M511.6 76.3C264.3 76.2 64 276.4 64 523.5 64 718.9 189.3 885 363.8 946c23.5 5.9 19.9-10.8 19.9-22.2v-77.5c-135.7 15.9-141.2-73.9-150.3-88.9C215 726 171.5 718 184.5 703c30.9-15.9 62.4 4 98.9 57.9 26.4 39.1 77.9 32.5 104 26 5.7-23.5 17.9-44.5 34.7-60.8-140.6-25.2-199.2-111-199.2-213 0-49.5 16.3-95 48.3-131.7-20.4-60.5 1.9-112.3 4.9-120 58.1-5.2 118.5 41.6 123.2 45.3 33-8.9 70.7-13.6 112.9-13.6 42.4 0 80.2 4.9 113.5 13.9 11.3-8.6 67.3-48.8 121.3-43.9 2.9 7.7 24.7 58.3 5.5 118 32.4 36.8 48.9 82.7 48.9 132.3 0 102.2-59 188.1-200 212.9 23.5 23.2 38.1 55.4 38.1 91v112.5c0.8 9 0 17.9 15 17.9 177.1-59.7 304.6-227 304.6-424.1 0-247.2-200.4-447.3-447.5-447.3z"/>
+                    </svg>
+                </a>
+                <a href="#" title="Custom Icon 2" style="display: inline-block; width: 24px; height: 24px; vertical-align: middle;">
+                    <svg width="24" height="24" viewBox="0 0 1024 1024" fill="currentColor">
+                        <path d="M512 85.333c-235.52 0-426.667 191.147-426.667 426.667s191.147 426.667 426.667 426.667 426.667-191.147 426.667-426.667S747.52 85.333 512 85.333z m134.656 503.467c-21.333 21.333-55.467 21.333-76.8 0L512 512l67.84-67.84c21.333-21.333 55.467-21.333 76.8 0 21.333 21.333 21.333 55.467 0 76.8L588.8 512l57.856 56.8z"/>
+                    </svg>
+                </a>
+                <a href="#" title="Custom Icon 3" style="display: inline-block; width: 24px; height: 24px; vertical-align: middle;">
+                    <svg width="24" height="24" viewBox="0 0 1024 1024" fill="currentColor">
+                        <path d="M960 117.333v213.334h-170.667L512 832 234.667 330.667H64V117.333h906.667z m-512 554.667l213.333-362.667h-213.333v362.667z"/>
+                    </svg>
+                </a>
+                <a href="#" title="Custom Icon 4" style="display: inline-block; width: 24px; height: 24px; vertical-align: middle;">
+                    <svg width="24" height="24" viewBox="0 0 1024 1024" fill="currentColor">
+                        <path d="M853.333 405.333H170.667c-35.733 0-64 28.267-64 64v341.333c0 35.733 28.267 64 64 64h682.667c35.733 0 64-28.267 64-64V469.333c0-35.733-28.267-64-64-64zM512 853.333c-35.733 0-64-28.267-64-64s28.267-64 64-64 64 28.267 64 64-28.267 64-64 64z m341.333-170.667H170.667V469.333h682.667v213.333z"/>
+                    </svg>
+                </a>
+            </div>
         </div>
         
         <div class="tags-section">
