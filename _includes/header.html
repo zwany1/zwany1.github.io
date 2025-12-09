@@ -185,8 +185,8 @@
                     display: inline-block;
                     margin-right: 15px;
                     padding: 8px;
-                    color: #ff6b35; /* 更鲜艳的橙色 */
-                    font-size: 28px; /* 增大图标大小 */
+                    color: #35ff35; /*  */
+                    font-size: 50px; /* 增大图标大小 */
                     text-decoration: none;
                     transition: all 0.3s ease;
                     position: relative;
@@ -194,21 +194,24 @@
                 }
                 
                 .travel-link:hover {
-                    color: transparent;
+                    color: #ff4500; /* 悬停时颜色更深更鲜艳 */
+                    transform: scale(1.1); /* 悬停时轻微放大 */
                 }
                 
-                .travel-link:hover::after {
+                /* 移除悬停时显示图片的效果 */
+                /* .travel-link:hover::after {
                     content: '';
                     position: absolute;
                     top: 50%;
                     left: 50%;
                     transform: translate(-50%, -50%);
-                    width: 32px; /* 增大悬停图标大小 */
+                    width: 32px;
                     height: 32px;
                     background-image: url('/assets/images/aoy.png');
                     background-size: contain;
                     background-repeat: no-repeat;
-                }
+                } */
+            
             </style>
         </div>
     </header>
