@@ -32,17 +32,11 @@ permalink: /gallery/
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
 }
 
-/* 图片样式 */
 .gallery-item img {
   width: 100%;
   height: 100%;
   object-fit: cover;
   transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
-  opacity: 0;
-}
-
-.gallery-item img.loaded {
-  opacity: 1;
 }
 
 .gallery-item:hover img {
@@ -64,7 +58,6 @@ permalink: /gallery/
   transform: translateY(100%);
   transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
   text-align: center;
-  z-index: 2;
 }
 
 .gallery-item:hover::after {
@@ -72,14 +65,31 @@ permalink: /gallery/
   transform: translateY(0);
 }
 
-
-
-/* 视频播放按钮 */
-.gallery-item > div {
-  z-index: 2;
+/* 图片加载占位符 */
+.gallery-item::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background-size: 200% 100%;
+  animation: loading 1.5s infinite;
 }
 
-/* 加载动画已替换为GIF */
+.gallery-item img.loaded::before {
+  display: none;
+}
+
+@keyframes loading {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
 
 /* 响应式设计 */
 @media (max-width: 1024px) {
@@ -108,37 +118,12 @@ permalink: /gallery/
 }
 </style>
 
-<script>
-  // 等待DOM加载完成
-  window.onload = function() {
-    // 获取所有图片元素
-    const images = document.querySelectorAll('.gallery-item img');
-    
-    // 为每个图片添加加载完成事件
-    images.forEach(function(img) {
-      // 图片加载完成时执行
-      function onImageLoad() {
-        // 显示图片
-        img.classList.add('loaded');
-      }
-      
-      // 添加加载事件监听器
-      img.addEventListener('load', onImageLoad);
-      
-      // 检查图片是否已经加载完成（缓存中）
-      if (img.complete && img.naturalWidth > 0) {
-        onImageLoad();
-      }
-    });
-  };
-</script>
-
 <h2 style="margin-top: 40px; margin-bottom: 20px; color: #333; font-size: 28px;">🎬 视频</h2>
 
 <div class="gallery">
   <!-- 视频内容 -->
   <a href="/images/gallery/1d219a323cedb70b129d3317acbcc63d.mp4" class="gallery-item" data-title="视频1">
-    <img src="/images/gallery/22.png" alt="视频1" width="800" height="600" loading="lazy">
+    <img src="/images/gallery/22.png" alt="视频1" loading="lazy">
     <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 60px; height: 60px; background-color: rgba(255, 255, 255, 0.8); border-radius: 50%; display: flex; align-items: center; justify-content: center;">
       <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#ff0000" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
         <path d="M5 3l14 9-14 9V3z"></path>
@@ -146,7 +131,7 @@ permalink: /gallery/
     </div>
   </a>
   <a href="/images/gallery/8be4fe5f439369750f6022b7d9254839.mp4" class="gallery-item" data-title="视频2">
-    <img src="/images/gallery/11.png" alt="视频2" width="800" height="600" loading="lazy">
+    <img src="/images/gallery/11.png" alt="视频2" loading="lazy">
     <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 60px; height: 60px; background-color: rgba(255, 255, 255, 0.8); border-radius: 50%; display: flex; align-items: center; justify-content: center;">
       <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#ff0000" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
         <path d="M5 3l14 9-14 9V3z"></path>
@@ -173,9 +158,7 @@ permalink: /gallery/
 
 <!-- 图片优化提示 -->
 <div style="margin-top: 30px; padding: 15px; background-color: #f8f9fa; border-radius: 8px; text-align: center;">
-  <strong>图片优化建议：</strong>视频封面图片建议压缩至200KB以下以提升加载速度。可以使用tinypng.com等在线工具进行无损压缩。<br>
-
   <p style="color: #666; font-size: 14px; margin: 0;">
-    💡 为获得更好的加载效果，建议将相册图片压缩至100KB以下，并使用适当尺寸的缩略图
+    💡 提示：为获得更好的加载效果，建议将相册图片压缩至100KB以下，并使用适当尺寸的缩略图
   </p>
 </div>
