@@ -476,7 +476,7 @@ body {
     <!-- 左侧边栏 -->
     <div class="sidebar">
         <div class="avatar">
-            <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200' viewBox='0 0 200 200'%3E%3Crect width='200' height='200' fill='%23f0f0f0'/%3E%3C/svg%3E" data-src="/assets/images/d56012bab88f5aabe76bb1fc7eeeb9c6.jpg" alt="Zwy" class="main-avatar lazy-load" />
+            <img src="{{ site.url }}/assets/images/d56012bab88f5aabe76bb1fc7eeeb9c6.jpg" alt="Zwy" class="main-avatar" />
         </div>
         
         <div class="tags-section">
@@ -606,7 +606,7 @@ body {
     <div class="skills-section">
         <h3>⚡ skills</h3>
         <div class="skills-grid" style="display: flex; justify-content: center; align-items: center; padding: 20px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 10px; overflow: hidden;">
-            <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='200' viewBox='0 0 300 200'%3E%3Crect width='300' height='200' fill='%23f0f0f0'/%3E%3C/svg%3E" data-src="/images/fragments/image.png" alt="Skills" style="max-width: 100%; max-height: 300px; object-fit: contain; border-radius: 5px; cursor: pointer;" class="image-modal-trigger lazy-load" />
+            <img src="{{ site.url }}/images/fragments/image.png" alt="Skills" style="max-width: 100%; max-height: 300px; object-fit: contain; border-radius: 5px; cursor: pointer;" class="image-modal-trigger" />
         </div>
     </div>
 </div>
