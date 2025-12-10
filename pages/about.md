@@ -476,7 +476,7 @@ body {
     <!-- 左侧边栏 -->
     <div class="sidebar">
         <div class="avatar">
-            <img src="{{ site.url }}/assets/images/d56012bab88f5aabe76bb1fc7eeeb9c6.jpg" alt="Zwy" class="main-avatar" />
+            <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200' viewBox='0 0 200 200'%3E%3Crect width='200' height='200' fill='%23f0f0f0'/%3E%3C/svg%3E" data-src="{{ site.url }}/assets/images/d56012bab88f5aabe76bb1fc7eeeb9c6.jpg" alt="Zwy" class="main-avatar lazy-load" />
         </div>
         
         <div class="tags-section">
@@ -538,13 +538,13 @@ body {
                         </svg>
                     </a>
                     <!-- WeChat QR Code -->
-                    <a href="/assets/images/qrcode.jpg" class="image-modal-trigger" title="WeChat">
+                    <a href="/assets/images/qrcode_backup.jpg" class="image-modal-trigger" title="WeChat">
                         <svg width="24" height="24" viewBox="0 0 1024 1024" fill="currentColor">
                             <path d="M816.551274 248.167103C697.80273 131.500986 553.294498 97.66946 394.437467 140.52757 114.716718 215.994356 28.163433 506.98887 169.479973 696.646394c6.853082 9.198499 8.147564 26.164916 5.545296 38.09769-7.601118 34.868135-18.714224 68.958558-28.000728 103.474676-4.965082 18.455327-7.90504 37.21253 8.632611 52.019771 17.777899 15.921621 36.82572 12.654204 56.258305 2.777253 31.879058-16.200984 64.335261-31.314193 95.763041-48.336892 20.469194-11.086499 38.847773-11.658528 61.942771-5.240351 46.063105 12.799514 93.717452 19.872606 117.992321 24.74866 144.317896-2.603291 249.610988-41.736567 333.958024-129.489166C955.8826 594.966597 954.903296 384.090818 816.551274 248.167103zM763.498988 681.878039C658.864906 785.728268 531.49603 810.562886 393.782551 764.371868c-45.408189-15.229866-82.686211-19.207457-122.088616 7.493671-3.576455 2.423189-8.448416 2.934842-26.51284 8.852622 36.271088-62.917982 9.41851-102.273315-21.181415-146.894581-67.886133-98.989525-54.03773-226.624461 26.78197-318.740438 132.026966-150.480246 390.603139-150.382009 522.634198 0.196475C869.144096 424.455131 867.098507 579.054185 763.498988 681.878039z"/>
                         </svg>
                     </a>
                     <!-- Sponsor QR Code -->
-                    <a href="/assets/images/zanzu.jpg" class="image-modal-trigger" title="Sponsor">
+                    <a href="/assets/images/zanzu_backup.jpg" class="image-modal-trigger" title="Sponsor">
                         <svg width="24" height="24" viewBox="0 0 1024 1024" fill="currentColor">
                             <path d="M995.575172 725.451034c-12.358621-26.835862-38.488276-64.794483-92.689655-94.27862-62.146207-33.721379-136.297931-40.96-208.860689-20.303448l-99.928276 28.424827-279.304828-126.057931H22.775172v489.401379h509.704828l432.375172-195.266207c15.006897-6.708966 26.835862-19.42069 32.662069-34.957241 5.649655-15.36 4.943448-31.955862-1.942069-46.962759z m-482.162758 188.910345H111.051034V601.688276h184.673104l166.664828 75.387586-3.354483 0.882759h-170.372414v88.275862H471.393103l246.819311-70.267586c49.434483-14.124138 101.517241-9.357241 142.653793 12.888275 18.184828 9.886897 30.72 20.833103 39.371034 30.896552l-386.824827 174.609655z"/>
                             <path d="M695.437241 163.486897l58.615173-142.30069h-397.24138l66.736552 143.36c-121.82069 53.142069-207.095172 174.433103-207.095172 315.674483 0 28.601379 3.531034 57.202759 10.593103 84.744827l85.627586-21.715862c-5.12-20.48-7.768276-41.666207-7.768275-63.028965 0-141.241379 114.758621-256 256-256s256 114.758621 256 256c0 51.023448-14.830345 100.104828-43.078621 142.300689l73.268965 49.08138c37.958621-56.673103 58.085517-122.88 58.085518-191.382069-0.176552-141.947586-86.686897-264.121379-209.743449-316.733793zM467.508966 91.983448h180.965517l-21.009655 50.846897a348.16 348.16 0 0 0-66.913104-6.708966c-23.834483 0-46.962759 2.471724-69.384827 7.062069l-23.657931-51.2z"/>
@@ -606,45 +606,91 @@ body {
     <div class="skills-section">
         <h3>⚡ skills</h3>
         <div class="skills-grid" style="display: flex; justify-content: center; align-items: center; padding: 20px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 10px; overflow: hidden;">
-            <img src="{{ site.url }}/images/fragments/image.png" alt="Skills" style="max-width: 100%; max-height: 300px; object-fit: contain; border-radius: 5px; cursor: pointer;" class="image-modal-trigger" />
+            <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='200' viewBox='0 0 300 200'%3E%3Crect width='300' height='200' fill='%23f0f0f0'/%3E%3C/svg%3E" data-src="{{ site.url }}/images/fragments/image.png" alt="Skills" style="max-width: 100%; max-height: 300px; object-fit: contain; border-radius: 5px; cursor: pointer;" class="image-modal-trigger lazy-load" />
         </div>
     </div>
 </div>
 
-<!-- 图片弹窗脚本 -->
+<!-- 图片懒加载和弹窗脚本 -->
 <script>
 // 页面加载完成后执行
 document.addEventListener('DOMContentLoaded', function() {
-    // 获取所有带有image-modal-trigger类的元素
-    var imageTriggers = document.querySelectorAll('.image-modal-trigger');
-    var modal = document.getElementById('imageModal');
-    var modalImg = document.getElementById('modalImage');
+    // 图片懒加载功能
+    function lazyLoadImages() {
+        // 检查浏览器是否支持IntersectionObserver
+        if ('IntersectionObserver' in window) {
+            const lazyImages = document.querySelectorAll('.lazy-load');
+            
+            // 创建观察器实例
+            const imageObserver = new IntersectionObserver((entries, observer) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        const img = entry.target;
+                        // 替换图片源
+                        img.src = img.dataset.src;
+                        // 移除懒加载类
+                        img.classList.remove('lazy-load');
+                        // 停止观察
+                        observer.unobserve(img);
+                    }
+                });
+            }, {
+                // 当图片10%进入视口时开始加载
+                threshold: 0.1
+            });
+            
+            // 观察所有懒加载图片
+            lazyImages.forEach(img => imageObserver.observe(img));
+        } else {
+            // 降级处理：直接加载所有图片
+            const lazyImages = document.querySelectorAll('.lazy-load');
+            lazyImages.forEach(img => {
+                img.src = img.dataset.src;
+                img.classList.remove('lazy-load');
+            });
+        }
+    }
     
-    // 为每个元素添加点击事件
-    imageTriggers.forEach(function(trigger) {
-        trigger.addEventListener('click', function(e) {
-            // 阻止默认的链接跳转行为
-            e.preventDefault();
-            
-            // 获取图片地址
-            var imageSrc = this.href || this.src;
-            
-            // 处理相对路径（如果有的话）
-            if (imageSrc.startsWith('assets/')) {
-                // 确保使用正确的绝对路径
-                imageSrc = '/assets/' + imageSrc.replace('assets/', '');
-            }
-            
-            // 显示图片
-            modal.style.display = "block";
-            modalImg.src = imageSrc;
+    // 图片弹窗功能
+    function setupImageModal() {
+        const imageTriggers = document.querySelectorAll('.image-modal-trigger');
+        const modal = document.getElementById('imageModal');
+        const modalImg = document.getElementById('modalImage');
+        
+        // 为每个元素添加点击事件
+        imageTriggers.forEach(function(trigger) {
+            trigger.addEventListener('click', function(e) {
+                // 阻止默认的链接跳转行为
+                e.preventDefault();
+                
+                // 获取图片地址
+                let imageSrc = '';
+                if (this.tagName === 'A') {
+                    imageSrc = this.href;
+                } else if (this.tagName === 'IMG') {
+                    imageSrc = this.dataset.src || this.src;
+                }
+                
+                // 处理相对路径
+                if (imageSrc.startsWith('assets/')) {
+                    imageSrc = '/assets/' + imageSrc.replace('assets/', '');
+                }
+                
+                // 显示图片
+                modal.style.display = "block";
+                modalImg.src = imageSrc;
+            });
         });
-    });
+        
+        // 为模态框添加点击关闭事件
+        modal.addEventListener('click', function() {
+            modal.style.display = "none";
+        });
+    }
     
-    // 为模态框添加点击关闭事件
-    modal.addEventListener('click', function() {
-        modal.style.display = "none";
-    });
+    // 初始化功能
+    lazyLoadImages();
+    setupImageModal();
 });
 </script>
 
