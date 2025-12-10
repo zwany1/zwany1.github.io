@@ -613,44 +613,39 @@ body {
 
 <!-- 图片弹窗脚本 -->
 <script>
-// 显示图片函数
-function showImage(imageSrc) {
+// 页面加载完成后执行
+document.addEventListener('DOMContentLoaded', function() {
+    // 获取所有带有image-modal-trigger类的元素
+    var imageTriggers = document.querySelectorAll('.image-modal-trigger');
     var modal = document.getElementById('imageModal');
     var modalImg = document.getElementById('modalImage');
-    modal.style.display = "block";
-    modalImg.src = imageSrc;
-}
-
-// 添加事件监听器
-window.onload = function() {
-    // 获取所有带有image-modal-trigger类的元素
-    var imageTriggers = document.getElementsByClassName('image-modal-trigger');
     
     // 为每个元素添加点击事件
-    for (var i = 0; i < imageTriggers.length; i++) {
-        imageTriggers[i].addEventListener('click', function(e) {
+    imageTriggers.forEach(function(trigger) {
+        trigger.addEventListener('click', function(e) {
             // 阻止默认的链接跳转行为
             e.preventDefault();
             
             // 获取图片地址
-            var imageSrc = this.href;
+            var imageSrc = this.href || this.src;
             
-            // 如果是直接的img标签，获取src属性
-            if (this.tagName === 'IMG') {
-                imageSrc = this.src;
+            // 处理相对路径
+            if (imageSrc.startsWith('assets/')) {
+                // 确保使用正确的绝对路径
+                imageSrc = '/assets/' + imageSrc.replace('assets/', '');
             }
             
             // 显示图片
-            showImage(imageSrc);
+            modal.style.display = "block";
+            modalImg.src = imageSrc;
         });
-    }
+    });
     
     // 为模态框添加点击关闭事件
-    var modal = document.getElementById('imageModal');
     modal.addEventListener('click', function() {
         modal.style.display = "none";
     });
-}
+});
 </script>
 
 
