@@ -234,6 +234,65 @@ function initFadeOutOnScroll() {
   fadeElements.forEach(el => observer.observe(el));
 }
 
+// 图片展示模态框功能
+function initImageModal() {
+  // 添加模态框样式
+  const style = document.createElement('style');
+  style.textContent = "/* 图片展示模态框 */" +
+      "#imageModal {" +
+        "display: none;" +
+        "position: fixed;" +
+        "z-index: 9999;" +
+        "left: 0;" +
+        "top: 0;" +
+        "width: 100%;" +
+        "height: 100%;" +
+        "overflow: auto;" +
+        "background-color: rgba(0, 0, 0, 0.8);" +
+        "text-align: center;" +
+        "padding-top: 20px;" +
+      "}" +
+      "" +
+      "#modalImage {" +
+        "max-width: 90%;" +
+        "max-height: 90%;" +
+        "margin: 0 auto;" +
+        "display: block;" +
+        "border-radius: 5px;" +
+        "animation: modalZoomIn 0.3s ease;" +
+      "}" +
+      "" +
+      "@keyframes modalZoomIn {" +
+        "from { transform: scale(0.8); opacity: 0; }" +
+        "to { transform: scale(1); opacity: 1; }" +
+      "}";
+  document.head.appendChild(style);
+  
+  // 点击模态框关闭
+  document.addEventListener('click', function(event) {
+    const modal = document.getElementById('imageModal');
+    if (modal && event.target === modal) {
+      modal.style.display = 'none';
+    }
+  });
+}
+
+// 全局showImage函数
+window.showImage = function(imageURL, event) {
+  if (event) event.preventDefault(); // 阻止默认链接行为
+  
+  // 确保模态框元素存在
+  var modal = document.getElementById('imageModal');
+  var modalImg = document.getElementById('modalImage');
+  
+  if (modal && modalImg) {
+    modalImg.src = imageURL;
+    modal.style.display = 'block';
+  } else {
+    console.error('模态框元素不存在');
+  }
+};
+
 // 初始化所有微交互
 jQuery(function() {
   // 添加必要的CSS样式
@@ -347,6 +406,7 @@ jQuery(function() {
   document.head.appendChild(style);
 
   // 初始化所有功能
+  initImageModal();
   initScrollAnimations();
   initRippleEffect();
   initSmoothScroll();
