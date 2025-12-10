@@ -45,27 +45,35 @@ function initRippleEffect() {
 
 // 平滑滚动功能
 function initSmoothScroll() {
-  document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+  // 只选择href以#开头且长度大于1的链接，完全避免处理'#'链接
+  document.querySelectorAll('a[href^="#"]:not([href="#"])').forEach(anchor => {
     anchor.addEventListener('click', function (e) {
       const targetId = this.getAttribute('href');
       
-      // 只有当targetId是有效的选择器（以#开头且长度大于1）时，才阻止默认行为并执行平滑滚动
+      // 验证targetId是否是有效的CSS选择器
       if (targetId && targetId.length > 1 && targetId.startsWith('#')) {
         e.preventDefault();
         
+        // 尝试获取目标元素
+        let targetElement = null;
         try {
-          const targetElement = document.querySelector(targetId);
-          if (targetElement) {
-            targetElement.scrollIntoView({
-              behavior: 'smooth'
-            });
+          // 检查是否是ID选择器（#id）
+          if (/^#[\w-]+$/.test(targetId)) {
+            targetElement = document.getElementById(targetId.substring(1));
+          } else {
+            // 对于其他选择器，使用querySelector
+            targetElement = document.querySelector(targetId);
           }
         } catch (error) {
           console.error('Invalid selector:', targetId);
-          // 如果选择器无效，不阻止默认行为
+        }
+        
+        if (targetElement) {
+          targetElement.scrollIntoView({
+            behavior: 'smooth'
+          });
         }
       }
-      // 否则，允许默认行为继续执行
     });
   });
 }
