@@ -611,46 +611,10 @@ body {
     </div>
 </div>
 
-<!-- 图片懒加载和弹窗脚本 -->
+<!-- 图片弹窗脚本 -->
 <script>
 // 页面加载完成后执行
 document.addEventListener('DOMContentLoaded', function() {
-    // 图片懒加载功能
-    function lazyLoadImages() {
-        // 检查浏览器是否支持IntersectionObserver
-        if ('IntersectionObserver' in window) {
-            const lazyImages = document.querySelectorAll('.lazy-load');
-            
-            // 创建观察器实例
-            const imageObserver = new IntersectionObserver((entries, observer) => {
-                entries.forEach(entry => {
-                    if (entry.isIntersecting) {
-                        const img = entry.target;
-                        // 替换图片源
-                        img.src = img.dataset.src;
-                        // 移除懒加载类
-                        img.classList.remove('lazy-load');
-                        // 停止观察
-                        observer.unobserve(img);
-                    }
-                });
-            }, {
-                // 当图片10%进入视口时开始加载
-                threshold: 0.1
-            });
-            
-            // 观察所有懒加载图片
-            lazyImages.forEach(img => imageObserver.observe(img));
-        } else {
-            // 降级处理：直接加载所有图片
-            const lazyImages = document.querySelectorAll('.lazy-load');
-            lazyImages.forEach(img => {
-                img.src = img.dataset.src;
-                img.classList.remove('lazy-load');
-            });
-        }
-    }
-    
     // 图片弹窗功能
     function setupImageModal() {
         const imageTriggers = document.querySelectorAll('.image-modal-trigger');
@@ -668,7 +632,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 if (this.tagName === 'A') {
                     imageSrc = this.href;
                 } else if (this.tagName === 'IMG') {
-                    imageSrc = this.dataset.src || this.src;
+                    imageSrc = this.src;
                 }
                 
                 // 处理相对路径
@@ -689,7 +653,6 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     
     // 初始化功能
-    lazyLoadImages();
     setupImageModal();
 });
 </script>
