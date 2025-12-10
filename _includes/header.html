@@ -78,6 +78,25 @@
 
     <script src="{{ assets_base_url }}/assets/vendor/jquery/dist/jquery.min.js"></script>
     <script defer src="{{ assets_base_url }}/assets/js/main.js"></script>
+    
+    <!-- 确保showImage函数在页面加载时就可用 -->
+    <script>
+    // 全局showImage函数
+    window.showImage = function(imageURL, event) {
+      if (event) event.preventDefault(); // 阻止默认链接行为
+      
+      // 确保模态框元素存在
+      var modal = document.getElementById('imageModal');
+      var modalImg = document.getElementById('modalImage');
+      
+      if (modal && modalImg) {
+        modalImg.src = imageURL;
+        modal.style.display = 'block';
+      } else {
+        console.error('模态框元素不存在');
+      }
+    };
+    </script>
 
     {% if site.google.adsense.enabled and site.url contains 'mazhuang.org' %}
     <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7093222719567591" crossorigin="anonymous"></script>
