@@ -145,7 +145,371 @@ body {
     transform: translateX(5px);
 }
 
-<!-- 右侧主内容 -->
+/* 右侧主内容 */
+.main-content {
+    flex: 1;
+}
+
+/* 头部区域 */
+.header {
+    margin-bottom: 30px;
+}
+
+.avatar img {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.title-section h1 {
+    font-size: 65px;
+    font-weight: 800;
+    margin: 20px 0;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.gradientText {
+    /* 基本文字样式 */
+    font-family: Arial, sans-serif;
+    font-size: 72px;
+    font-weight: bold;
+    
+    /* 渐变效果 */
+    background: linear-gradient(135deg, rgb(120, 120, 255) 0%, rgb(0, 200, 255) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    
+    /* 其他样式 */
+    display: inline;
+    line-height: 1.2;
+}
+.welcome {
+    font-size: 72px;
+    font-weight: 900;
+    margin: 20px 0px;
+    letter-spacing: 2px;
+    line-height: 1.2;
+}
+
+@keyframes backgroundSizeAnimation {
+    0% {
+        background-position: 0%;
+    }
+    50% {
+        background-position: 100%;
+    }
+    100% {
+        background-position: 0%;
+    }
+}
+
+.title-section h1 span {
+    color: #ffd700;
+}
+
+.title-section p {
+    font-size: 18px;
+    margin: 10px 0;
+    color: rgba(255, 255, 255, 0.9);
+}
+
+/* 职业信息 */
+.职业信息 {
+    margin-bottom: 15px;
+}
+
+.职业信息 p {
+    font-size: 16px;
+    margin: 5px 0;
+    display: flex;
+    align-items: center;
+}
+
+.职业信息 p:first-child {
+    color: #ffd700;
+    font-weight: bold;
+}
+
+/* 社交图标 */
+.social-icons-container {
+    margin-top: 15px;
+    padding: 20px;
+    background-color: rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+}
+
+.social-icons {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.social-icons a {
+    color: white;
+    font-size: 24px;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 50px;
+    height: 50px;
+    border-radius: 10px;
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+.social-icons a:hover {
+    color: white;
+    background-color: rgba(255, 255, 255, 0.25);
+    transform: none;
+}
+
+/* 确保SVG图标与Font Awesome图标大小一致 */
+.social-icons svg {
+    width: 24px;
+    height: 24px;
+    fill: currentColor;
+}
+
+/* 网格图案 */
+.grid-section {
+    margin: 30px 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.grid-section img {
+    display: block;
+    margin-bottom: 10px;
+}
+
+.progress-bar {
+    width: 100%;
+    height: 2px;
+    background-color: rgba(255, 255, 255, 0.3);
+    border-radius: 1px;
+    overflow: hidden;
+}
+
+.progress-fill {
+    height: 100%;
+    width: 80%;
+    background-color: #4CAF50;
+}
+
+/* 站点和项目 */
+.sites-projects {
+    margin: 30px 0;
+}
+
+.site-section, .project-section {
+    margin-bottom: 30px;
+    background-color: rgba(255, 255, 255, 0.1);
+    padding: 20px;
+    border-radius: 10px;
+    backdrop-filter: blur(10px);
+}
+
+.site-section h3, .project-section h3 {
+    font-size: 20px;
+    margin-bottom: 20px;
+    color: #ffd700;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.site-links, .project-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+}
+
+.site-link, .project-link {
+    background-color: rgba(255, 255, 255, 0.2);
+    padding: 12px 20px;
+    border-radius: 8px;
+    text-decoration: none;
+    color: white;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    transition: all 0.3s ease;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.site-link:hover, .project-link:hover {
+    background-color: rgba(255, 255, 255, 0.3);
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+}
+
+.site-link i, .project-link i {
+    font-size: 20px;
+    color: #ffd700;
+}
+
+
+#line {
+    width: 100%;
+    height: 200px;
+    font-size: 13px;
+    padding-left: 8px;
+    scroll-snap-type: y mandatory;
+    overflow-y: scroll;
+}
+
+#line ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+#line li {
+    padding: 15px 0 15px 15px;
+    position: relative;
+    border-left: 2px solid rgba(255, 255, 255, 0.3);
+    transition: all 0.3s ease;
+    scroll-snap-align: start;
+}
+
+#line li:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+#line li:first-child {
+    font-weight: bold;
+    font-size: 16px;
+    color: #ffd700;
+}
+
+.focus {
+    width: 8px;
+    height: 8px;
+    border-radius: 22px;
+    background-color: rgb(255 255 255);
+    border: 2px solid #fff;
+    position: absolute;
+    left: -5px;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+/* 技能部分 */
+.skills-section {
+    margin-top: 30px;
+    background-color: rgba(255, 255, 255, 0.1);
+    padding: 20px;
+    border-radius: 10px;
+    backdrop-filter: blur(10px);
+}
+
+.skills-section h3 {
+    font-size: 20px;
+    margin-bottom: 20px;
+    color: #ffd700;
+    text-align: center;
+}
+
+.skills-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+    justify-content: center;
+}
+
+.skill-icon {
+    background-color: rgba(255, 255, 255, 0.2);
+    padding: 12px;
+    border-radius: 8px;
+    font-size: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 50px;
+    height: 50px;
+    transition: all 0.3s ease;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.skill-icon:hover {
+    background-color: rgba(255, 255, 255, 0.3);
+    transform: scale(1.1);
+}
+
+/* 响应式设计 */
+@media (max-width: 992px) {
+    .about-container {
+        flex-direction: column;
+    }
+    
+    .sidebar {
+        width: 100%;
+    }
+    
+    .avatar {
+        margin-right: 0;
+        margin-bottom: 20px;
+    }
+}
+
+@media (max-width: 768px) {
+    .title-section h1 {
+        font-size: 45px;
+    }
+    
+    .grid {
+        grid-template-columns: repeat(30, 6px);
+    }
+    
+    .site-links, .project-links {
+        flex-direction: column;
+    }
+}
+</style>
+
+<div class="about-container">
+    <!-- 左侧边栏 -->
+    <div class="sidebar">
+        <div class="avatar">
+            <img src="{{ site.url }}/assets/images/d56012bab88f5aabe76bb1fc7eeeb9c6.jpg" alt="Zwy" class="main-avatar" />
+        </div>
+        
+        <div class="tags-section">
+            <h4>标签</h4>
+            <div class="tags-grid">
+                <div class="tag-item">后端</div>
+                <div class="tag-item">小学生</div>
+                <div class="tag-item">阅读</div>
+                <div class="tag-item">linux</div>
+                <div class="tag-item">配置</div>
+                <div class="tag-item">游戏</div>
+                <div class="tag-item">收藏</div>
+                <div class="tag-item">旅行</div>
+            </div>
+        </div>
+        
+        <div class="links-section">
+            <h4>链接</h4>
+            <a href="#" class="link-item">
+                <i class="fas fa-book"></i> 动态字符
+            </a>
+            <a href="#" class="link-item">
+                <i class="fas fa-server"></i> CDN动态加速
+            </a>
+            <a href="#" class="link-item">
+                <i class="fas fa-code"></i> 2024-3
+            </a>
+            <a href="#" class="link-item">
+                <i class="fas fa-bullhorn"></i> 出站不掉...
+            </a>
+        </div>
+    </div>
+  <!-- 右侧主内容 -->
 <div class="main-content">
     <!-- 头部区域 -->
     <div class="header">
@@ -290,68 +654,5 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 });
 </script>
-    
-    <!-- 网格图案 -->
-    <div class="grid-section">
-        <img src="/images/blog/snake-Light.svg" alt="Snake Grid" style="width: 100%; height: auto;">
-        <div class="progress-bar">
-            <div class="progress-fill"></div>
-        </div>
-    </div>
-
-    <!-- 站点和项目 -->
-    <div class="sites-projects">
-        <div class="site-section">
-            <h3>📦 site</h3>
-            <div class="site-links">
-                <a href="https://zwany1.github.io/" class="site-link">
-                    <i class="fas fa-home"></i>
-                    博客
-                </a>
-                <a href="https://zwany1.github.io/docs/ " class="site-link">
-                    <i class="fas fa-book"></i>
-                    文档网站
-                </a>
-                <a href="#" class="site-link">
-                    <i class="fas fa-cat"></i>
-                    测试
-                </a>
-                <a href="#" class="site-link">
-                    <i class="fas fa-heart"></i>
-                    测试
-                </a>          
-            </div>
-        </div>
-        
-        <div class="project-section">
-            <h3>💼 project</h3>
-            <div class="project-links">
-                <a href="https://zwany1.github.io/" class="project-link">
-                    <i class="fas fa-home"></i>
-                    Zwy主页
-                </a>
-                <a href="https://github.com/zwany1" class="project-link">
-                    <i class="fas fa-palette"></i>
-                    Zwy主题
-                </a>
-                <a href="#" class="project-link">
-                    <i class="fas fa-palette"></i>
-                    一键切换
-                </a>
-            </div>
-        </div>
-    </div>
-    
-
-    <!-- 技能部分 -->
-    <div class="skills-section">
-        <h3>⚡ skills</h3>
-          <div class="skills-grid" style="display: flex; justify-content: center; align-items: center; padding: 20px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 10px; overflow: hidden;">
-            <img src="{{ site.url }}/images/fragments/image.png" alt="Skills" style="max-width: 100%; max-height: 300px; object-fit: contain; border-radius: 5px;" />
-        </div>
-    </div>
-</div>
-</div>
-
 <!-- 添加Font Awesome图标库 -->
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
