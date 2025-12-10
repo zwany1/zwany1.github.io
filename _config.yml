@@ -127,13 +127,16 @@ quiet: false
 excerpt_separator: "\n\n"
 permalink: /:year/:month/:day/:title/
 plugins:
-    - jekyll-github-metadata
     - rouge
 #     - jekyll-html-pipeline
     - jekyll-paginate
     - jekyll-sitemap
     - jekyll-feed
     - jemoji
+
+# 禁用GitHub Metadata插件的API调用
+github:
+  enabled: false
 #     - jekyll-mentions
 collections:
     fragments:

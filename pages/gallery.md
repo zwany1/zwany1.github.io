@@ -37,6 +37,12 @@ permalink: /gallery/
   height: 100%;
   object-fit: cover;
   transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+  opacity: 0;
+  transition: opacity 0.5s ease, transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.gallery-item img.loaded {
+  opacity: 1;
 }
 
 .gallery-item:hover img {
@@ -58,6 +64,7 @@ permalink: /gallery/
   transform: translateY(100%);
   transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
   text-align: center;
+  z-index: 2;
 }
 
 .gallery-item:hover::after {
@@ -65,7 +72,7 @@ permalink: /gallery/
   transform: translateY(0);
 }
 
-/* 图片加载占位符 */
+/* 图片加载占位符 - 使用菱形装载机GIF */
 .gallery-item::before {
   content: '';
   position: absolute;
@@ -73,23 +80,17 @@ permalink: /gallery/
   left: 0;
   right: 0;
   bottom: 0;
-  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
-  background-size: 200% 100%;
-  animation: loading 1.5s infinite;
+  background: #f5f5f5 url('/images/blog/icons8-菱形装载机.gif') no-repeat center center;
+  background-size: 60px 60px;
+  z-index: 1;
 }
 
-.gallery-item img.loaded::before {
-  display: none;
+/* 视频播放按钮 */
+.gallery-item > div {
+  z-index: 2;
 }
 
-@keyframes loading {
-  0% {
-    background-position: 200% 0;
-  }
-  100% {
-    background-position: -200% 0;
-  }
-}
+/* 加载动画已替换为GIF */
 
 /* 响应式设计 */
 @media (max-width: 1024px) {
@@ -118,12 +119,43 @@ permalink: /gallery/
 }
 </style>
 
+<script>
+  // 图片加载完成后添加loaded类并隐藏GIF加载动画
+  document.addEventListener('DOMContentLoaded', function() {
+    const images = document.querySelectorAll('.gallery img');
+    images.forEach(img => {
+      img.onload = function() {
+        this.classList.add('loaded');
+        // 隐藏加载占位符GIF
+        const parent = this.parentElement;
+        if (parent) {
+          // 通过修改父元素的伪元素样式来隐藏GIF
+          const style = document.createElement('style');
+          style.textContent = `.gallery-item:nth-child(${Array.from(parent.parentElement.children).indexOf(parent) + 1})::before { display: none; }`;
+          document.head.appendChild(style);
+        }
+      };
+      // 如果图片已经在缓存中
+      if (img.complete) {
+        img.classList.add('loaded');
+        const parent = img.parentElement;
+        if (parent) {
+          // 通过修改父元素的伪元素样式来隐藏GIF
+          const style = document.createElement('style');
+          style.textContent = `.gallery-item:nth-child(${Array.from(parent.parentElement.children).indexOf(parent) + 1})::before { display: none; }`;
+          document.head.appendChild(style);
+        }
+      }
+    });
+  });
+</script>
+
 <h2 style="margin-top: 40px; margin-bottom: 20px; color: #333; font-size: 28px;">🎬 视频</h2>
 
 <div class="gallery">
   <!-- 视频内容 -->
   <a href="/images/gallery/1d219a323cedb70b129d3317acbcc63d.mp4" class="gallery-item" data-title="视频1">
-    <img src="/images/gallery/22.png" alt="视频1" loading="lazy">
+    <img src="/images/gallery/22.png" alt="视频1" width="800" height="600" loading="lazy">
     <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 60px; height: 60px; background-color: rgba(255, 255, 255, 0.8); border-radius: 50%; display: flex; align-items: center; justify-content: center;">
       <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#ff0000" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
         <path d="M5 3l14 9-14 9V3z"></path>
@@ -131,7 +163,7 @@ permalink: /gallery/
     </div>
   </a>
   <a href="/images/gallery/8be4fe5f439369750f6022b7d9254839.mp4" class="gallery-item" data-title="视频2">
-    <img src="/images/gallery/11.png" alt="视频2" loading="lazy">
+    <img src="/images/gallery/11.png" alt="视频2" width="800" height="600" loading="lazy">
     <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 60px; height: 60px; background-color: rgba(255, 255, 255, 0.8); border-radius: 50%; display: flex; align-items: center; justify-content: center;">
       <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#ff0000" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
         <path d="M5 3l14 9-14 9V3z"></path>
@@ -158,6 +190,8 @@ permalink: /gallery/
 
 <!-- 图片优化提示 -->
 <div style="margin-top: 30px; padding: 15px; background-color: #f8f9fa; border-radius: 8px; text-align: center;">
+  <strong>图片优化建议：</strong>视频封面图片(11.png, 22.png)过大，建议压缩至200KB以下以提升加载速度。可以使用tinypng.com等在线工具进行无损压缩。<br>
+
   <p style="color: #666; font-size: 14px; margin: 0;">
     💡 提示：为获得更好的加载效果，建议将相册图片压缩至100KB以下，并使用适当尺寸的缩略图
   </p>
