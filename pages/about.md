@@ -581,14 +581,7 @@ body {
                     <i class="fas fa-book"></i>
                     文档网站
                 </a>
-                <a href="#" class="site-link">
-                    <i class="fas fa-cat"></i>
-                    测试
-                </a>
-                <a href="#" class="site-link">
-                    <i class="fas fa-heart"></i>
-                    测试
-                </a>          
+
             </div>
         </div>
         
@@ -603,10 +596,7 @@ body {
                     <i class="fas fa-palette"></i>
                     Zwy主题
                 </a>
-                <a href="#" class="project-link">
-                    <i class="fas fa-palette"></i>
-                    一键切换
-                </a>
+
             </div>
         </div>
     </div>
@@ -621,38 +611,4 @@ body {
     </div>
 </div>
 
-<!-- 统一的图片弹窗脚本（放在页面底部或 layout 的 footer 中更佳） -->
-<script>
-document.addEventListener('DOMContentLoaded', function () {
-    // 图片弹窗函数
-    function showImage(src) {
-        const modal = document.getElementById('imageModal');
-        const modalImg = document.getElementById('modalImage');
-        if (modal && modalImg) {
-            modalImg.src = src;
-            modal.style.display = 'block';
-        }
-    }
 
-    // 绑定所有带 .image-modal-trigger 的链接
-    document.querySelectorAll('.image-modal-trigger').forEach(link => {
-        link.addEventListener('click', function (e) {
-            e.preventDefault();
-            const imgSrc = this.getAttribute('data-image');
-            if (imgSrc) {
-                showImage(imgSrc);
-            }
-        });
-    });
-
-    // 点击模态框背景关闭
-    const modal = document.getElementById('imageModal');
-    if (modal) {
-        modal.addEventListener('click', function () {
-            this.style.display = 'none';
-        });
-    }
-});
-</script>
-<!-- 添加Font Awesome图标库 -->
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
