@@ -125,38 +125,37 @@ permalink: /gallery/
 </style>
 
 <script>
-  // 图片加载完成后添加loaded类并隐藏GIF加载动画
-  document.addEventListener('DOMContentLoaded', function() {
+  // 等待DOM加载完成
+  window.onload = function() {
     // 获取所有图片元素
-    const allImages = document.querySelectorAll('.gallery-item img');
+    const images = document.querySelectorAll('.gallery-item img');
     
-    // 处理单个图片加载完成的函数
-    function handleImageLoaded(img) {
-      // 显示图片
-      img.classList.add('loaded');
-      
-      // 获取图片的父容器（gallery-item）
-      const galleryItem = img.parentNode;
-      
-      // 为父容器添加一个标记类，用于隐藏GIF
-      if (galleryItem) {
-        galleryItem.classList.add('image-loaded');
+    // 为每个图片添加加载完成事件
+    images.forEach(function(img) {
+      // 图片加载完成时执行
+      function onImageLoad() {
+        // 显示图片
+        img.classList.add('loaded');
+        
+        // 获取父容器
+        const parent = img.parentElement;
+        
+        // 确保父容器是gallery-item
+        if (parent && parent.classList.contains('gallery-item')) {
+          // 隐藏GIF加载动画
+          parent.classList.add('image-loaded');
+        }
       }
-    }
-    
-    // 为每个图片添加加载事件监听器
-    allImages.forEach(function(img, index) {
-      // 加载完成事件
-      img.onload = function() {
-        handleImageLoaded(this);
-      };
       
-      // 如果图片已经在缓存中完成加载
-      if (img.complete) {
-        handleImageLoaded(img);
+      // 添加加载事件监听器
+      img.addEventListener('load', onImageLoad);
+      
+      // 检查图片是否已经加载完成（缓存中）
+      if (img.complete && img.naturalWidth > 0) {
+        onImageLoad();
       }
     });
-  });
+  };
 </script>
 
 <h2 style="margin-top: 40px; margin-bottom: 20px; color: #333; font-size: 28px;">🎬 视频</h2>
