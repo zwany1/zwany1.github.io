@@ -47,17 +47,25 @@ function initRippleEffect() {
 function initSmoothScroll() {
   document.querySelectorAll('a[href^="#"]').forEach(anchor => {
     anchor.addEventListener('click', function (e) {
-      e.preventDefault();
-      
       const targetId = this.getAttribute('href');
-      if (targetId === '#') return;
       
-      const targetElement = document.querySelector(targetId);
-      if (targetElement) {
-        targetElement.scrollIntoView({
-          behavior: 'smooth'
-        });
+      // 只有当targetId是有效的选择器（以#开头且长度大于1）时，才阻止默认行为并执行平滑滚动
+      if (targetId && targetId.length > 1 && targetId.startsWith('#')) {
+        e.preventDefault();
+        
+        try {
+          const targetElement = document.querySelector(targetId);
+          if (targetElement) {
+            targetElement.scrollIntoView({
+              behavior: 'smooth'
+            });
+          }
+        } catch (error) {
+          console.error('Invalid selector:', targetId);
+          // 如果选择器无效，不阻止默认行为
+        }
       }
+      // 否则，允许默认行为继续执行
     });
   });
 }
