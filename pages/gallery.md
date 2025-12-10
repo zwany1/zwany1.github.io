@@ -37,14 +37,12 @@ permalink: /gallery/
   width: 100%;
   height: 100%;
   object-fit: cover;
-  transition: opacity 0.5s ease, transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
-  opacity: 0; /* 默认隐藏图片 */
+  transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+  opacity: 0;
 }
 
-/* 鼠标悬停时显示图片 */
-.gallery-item:hover img {
+.gallery-item img.loaded {
   opacity: 1;
-  transform: scale(1.1);
 }
 
 .gallery-item:hover img {
@@ -74,25 +72,7 @@ permalink: /gallery/
   transform: translateY(0);
 }
 
-/* 图片加载占位符 - 使用菱形装载机GIF */
-.gallery-item::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: #f5f5f5 url('/images/blog/icons8-菱形装载机.gif') no-repeat center center;
-  background-size: 60px 60px;
-  z-index: 1;
-  transition: opacity 0.5s ease;
-}
 
-/* 鼠标悬停时隐藏GIF加载动画 */
-.gallery-item:hover::before {
-  opacity: 0;
-  display: none;
-}
 
 /* 视频播放按钮 */
 .gallery-item > div {
@@ -129,17 +109,25 @@ permalink: /gallery/
 </style>
 
 <script>
-  // 简化的JavaScript，只确保图片加载完成即可
-  // 显示/隐藏由CSS的:hover伪类控制
+  // 等待DOM加载完成
   window.onload = function() {
+    // 获取所有图片元素
     const images = document.querySelectorAll('.gallery-item img');
     
+    // 为每个图片添加加载完成事件
     images.forEach(function(img) {
-      // 确保图片加载完成后可用
-      if (!img.complete || img.naturalWidth === 0) {
-        img.addEventListener('load', function() {
-          // 图片加载完成，由CSS控制显示
-        });
+      // 图片加载完成时执行
+      function onImageLoad() {
+        // 显示图片
+        img.classList.add('loaded');
+      }
+      
+      // 添加加载事件监听器
+      img.addEventListener('load', onImageLoad);
+      
+      // 检查图片是否已经加载完成（缓存中）
+      if (img.complete && img.naturalWidth > 0) {
+        onImageLoad();
       }
     });
   };
