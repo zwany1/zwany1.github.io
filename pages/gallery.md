@@ -173,7 +173,7 @@ permalink: /gallery/
 
 <!-- 图片优化提示 -->
 <div style="margin-top: 30px; padding: 15px; background-color: #f8f9fa; border-radius: 8px; text-align: center;">
-  <strong>图片优化建议：</strong>视频封面图片过大，建议压缩至200KB以下以提升加载速度。可以使用tinypng.com等在线工具进行无损压缩。<br>
+  <strong>图片优化建议：</strong>视频封面图片建议压缩至200KB以下以提升加载速度。可以使用tinypng.com等在线工具进行无损压缩。<br>
 
   <p style="color: #666; font-size: 14px; margin: 0;">
     💡 为获得更好的加载效果，建议将相册图片压缩至100KB以下，并使用适当尺寸的缩略图
