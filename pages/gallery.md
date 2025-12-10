@@ -123,7 +123,7 @@ permalink: /gallery/
 <div class="gallery">
   <!-- 视频内容 -->
   <a href="/images/gallery/1d219a323cedb70b129d3317acbcc63d.mp4" class="gallery-item" data-title="视频1">
-    <img src="/assets/images/zanzu.jpg" alt="视频1" loading="lazy">
+    <img src="/images/gallery/22.png" alt="视频1" loading="lazy">
     <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 60px; height: 60px; background-color: rgba(255, 255, 255, 0.8); border-radius: 50%; display: flex; align-items: center; justify-content: center;">
       <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#ff0000" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
         <path d="M5 3l14 9-14 9V3z"></path>
@@ -131,7 +131,7 @@ permalink: /gallery/
     </div>
   </a>
   <a href="/images/gallery/8be4fe5f439369750f6022b7d9254839.mp4" class="gallery-item" data-title="视频2">
-    <img src="/assets/images/zanzu.jpg" alt="视频2" loading="lazy">
+    <img src="/images/gallery/11.png" alt="视频2" loading="lazy">
     <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 60px; height: 60px; background-color: rgba(255, 255, 255, 0.8); border-radius: 50%; display: flex; align-items: center; justify-content: center;">
       <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#ff0000" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
         <path d="M5 3l14 9-14 9V3z"></path>
