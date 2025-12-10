@@ -118,17 +118,42 @@ permalink: /gallery/
 }
 </style>
 
+<h2 style="margin-top: 40px; margin-bottom: 20px; color: #333; font-size: 28px;">🎬 视频</h2>
+
 <div class="gallery">
-  <!-- 相册内容 -->
-  <a href="/assets/images/zanzu.jpg" class="gallery-item" data-title="示例照片1"><img src="/assets/images/zanzu.jpg" alt="示例照片1" loading="lazy"></a>
-  <a href="/assets/images/zanzu.jpg" class="gallery-item" data-title="示例照片2"><img src="/assets/images/zanzu.jpg" alt="示例照片2" loading="lazy"></a>
-  <a href="/assets/images/zanzu.jpg" class="gallery-item" data-title="示例照片3"><img src="/assets/images/zanzu.jpg" alt="示例照片3" loading="lazy"></a>
-  <a href="/assets/images/zanzu.jpg" class="gallery-item" data-title="示例照片4"><img src="/assets/images/zanzu.jpg" alt="示例照片4" loading="lazy"></a>
-  <a href="/assets/images/zanzu.jpg" class="gallery-item" data-title="示例照片5"><img src="/assets/images/zanzu.jpg" alt="示例照片5" loading="lazy"></a>
-  <a href="/assets/images/zanzu.jpg" class="gallery-item" data-title="示例照片6"><img src="/assets/images/zanzu.jpg" alt="示例照片6" loading="lazy"></a>
-  <a href="/assets/images/zanzu.jpg" class="gallery-item" data-title="示例照片7"><img src="/assets/images/zanzu.jpg" alt="示例照片7" loading="lazy"></a>
-  <a href="/assets/images/zanzu.jpg" class="gallery-item" data-title="示例照片8"><img src="/assets/images/zanzu.jpg" alt="示例照片8" loading="lazy"></a>
-  <a href="/assets/images/zanzu.jpg" class="gallery-item" data-title="示例照片9"><img src="/assets/images/zanzu.jpg" alt="示例照片9" loading="lazy"></a>
+  <!-- 视频内容 -->
+  <a href="/images/gallery/1d219a323cedb70b129d3317acbcc63d.mp4" class="gallery-item" data-title="视频1">
+    <img src="/assets/images/zanzu.jpg" alt="视频1" loading="lazy">
+    <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 60px; height: 60px; background-color: rgba(255, 255, 255, 0.8); border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#ff0000" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M5 3l14 9-14 9V3z"></path>
+      </svg>
+    </div>
+  </a>
+  <a href="/images/gallery/8be4fe5f439369750f6022b7d9254839.mp4" class="gallery-item" data-title="视频2">
+    <img src="/assets/images/zanzu.jpg" alt="视频2" loading="lazy">
+    <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 60px; height: 60px; background-color: rgba(255, 255, 255, 0.8); border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#ff0000" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M5 3l14 9-14 9V3z"></path>
+      </svg>
+    </div>
+  </a>
+</div>
+
+<h2 style="margin-top: 60px; margin-bottom: 20px; color: #333; font-size: 28px;">📷 照片</h2>
+
+<div class="gallery">
+  <!-- 照片内容 -->
+  <a href="/images/gallery/05ac7d8484417f2f4301215889fc5988.jpg" class="gallery-item" data-title="照片1"><img src="/images/gallery/05ac7d8484417f2f4301215889fc5988.jpg" alt="照片1" loading="lazy"></a>
+  <a href="/images/gallery/363ce57e51d78927fbbb05fc3228bd97.jpg" class="gallery-item" data-title="照片2"><img src="/images/gallery/363ce57e51d78927fbbb05fc3228bd97.jpg" alt="照片2" loading="lazy"></a>
+  <a href="/images/gallery/3bb276100b2b9c40a2225f124345ba64.jpg" class="gallery-item" data-title="照片3"><img src="/images/gallery/3bb276100b2b9c40a2225f124345ba64.jpg" alt="照片3" loading="lazy"></a>
+  <a href="/images/gallery/53637bb52ad51ba0e928c36671927e37.jpg" class="gallery-item" data-title="照片4"><img src="/images/gallery/53637bb52ad51ba0e928c36671927e37.jpg" alt="照片4" loading="lazy"></a>
+  <a href="/images/gallery/8335bbd5b1ad82bddd33e43d4915910f.jpg" class="gallery-item" data-title="照片5"><img src="/images/gallery/8335bbd5b1ad82bddd33e43d4915910f.jpg" alt="照片5" loading="lazy"></a>
+  <a href="/images/gallery/aed3c79064681fca2429e02c2b7f3a57.jpg" class="gallery-item" data-title="照片6"><img src="/images/gallery/aed3c79064681fca2429e02c2b7f3a57.jpg" alt="照片6" loading="lazy"></a>
+  <a href="/images/gallery/bbc73ac8d8e75ddbbdfbbf92ced1784f.jpg" class="gallery-item" data-title="照片7"><img src="/images/gallery/bbc73ac8d8e75ddbbdfbbf92ced1784f.jpg" alt="照片7" loading="lazy"></a>
+  <a href="/images/gallery/c10125d5c8833567c705a01bb8d73107.jpg" class="gallery-item" data-title="照片8"><img src="/images/gallery/c10125d5c8833567c705a01bb8d73107.jpg" alt="照片8" loading="lazy"></a>
+  <a href="/images/gallery/dc490ba6283e64e224aa1313640e49f8.jpg" class="gallery-item" data-title="照片9"><img src="/images/gallery/dc490ba6283e64e224aa1313640e49f8.jpg" alt="照片9" loading="lazy"></a>
+  <a href="/images/gallery/e90d8f8520a6bd67631c805850fe723f.jpg" class="gallery-item" data-title="照片10"><img src="/images/gallery/e90d8f8520a6bd67631c805850fe723f.jpg" alt="照片10" loading="lazy"></a>
 </div>
 
 <!-- 图片优化提示 -->
