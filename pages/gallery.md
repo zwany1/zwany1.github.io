@@ -83,7 +83,6 @@ permalink: /gallery/
   background: #f5f5f5 url('/images/blog/icons8-菱形装载机.gif') no-repeat center center;
   background-size: 60px 60px;
   z-index: 1;
-  transition: opacity 0.3s ease;
 }
 
 /* 图片加载完成后隐藏GIF加载动画 */
@@ -128,27 +127,33 @@ permalink: /gallery/
 <script>
   // 图片加载完成后添加loaded类并隐藏GIF加载动画
   document.addEventListener('DOMContentLoaded', function() {
-    // 选择所有gallery-item内的图片
-    const images = document.querySelectorAll('.gallery .gallery-item img');
-    images.forEach(img => {
-      // 创建隐藏GIF的函数
-      const hideLoadingGif = function() {
-        this.classList.add('loaded');
-        // 隐藏加载占位符GIF
-        const galleryItem = this.closest('.gallery-item');
-        if (galleryItem) {
-          // 直接添加类来隐藏GIF，避免使用复杂的nth-child选择器
-          galleryItem.style.position = 'relative'; // 确保定位正确
-          galleryItem.classList.add('image-loaded');
-        }
+    // 获取所有图片元素
+    const allImages = document.querySelectorAll('.gallery-item img');
+    
+    // 处理单个图片加载完成的函数
+    function handleImageLoaded(img) {
+      // 显示图片
+      img.classList.add('loaded');
+      
+      // 获取图片的父容器（gallery-item）
+      const galleryItem = img.parentNode;
+      
+      // 为父容器添加一个标记类，用于隐藏GIF
+      if (galleryItem) {
+        galleryItem.classList.add('image-loaded');
+      }
+    }
+    
+    // 为每个图片添加加载事件监听器
+    allImages.forEach(function(img, index) {
+      // 加载完成事件
+      img.onload = function() {
+        handleImageLoaded(this);
       };
       
-      // 图片加载完成事件
-      img.onload = hideLoadingGif;
-      
-      // 如果图片已经在缓存中
+      // 如果图片已经在缓存中完成加载
       if (img.complete) {
-        hideLoadingGif.call(img);
+        handleImageLoaded(img);
       }
     });
   });
