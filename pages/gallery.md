@@ -164,7 +164,7 @@ permalink: /gallery/
   <a href="/images/gallery/363ce57e51d78927fbbb05fc3228bd97.jpg" class="gallery-item" data-title="认祖归宗"><img src="/images/gallery/363ce57e51d78927fbbb05fc3228bd97.jpg" alt="照片2" loading="lazy"></a>
   <a href="/images/gallery/3bb276100b2b9c40a2225f124345ba64.jpg" class="gallery-item" data-title="毕业季"><img src="/images/gallery/3bb276100b2b9c40a2225f124345ba64.jpg" alt="照片3" loading="lazy"></a>
   <a href="/images/gallery/53637bb52ad51ba0e928c36671927e37.jpg" class="gallery-item" data-title="甜蜜合照"><img src="/images/gallery/53637bb52ad51ba0e928c36671927e37.jpg" alt="照片4" loading="lazy"></a>
-  <a href="/images/gallery/8335bbd5b1ad82bddd33e43d4915910f.jpg" class="gallery-item" data-title="游玩"><img src="/images/gallery/8335bbd5b1ad82bddd33e43d4915910f.jpg" alt="照片5" loading="lazy"></a>
+  <a href="/images/gallery/8335bbd5b1ad82bddd33e43d4915910f.jpg" class="gallery-item" data-title="陆川游玩"><img src="/images/gallery/8335bbd5b1ad82bddd33e43d4915910f.jpg" alt="照片5" loading="lazy"></a>
   <a href="/images/gallery/aed3c79064681fca2429e02c2b7f3a57.jpg" class="gallery-item" data-title="甜蜜合照"><img src="/images/gallery/aed3c79064681fca2429e02c2b7f3a57.jpg" alt="照片6" loading="lazy"></a>
   <a href="/images/gallery/bbc73ac8d8e75ddbbdfbbf92ced1784f.jpg" class="gallery-item" data-title="第一次聚餐"><img src="/images/gallery/bbc73ac8d8e75ddbbdfbbf92ced1784f.jpg" alt="照片7" loading="lazy"></a>
   <a href="/images/gallery/c10125d5c8833567c705a01bb8d73107.jpg" class="gallery-item" data-title="毕业合照"><img src="/images/gallery/c10125d5c8833567c705a01bb8d73107.jpg" alt="照片8" loading="lazy"></a>
