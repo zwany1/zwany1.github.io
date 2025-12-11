@@ -172,6 +172,8 @@ permalink: /gallery/
   <a href="/images/gallery/e90d8f8520a6bd67631c805850fe723f.jpg" class="gallery-item" data-title="南宁游玩"><img src="/images/gallery/e90d8f8520a6bd67631c805850fe723f.jpg" alt="照片10" loading="lazy"></a>
   <a href="/images/gallery/学校.jpg" class="gallery-item" data-title="学校"><img src="/images/gallery/学校.jpg" alt="照片11" loading="lazy"></a>
   <a href="/images/gallery/b学.jpg" class="gallery-item" data-title="b学"><img src="/images/gallery/b学.jpg" alt="照片12" loading="lazy"></a>
+  <a href="/images/gallery/帅比.jpg" class="gallery-item" data-title="帅比"><img src="/images/gallery/帅比.jpg" alt="照片13" loading="lazy"></a>
+
 
 </div>
 
