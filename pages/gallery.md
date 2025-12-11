@@ -174,6 +174,10 @@ permalink: /gallery/
   <a href="/images/gallery/b学.jpg" class="gallery-item" data-title="b学"><img src="/images/gallery/b学.jpg" alt="照片12" loading="lazy"></a>
   <a href="/images/gallery/帅比.jpg" class="gallery-item" data-title="帅比"><img src="/images/gallery/帅比.jpg" alt="照片13" loading="lazy"></a>
   <a href="/images/gallery/柳州.jpg" class="gallery-item" data-title="柳州"><img src="/images/gallery/柳州.jpg" alt="照片14" loading="lazy"></a>
+    <a href="/images/gallery/高p.jpg" class="gallery-item" data-title="高p"><img src="/images/gallery/高p.jpg" alt="照片15" loading="lazy"></a>
+    <a href="/images/gallery/进厂日记.jpg" class="gallery-item" data-title="进厂日记"><img src="/images/gallery/进厂日记.jpg" alt="照片16" loading="lazy"></a>
+    <a href="/images/gallery/陆川二中.jpg" class="gallery-item" data-title="陆川二中"><img src="/images/gallery/陆川二中.jpg" alt="照片17" loading="lazy"></a>
+
 
 
 </div>

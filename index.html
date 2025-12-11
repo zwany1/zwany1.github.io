@@ -15,6 +15,11 @@ comments: false
   color: {{ site.index.banner.color | default: '#ffffff' }};
 }
 
+/* 为banner区域添加顶部padding，避免被固定导航栏遮挡 */
+.home .banner {
+  padding-top: 80px;
+}
+
 .home .site-header .site-header-nav-item {
   color: {{ site.index.banner.nav-color | default: 'rgba(255, 255, 255, 0.7)' }};
   transition: all 0.3s ease;
