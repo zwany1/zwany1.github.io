@@ -9,9 +9,14 @@
     backdrop-filter: blur(10px);
 }
 
-/* 为主要内容添加顶部边距，避免被固定头部遮挡 */
+/* 为所有页面内容添加顶部边距/内边距，避免被固定导航栏遮挡 */
+body {
+    padding-top: 80px;
+}
+
+/* 为主要内容添加顶部边距，避免被固定头部遮挡（兼容旧设置） */
 main {
-    margin-top: 80px;
+    margin-top: 0;
 }
 
 .markdown-body,body {
