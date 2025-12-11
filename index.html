@@ -74,7 +74,7 @@ comments: false
     left: 0;
     width: 100%;
     height: 100%;
-    z-index: 1;
+    z-index: 0;
     overflow: hidden;
 }
 
@@ -139,6 +139,8 @@ comments: false
     text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
     letter-spacing: -0.5px;
     animation: fadeInUp 1s ease forwards;
+    position: relative;
+    z-index: 2;
 }
 
 .home .collection-head .collection-header span {
@@ -180,6 +182,8 @@ comments: false
     border-radius: 20px;
     backdrop-filter: blur(5px);
     transition: all 0.3s ease;
+    position: relative;
+    z-index: 2;
 }
 
 .home .collection-info .meta-info:hover {
@@ -392,7 +396,7 @@ comments: false
             </div>
           </div>
           <div class="column one-third mobile-hidden">
-            <div class="collection-title">
+            <div class="collection-title" style="position: relative; z-index: 2;">
               {% include sidebar-qrcode.html %}
             </div>
           </div>
