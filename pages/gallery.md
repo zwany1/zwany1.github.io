@@ -122,7 +122,7 @@ permalink: /gallery/
 
 <div class="gallery">
   <!-- 视频内容 -->
-  <a href="/images/gallery/1d219a323cedb70b129d3317acbcc63d.mp4" class="gallery-item" data-title="视频1">
+  <a href="/images/gallery/1d219a323cedb70b129d3317acbcc63d.mp4" class="gallery-item" data-title="kissqiu">
     <img src="/images/gallery/22.png" alt="kissqiu" loading="lazy">
     <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 60px; height: 60px; background-color: rgba(255, 255, 255, 0.8); border-radius: 50%; display: flex; align-items: center; justify-content: center;">
       <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#ff0000" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
@@ -130,7 +130,7 @@ permalink: /gallery/
       </svg>
     </div>
   </a>
-  <a href="/images/gallery/8be4fe5f439369750f6022b7d9254839.mp4" class="gallery-item" data-title="视频2">
+  <a href="/images/gallery/8be4fe5f439369750f6022b7d9254839.mp4" class="gallery-item" data-title="质检网红球员">
     <img src="/images/gallery/11.png" alt="质检网红球员" loading="lazy">
     <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 60px; height: 60px; background-color: rgba(255, 255, 255, 0.8); border-radius: 50%; display: flex; align-items: center; justify-content: center;">
       <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#ff0000" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
@@ -138,7 +138,7 @@ permalink: /gallery/
       </svg>
     </div>
   </a>
-    <a href="/images/gallery/大雾.mp4" class="gallery-item" data-title="视频2">
+    <a href="/images/gallery/大雾.mp4" class="gallery-item" data-title="大雾漫天">
     <img src="/images/gallery/大雾封面_压缩后.jpg" alt="大雾漫天" loading="lazy">
     <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 60px; height: 60px; background-color: rgba(255, 255, 255, 0.8); border-radius: 50%; display: flex; align-items: center; justify-content: center;">
       <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#ff0000" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
@@ -146,7 +146,7 @@ permalink: /gallery/
       </svg>
     </div>
   </a>
-    <a href="/images/gallery/hzwz.mp4" class="gallery-item" data-title="视频2">
+    <a href="/images/gallery/hzwz.mp4" class="gallery-item" data-title="好自为之">
     <img src="/images/gallery/hzwz封面.png" alt="好自为之" loading="lazy">
     <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 60px; height: 60px; background-color: rgba(255, 255, 255, 0.8); border-radius: 50%; display: flex; align-items: center; justify-content: center;">
       <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#ff0000" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
@@ -170,6 +170,9 @@ permalink: /gallery/
   <a href="/images/gallery/c10125d5c8833567c705a01bb8d73107.jpg" class="gallery-item" data-title="毕业合照"><img src="/images/gallery/c10125d5c8833567c705a01bb8d73107.jpg" alt="照片8" loading="lazy"></a>
   <a href="/images/gallery/dc490ba6283e64e224aa1313640e49f8.jpg" class="gallery-item" data-title="国宝"><img src="/images/gallery/dc490ba6283e64e224aa1313640e49f8.jpg" alt="照片9" loading="lazy"></a>
   <a href="/images/gallery/e90d8f8520a6bd67631c805850fe723f.jpg" class="gallery-item" data-title="南宁游玩"><img src="/images/gallery/e90d8f8520a6bd67631c805850fe723f.jpg" alt="照片10" loading="lazy"></a>
+  <a href="/images/gallery/学校.jpg" class="gallery-item" data-title="学校"><img src="/images/gallery/学校.jpg" alt="照片11" loading="lazy"></a>
+  <a href="/images/gallery/b学.jpg" class="gallery-item" data-title="b学"><img src="/images/gallery/b学.jpg" alt="照片12" loading="lazy"></a>
+
 </div>
 
 <!-- 图片优化提示 -->

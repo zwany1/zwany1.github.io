@@ -155,13 +155,13 @@
                 .dropdown {
                     position: relative;
                     display: inline-block;
-                    z-index: 10000; /* 确保菜单容器层级足够高 */
+                    z-index: 10; /* 降低菜单容器层级 */
                 }
                 
                 .dropdown-toggle {
                     cursor: pointer;
                     position: relative;
-                    z-index: 10002;
+                    z-index: 12;
                 }
                 
                 .dropdown-menu {
@@ -174,7 +174,7 @@
                     border-radius: 4px;
                     padding: 0;
                     margin: 0;
-                    z-index: 10001; /* 确保菜单内容层级最高 */
+                    z-index: 11; /* 降低菜单内容层级 */
                     border: 1px solid #e1e4e8;
                     white-space: nowrap;
                 }
