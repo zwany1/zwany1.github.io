@@ -14,7 +14,6 @@ body {
     padding-top: 80px;
 }
 
-/* 为主要内容添加顶部边距，避免被固定头部遮挡（兼容旧设置） */
 main {
     margin-top: 0;
 }
