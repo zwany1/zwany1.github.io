@@ -118,6 +118,19 @@ permalink: /gallery/
 }
 </style>
 
+<h2 style="margin-top: 40px; margin-bottom: 20px; color: #333; font-size: 28px;">📌 置顶</h2>
+<div class="gallery">
+  <a href="/images/gallery/yhs.jpg" class="gallery-item" data-title="yhs"><img src="/images/gallery/yhs.jpg" alt="照片18" loading="lazy"></a>
+  <a href="/images/gallery/8be4fe5f439369750f6022b7d9254839.mp4" class="gallery-item" data-title="质检网红球员"> 
+     <img src="/images/gallery/11.png" alt="质检网红球员" loading="lazy"> 
+     <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 60px; height: 60px; background-color: rgba(255, 255, 255, 0.8); border-radius: 50%; display: flex; align-items: center; justify-content: center;"> 
+       <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#ff0000" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"> 
+         <path d="M5 3l14 9-14 9V3z"></path> 
+       </svg> 
+     </div> 
+   </a>
+</div>
+
 <h2 style="margin-top: 40px; margin-bottom: 20px; color: #333; font-size: 28px;">🎬 视频</h2>
 
 <div class="gallery">
@@ -130,15 +143,7 @@ permalink: /gallery/
       </svg>
     </div>
   </a>
-  <a href="/images/gallery/8be4fe5f439369750f6022b7d9254839.mp4" class="gallery-item" data-title="质检网红球员">
-    <img src="/images/gallery/11.png" alt="质检网红球员" loading="lazy">
-    <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 60px; height: 60px; background-color: rgba(255, 255, 255, 0.8); border-radius: 50%; display: flex; align-items: center; justify-content: center;">
-      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#ff0000" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M5 3l14 9-14 9V3z"></path>
-      </svg>
-    </div>
-  </a>
-    <a href="/images/gallery/大雾.mp4" class="gallery-item" data-title="大雾漫天">
+  <a href="/images/gallery/大雾.mp4" class="gallery-item" data-title="大雾漫天">
     <img src="/images/gallery/大雾封面_压缩后.jpg" alt="大雾漫天" loading="lazy">
     <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 60px; height: 60px; background-color: rgba(255, 255, 255, 0.8); border-radius: 50%; display: flex; align-items: center; justify-content: center;">
       <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#ff0000" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
@@ -177,7 +182,6 @@ permalink: /gallery/
     <a href="/images/gallery/高p.jpg" class="gallery-item" data-title="高p"><img src="/images/gallery/高p.jpg" alt="照片15" loading="lazy"></a>
     <a href="/images/gallery/进厂日记.jpg" class="gallery-item" data-title="进厂日记"><img src="/images/gallery/进厂日记.jpg" alt="照片16" loading="lazy"></a>
     <a href="/images/gallery/陆川二中.jpg" class="gallery-item" data-title="陆川二中"><img src="/images/gallery/陆川二中.jpg" alt="照片17" loading="lazy"></a>
-    <a href="/images/gallery/yhs.jpg" class="gallery-item" data-title="yhs"><img src="/images/gallery/yhs.jpg" alt="照片18" loading="lazy"></a>
 
 
 
