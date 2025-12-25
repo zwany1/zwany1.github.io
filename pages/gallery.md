@@ -177,6 +177,9 @@ permalink: /gallery/
     <a href="/images/gallery/高p.jpg" class="gallery-item" data-title="高p"><img src="/images/gallery/高p.jpg" alt="照片15" loading="lazy"></a>
     <a href="/images/gallery/进厂日记.jpg" class="gallery-item" data-title="进厂日记"><img src="/images/gallery/进厂日记.jpg" alt="照片16" loading="lazy"></a>
     <a href="/images/gallery/陆川二中.jpg" class="gallery-item" data-title="陆川二中"><img src="/images/gallery/陆川二中.jpg" alt="照片17" loading="lazy"></a>
+    <a href="/images/gallery/yhs.jpg" class="gallery-item" data-title="yhs"><img src="/images/gallery/yhs.jpg" alt="照片18" loading="lazy"></a>
+
+
 
 
 
