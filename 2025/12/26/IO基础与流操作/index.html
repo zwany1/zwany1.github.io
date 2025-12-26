@@ -1,25 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="3.10.0">Jekyll</generator><link href="https://zwany1.github.io/feed.xml" rel="self" type="application/atom+xml" /><link href="https://zwany1.github.io/" rel="alternate" type="text/html" /><updated>2025-12-26T15:14:10+08:00</updated><id>https://zwany1.github.io/feed.xml</id><title type="html">朱</title><subtitle>朱的个人博客，公众号：朱猪写作</subtitle><author><name>朱</name></author><entry><title type="html">IO基础与流操作</title><link href="https://zwany1.github.io/2025/12/26/IO%E5%9F%BA%E7%A1%80%E4%B8%8E%E6%B5%81%E6%93%8D%E4%BD%9C/" rel="alternate" type="text/html" title="IO基础与流操作" /><published>2025-12-26T00:00:00+08:00</published><updated>2025-12-26T00:00:00+08:00</updated><id>https://zwany1.github.io/2025/12/26/IO%E5%9F%BA%E7%A1%80%E4%B8%8E%E6%B5%81%E6%93%8D%E4%BD%9C</id><content type="html" xml:base="https://zwany1.github.io/2025/12/26/IO%E5%9F%BA%E7%A1%80%E4%B8%8E%E6%B5%81%E6%93%8D%E4%BD%9C/"><![CDATA[<p>简要导读：本文覆盖 IO 流核心概念、字节流与字符流的常用操作，以及大文件断点续传的实战方案（本地与 HTTP Range）。</p>
-
-<ul>
-  <li>目录
-    <ul>
-      <li><a href="#io-core">IO流核心概念</a></li>
-      <li><a href="#byte-stream">字节流操作</a></li>
-      <li><a href="#char-stream">字符流操作</a></li>
-      <li><a href="#resume">实战应用：大文件断点续传</a></li>
-    </ul>
-  </li>
-</ul>
-
-<h2 id="io流核心概念--io-core">IO流核心概念 {: #io-core}</h2>
-
-<ul>
-  <li>抽象分层：<code class="language-plaintext highlighter-rouge">InputStream/OutputStream</code>（字节）、<code class="language-plaintext highlighter-rouge">Reader/Writer</code>（字符）</li>
-  <li>阻塞与非阻塞：经典 IO 为阻塞；<code class="language-plaintext highlighter-rouge">NIO</code> 通过缓冲区与通道提升吞吐</li>
-  <li>编码转换：字符流负责字节⇄字符的编码解码（如 UTF-8、GBK）</li>
-</ul>
-
-<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">import</span> <span class="nn">java.io.InputStream</span><span class="o">;</span>
+<!DOCTYPE html><html lang="zh-cmn-Hans" prefix="og: http://ogp.me/ns#" class="han-init"><head><meta charset="utf-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" /><title>IO基础与流操作 &mdash; 朱</title><link rel="stylesheet" href="https://fastly.jsdelivr.net/gh/zwany1/zwany1.github.io@master/assets/vendor/primer-css/css/primer.css"><link rel="stylesheet" href="https://fastly.jsdelivr.net/gh/zwany1/zwany1.github.io@master/assets/css/globals/common.css"><link rel="stylesheet" href="https://fastly.jsdelivr.net/gh/zwany1/zwany1.github.io@master/assets/css/globals/responsive.css"><link rel="stylesheet" href="https://fastly.jsdelivr.net/gh/zwany1/zwany1.github.io@master/assets/css/components/collection.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://fastly.jsdelivr.net/gh/zwany1/zwany1.github.io@master/assets/css/components/repo-card.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://fastly.jsdelivr.net/gh/zwany1/zwany1.github.io@master/assets/css/sections/repo-list.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://fastly.jsdelivr.net/gh/zwany1/zwany1.github.io@master/assets/css/components/boxed-group.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://fastly.jsdelivr.net/gh/zwany1/zwany1.github.io@master/assets/css/posts/index.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://fastly.jsdelivr.net/gh/zwany1/zwany1.github.io@master/assets/css/globals/animations.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://fastly.jsdelivr.net/gh/zwany1/zwany1.github.io@master/assets/vendor/octicons/octicons/octicons.css"><link rel="stylesheet" href="https://fastly.jsdelivr.net/gh/mzlogin/rouge-themes@master/dist/github.css"><link rel="canonical" href="https://zwany1.github.io/2025/12/26/IO%E5%9F%BA%E7%A1%80%E4%B8%8E%E6%B5%81%E6%93%8D%E4%BD%9C/"><link rel="alternate" type="application/atom+xml" title="朱" href="https://zwany1.github.io/feed.xml"><link rel="shortcut icon" href="https://fastly.jsdelivr.net/gh/zwany1/zwany1.github.io@master/assets/images/d56012bab88f5aabe76bb1fc7eeeb9c6.jpg"><meta property="og:title" content="IO基础与流操作"><meta name="keywords" content="朱, zwany1, 朱猪写作"><meta name="og:keywords" content="朱, zwany1, 朱猪写作"><meta name="description" content="简要导读：本文覆盖 IO 流核心概念、字节流与字符流的常用操作，以及大文件断点续传的实战方案（本地与 HTTP Range）。"><meta name="og:description" content="简要导读：本文覆盖 IO 流核心概念、字节流与字符流的常用操作，以及大文件断点续传的实战方案（本地与 HTTP Range）。"><meta property="og:url" content="https://zwany1.github.io/2025/12/26/IO%E5%9F%BA%E7%A1%80%E4%B8%8E%E6%B5%81%E6%93%8D%E4%BD%9C/"><meta property="og:site_name" content="朱"><meta property="og:type" content="article"><meta property="og:locale" content="zh_CN" /><meta property="article:published_time" content="2025-12-26"> <script src="https://fastly.jsdelivr.net/gh/zwany1/zwany1.github.io@master/assets/vendor/jquery/dist/jquery.min.js"></script> <script defer src="https://fastly.jsdelivr.net/gh/zwany1/zwany1.github.io@master/assets/js/main.js"></script> <script> // 全局showImage函数 window.showImage = function(imageURL, event) { if (event) event.preventDefault(); // 阻止默认链接行为 // 确保模态框元素存在 var modal = document.getElementById('imageModal'); var modalImg = document.getElementById('modalImage'); if (modal && modalImg) { modalImg.src = imageURL; modal.style.display = 'block'; } else { console.error('模态框元素不存在'); } }; </script></head><body class="" data-mz=""><header class="site-header"><div class="container"><h1><a href="https://zwany1.github.io/" title="朱"><span class="octicon octicon-mark-github"></span> 朱</a></h1><a href="https://www.travellings.cn/go-by-clouds.html" class="travel-link mobile-hidden" title="遨游世界" target="_blank"> <span class="octicon octicon-globe"></span> 遨游世界 </a> <button class="collapsed mobile-visible" type="button" onclick="toggleMenu();"> <span class="icon-bar"></span> <span class="icon-bar"></span> <span class="icon-bar"></span> </button><nav class="site-header-nav" role="navigation"> <a href="https://zwany1.github.io/" class="site-header-nav-item" title="首页">首页</a><div class="dropdown mobile-hidden"> <a href="/pages/" class="site-header-nav-item dropdown-toggle" title="页面">页面👉</a><div class="dropdown-menu"> <a href="/about/" class="dropdown-item">关于</a> <a href="/categories/" class="dropdown-item">分类</a> <a href="/fragments/" class="dropdown-item">片段</a> <a href="/open-source/" class="dropdown-item">开源</a> <a href="/gallery/" class="dropdown-item">回忆录</a></div></div><a class="mobile-hidden" href="https://zwany1.github.io/feed.xml"><span class="octicon octicon-rss" style="color:orange;"></span></a></nav><style> /* 水平展开菜单样式 */ .dropdown { position: relative; display: inline-block; z-index: 10; /* 降低菜单容器层级 */ } .dropdown-toggle { cursor: pointer; position: relative; z-index: 12; } .dropdown-menu { display: none; position: absolute; top: 0; left: 100%; background-color: white; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15); border-radius: 4px; padding: 0; margin: 0; z-index: 11; /* 降低菜单内容层级 */ border: 1px solid #e1e4e8; white-space: nowrap; } .dropdown:hover .dropdown-menu { display: block; } .dropdown-item { display: inline-block; padding: 8px 16px; color: #24292e; text-decoration: none; background-color: transparent; border: none; text-align: center; font-size: 14px; line-height: 1.5; } .dropdown-item:hover { background-color: #f6f8fa; } /* 遨游世界链接样式 */ .travel-link { display: inline-block; margin-right: 15px; padding: 8px 12px; color: #35ff35; /* 绿色文字 */ font-size: 18px; /* 适中的字体大小 */ font-weight: bold; text-decoration: none; transition: all 0.3s ease; position: relative; z-index: 10; } .travel-link .octicon { margin-right: 5px; /* 图标与文字之间的间距 */ font-size: 24px; /* 图标大小略大于文字 */ vertical-align: middle; } .travel-link:hover { color: #ff4500; /* 悬停时颜色变为橙色 */ transform: scale(1.05); /* 悬停时轻微放大 */ }</style></div></header><section class="collection-head small geopattern" data-pattern-id="IO基础与流操作"><div class="container"><div class="columns"><div class="column three-fourths"><div class="collection-title"><h1 class="collection-header">IO基础与流操作</h1><div class="collection-info"> <span class="meta-info"> <span class="octicon octicon-calendar"></span> 2025/12/26 </span> <span class="meta-info"> <span class="octicon octicon-file-directory"></span> <a href="https://zwany1.github.io/categories/#Java" title="Java">Java</a> </span> <span class="meta-info"> <span class="octicon octicon-clock"></span> 共 5436 字，约 16 分钟 </span></div></div></div><div class="column one-fourth mobile-hidden"><div class="collection-title"> <img style="height:72px;width:72px; position: relative; z-index: 20;" src="https://zwany1.github.io/assets/images/qrcode.jpg" alt="朱猪写作" /></div></div></div></div></section><section class="container content"><div class="columns"><div class="column three-fourths" ><article class="article-content markdown-body"><p>简要导读：本文覆盖 IO 流核心概念、字节流与字符流的常用操作，以及大文件断点续传的实战方案（本地与 HTTP Range）。</p><ul><li>目录<ul><li><a href="#io-core">IO流核心概念</a></li><li><a href="#byte-stream">字节流操作</a></li><li><a href="#char-stream">字符流操作</a></li><li><a href="#resume">实战应用：大文件断点续传</a></li></ul></li></ul><h2 id="io流核心概念--io-core">IO流核心概念 {: #io-core}</h2><ul><li>抽象分层：<code class="language-plaintext highlighter-rouge">InputStream/OutputStream</code>（字节）、<code class="language-plaintext highlighter-rouge">Reader/Writer</code>（字符）</li><li>阻塞与非阻塞：经典 IO 为阻塞；<code class="language-plaintext highlighter-rouge">NIO</code> 通过缓冲区与通道提升吞吐</li><li>编码转换：字符流负责字节⇄字符的编码解码（如 UTF-8、GBK）</li></ul><div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">import</span> <span class="nn">java.io.InputStream</span><span class="o">;</span>
 <span class="kn">import</span> <span class="nn">java.io.OutputStream</span><span class="o">;</span>
 <span class="kn">import</span> <span class="nn">java.io.FileInputStream</span><span class="o">;</span>
 <span class="kn">import</span> <span class="nn">java.io.FileOutputStream</span><span class="o">;</span>
@@ -37,18 +16,7 @@
         <span class="o">}</span>
     <span class="o">}</span>
 <span class="o">}</span>
-</code></pre></div></div>
-
-<h2 id="字节流操作--byte-stream">字节流操作 {: #byte-stream}</h2>
-
-<ul>
-  <li>输入：<code class="language-plaintext highlighter-rouge">InputStream</code> 关键方法 <code class="language-plaintext highlighter-rouge">read(...)</code>、<code class="language-plaintext highlighter-rouge">skip(...)</code>、<code class="language-plaintext highlighter-rouge">available()</code>、<code class="language-plaintext highlighter-rouge">close()</code></li>
-  <li>输出：<code class="language-plaintext highlighter-rouge">OutputStream</code> 关键方法 <code class="language-plaintext highlighter-rouge">write(...)</code>、<code class="language-plaintext highlighter-rouge">flush()</code>、<code class="language-plaintext highlighter-rouge">close()</code></li>
-  <li>性能：使用缓冲包装如 <code class="language-plaintext highlighter-rouge">BufferedInputStream/BufferedOutputStream</code></li>
-  <li>大文件：优先使用 <code class="language-plaintext highlighter-rouge">NIO FileChannel.transferTo/transferFrom</code></li>
-</ul>
-
-<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">import</span> <span class="nn">java.io.BufferedInputStream</span><span class="o">;</span>
+</code></pre></div></div><h2 id="字节流操作--byte-stream">字节流操作 {: #byte-stream}</h2><ul><li>输入：<code class="language-plaintext highlighter-rouge">InputStream</code> 关键方法 <code class="language-plaintext highlighter-rouge">read(...)</code>、<code class="language-plaintext highlighter-rouge">skip(...)</code>、<code class="language-plaintext highlighter-rouge">available()</code>、<code class="language-plaintext highlighter-rouge">close()</code></li><li>输出：<code class="language-plaintext highlighter-rouge">OutputStream</code> 关键方法 <code class="language-plaintext highlighter-rouge">write(...)</code>、<code class="language-plaintext highlighter-rouge">flush()</code>、<code class="language-plaintext highlighter-rouge">close()</code></li><li>性能：使用缓冲包装如 <code class="language-plaintext highlighter-rouge">BufferedInputStream/BufferedOutputStream</code></li><li>大文件：优先使用 <code class="language-plaintext highlighter-rouge">NIO FileChannel.transferTo/transferFrom</code></li></ul><div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">import</span> <span class="nn">java.io.BufferedInputStream</span><span class="o">;</span>
 <span class="kn">import</span> <span class="nn">java.io.BufferedOutputStream</span><span class="o">;</span>
 <span class="kn">import</span> <span class="nn">java.io.FileInputStream</span><span class="o">;</span>
 <span class="kn">import</span> <span class="nn">java.io.FileOutputStream</span><span class="o">;</span>
@@ -66,9 +34,7 @@
         <span class="o">}</span>
     <span class="o">}</span>
 <span class="o">}</span>
-</code></pre></div></div>
-
-<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">import</span> <span class="nn">java.nio.channels.FileChannel</span><span class="o">;</span>
+</code></pre></div></div><div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">import</span> <span class="nn">java.nio.channels.FileChannel</span><span class="o">;</span>
 <span class="kn">import</span> <span class="nn">java.nio.file.StandardOpenOption</span><span class="o">;</span>
 <span class="kn">import</span> <span class="nn">java.nio.file.Path</span><span class="o">;</span>
 
@@ -85,17 +51,7 @@
         <span class="o">}</span>
     <span class="o">}</span>
 <span class="o">}</span>
-</code></pre></div></div>
-
-<h2 id="字符流操作--char-stream">字符流操作 {: #char-stream}</h2>
-
-<ul>
-  <li>适用场景：文本处理与编码转换（避免中文乱码）</li>
-  <li>桥接：<code class="language-plaintext highlighter-rouge">InputStreamReader</code>/<code class="language-plaintext highlighter-rouge">OutputStreamWriter</code> 在字节与字符之间转换</li>
-  <li>常用：<code class="language-plaintext highlighter-rouge">BufferedReader</code>/<code class="language-plaintext highlighter-rouge">BufferedWriter</code> 处理按行文本</li>
-</ul>
-
-<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">import</span> <span class="nn">java.io.BufferedReader</span><span class="o">;</span>
+</code></pre></div></div><h2 id="字符流操作--char-stream">字符流操作 {: #char-stream}</h2><ul><li>适用场景：文本处理与编码转换（避免中文乱码）</li><li>桥接：<code class="language-plaintext highlighter-rouge">InputStreamReader</code>/<code class="language-plaintext highlighter-rouge">OutputStreamWriter</code> 在字节与字符之间转换</li><li>常用：<code class="language-plaintext highlighter-rouge">BufferedReader</code>/<code class="language-plaintext highlighter-rouge">BufferedWriter</code> 处理按行文本</li></ul><div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">import</span> <span class="nn">java.io.BufferedReader</span><span class="o">;</span>
 <span class="kn">import</span> <span class="nn">java.io.BufferedWriter</span><span class="o">;</span>
 <span class="kn">import</span> <span class="nn">java.io.FileReader</span><span class="o">;</span>
 <span class="kn">import</span> <span class="nn">java.io.FileWriter</span><span class="o">;</span>
@@ -114,9 +70,7 @@
         <span class="o">}</span>
     <span class="o">}</span>
 <span class="o">}</span>
-</code></pre></div></div>
-
-<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">import</span> <span class="nn">java.io.InputStreamReader</span><span class="o">;</span>
+</code></pre></div></div><div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">import</span> <span class="nn">java.io.InputStreamReader</span><span class="o">;</span>
 <span class="kn">import</span> <span class="nn">java.io.OutputStreamWriter</span><span class="o">;</span>
 <span class="kn">import</span> <span class="nn">java.nio.charset.StandardCharsets</span><span class="o">;</span>
 <span class="kn">import</span> <span class="nn">java.io.FileInputStream</span><span class="o">;</span>
@@ -135,17 +89,7 @@
         <span class="o">}</span>
     <span class="o">}</span>
 <span class="o">}</span>
-</code></pre></div></div>
-
-<h2 id="实战应用大文件断点续传--resume">实战应用：大文件断点续传 {: #resume}</h2>
-
-<ul>
-  <li>本地续传：使用 <code class="language-plaintext highlighter-rouge">RandomAccessFile + FileChannel</code>，记录进度到文件</li>
-  <li>HTTP 续传：使用 <code class="language-plaintext highlighter-rouge">Range</code> 请求头进行断点下载</li>
-  <li>分片合并：后端合并分片到目标文件，按序零拷贝写入</li>
-</ul>
-
-<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">import</span> <span class="nn">java.io.RandomAccessFile</span><span class="o">;</span>
+</code></pre></div></div><h2 id="实战应用大文件断点续传--resume">实战应用：大文件断点续传 {: #resume}</h2><ul><li>本地续传：使用 <code class="language-plaintext highlighter-rouge">RandomAccessFile + FileChannel</code>，记录进度到文件</li><li>HTTP 续传：使用 <code class="language-plaintext highlighter-rouge">Range</code> 请求头进行断点下载</li><li>分片合并：后端合并分片到目标文件，按序零拷贝写入</li></ul><div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">import</span> <span class="nn">java.io.RandomAccessFile</span><span class="o">;</span>
 <span class="kn">import</span> <span class="nn">java.nio.channels.FileChannel</span><span class="o">;</span>
 <span class="kn">import</span> <span class="nn">java.nio.ByteBuffer</span><span class="o">;</span>
 <span class="kn">import</span> <span class="nn">java.nio.file.Path</span><span class="o">;</span>
@@ -185,9 +129,7 @@
         <span class="o">}</span>
     <span class="o">}</span>
 <span class="o">}</span>
-</code></pre></div></div>
-
-<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">import</span> <span class="nn">java.net.HttpURLConnection</span><span class="o">;</span>
+</code></pre></div></div><div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">import</span> <span class="nn">java.net.HttpURLConnection</span><span class="o">;</span>
 <span class="kn">import</span> <span class="nn">java.net.URL</span><span class="o">;</span>
 <span class="kn">import</span> <span class="nn">java.io.InputStream</span><span class="o">;</span>
 <span class="kn">import</span> <span class="nn">java.io.RandomAccessFile</span><span class="o">;</span>
@@ -222,9 +164,7 @@
         <span class="o">}</span>
     <span class="o">}</span>
 <span class="o">}</span>
-</code></pre></div></div>
-
-<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">import</span> <span class="nn">java.io.RandomAccessFile</span><span class="o">;</span>
+</code></pre></div></div><div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">import</span> <span class="nn">java.io.RandomAccessFile</span><span class="o">;</span>
 <span class="kn">import</span> <span class="nn">java.nio.channels.FileChannel</span><span class="o">;</span>
 <span class="kn">import</span> <span class="nn">java.util.List</span><span class="o">;</span>
 
@@ -248,34 +188,4 @@
         <span class="o">}</span>
     <span class="o">}</span>
 <span class="o">}</span>
-</code></pre></div></div>]]></content><author><name>朱</name></author><category term="Java" /><category term="IO" /><category term="Stream" /><category term="NIO" /><category term="文件传输" /><summary type="html"><![CDATA[简要导读：本文覆盖 IO 流核心概念、字节流与字符流的常用操作，以及大文件断点续传的实战方案（本地与 HTTP Range）。]]></summary></entry><entry><title type="html">Best buddy</title><link href="https://zwany1.github.io/2025/12/08/best-buddy/" rel="alternate" type="text/html" title="Best buddy" /><published>2025-12-08T17:56:55+08:00</published><updated>2025-12-08T17:56:55+08:00</updated><id>https://zwany1.github.io/2025/12/08/best-buddy</id><content type="html" xml:base="https://zwany1.github.io/2025/12/08/best-buddy/"><![CDATA[<h1 id="best-friend-memoir">Best Friend Memoir</h1>
-
-<p>这是我最好的朋友的故事。我们一起经历了许多难忘的时光，分享了无数的欢乐和泪水。</p>
-
-<video width="100%" controls="">
-  <source src="/assets/images/111.mp4" type="video/mp4" />
-  您的浏览器不支持视频播放。
-</video>
-
-<h2 id="相识">相识</h2>
-
-<p>我们是在高中时认识的，……………………….</p>
-
-<h2 id="共同的回忆">共同的回忆</h2>
-
-<ul>
-  <li>一起熬夜完成编程作业</li>
-  <li>周末一起去图书馆学习</li>
-  <li>假期一起旅行探索新的城市</li>
-  <li>遇到困难时互相支持和鼓励</li>
-</ul>
-
-<h2 id="友谊的意义">友谊的意义</h2>
-
-<p>真正的友谊是经得起时间考验的。无论我们相隔多远，联系多频繁，那份深厚的友谊永远不会改变。</p>
-
-<blockquote>
-  <p>“朋友是生活中最美好的礼物之一。”</p>
-</blockquote>
-
-<p>感谢我的 Best buddy，让我的生活变得更加丰富多彩。</p>]]></content><author><name>朱</name></author><category term="life" /><category term="friendship" /><category term="life" /><summary type="html"><![CDATA[Best Friend Memoir]]></summary></entry></feed>
+</code></pre></div></div><div style="margin-top:2em;padding:0 1.5em;border:1px solid #d3d3d3;background-color:#deebf7"><h3>文档信息</h3><ul><li>本文作者：<a href="https://zwany1.github.io" target="_blank">朱</a></li><li>本文链接：<a href="https://zwany1.github.io/2025/12/26/IO%E5%9F%BA%E7%A1%80%E4%B8%8E%E6%B5%81%E6%93%8D%E4%BD%9C/" target="_blank">https://zwany1.github.io/2025/12/26/IO%E5%9F%BA%E7%A1%80%E4%B8%8E%E6%B5%81%E6%93%8D%E4%BD%9C/</a></li><li>版权声明：自由转载-非商用-非衍生-保持署名（<a href="http://creativecommons.org/licenses/by-nc-nd/3.0/deed.zh" target="_blank">创意共享3.0许可证</a>）</li></ul></div></article><div class="share"></div><div class="comment"> <script src="https://utteranc.es/client.js" repo="zwany1/zwany1.github.io" issue-term="title" label="gitment" theme="github-light" crossorigin="anonymous" async> </script></div></div><div class="column one-fourth"><h3>Search</h3><div id="site_search"> <input style="width:96%" type="text" id="search_box" placeholder="Search"></div><ul id="search_results" style="font-size:14px;list-style-type:none;padding-top:10px;padding-left:10px;"></ul><script src="https://fastly.jsdelivr.net/gh/zwany1/zwany1.github.io@master/assets/js/simple-jekyll-search.min.js"></script> <script type="text/javascript"> SimpleJekyllSearch({ searchInput: document.getElementById('search_box'), resultsContainer: document.getElementById('search_results'), json: 'https://zwany1.github.io/assets/search_data.json?v=1766733250', searchResultTemplate: '<li><a href="{url}" title="{title}">{title}</a></li>', noResultsText: 'No results found', limit: 10, fuzzy: false, exclude: ['Welcome'] }) </script><h3 class="post-directory-title mobile-hidden">Table of Contents</h3><div id="post-directory-module" class="mobile-hidden"><section class="post-directory"><dl></dl></section></div><script src="https://fastly.jsdelivr.net/gh/zwany1/zwany1.github.io@master/assets/js/jquery.toc.js"></script></div></div></section><div id="imageModal"> <img id="modalImage"></div><footer class="container"><div class="site-footer" role="contentinfo"><div class="copyright left mobile-block"> © 2025 <span title="朱">朱</span> <a href="javascript:window.scrollTo(0,0)" class="right mobile-visible">TOP</a></div><ul class="site-footer-links right mobile-hidden"><li> <a href="javascript:window.scrollTo(0,0)" >TOP</a></li></ul><a href="https://github.com/zwany1/zwany1.github.io" target="_blank" aria-label="view source code"> <span class="mega-octicon octicon-mark-github" title="GitHub"></span> </a><ul class="site-footer-links mobile-hidden"><li> <a href="https://zwany1.github.io/" title="首页" target="">首页</a></li><li> <a href="https://zwany1.github.io/categories/" title="分类" target="">分类</a></li><li> <a href="https://zwany1.github.io/pages/" title="页面" target="">页面</a></li><li> <a href="https://zwany1.github.io/open-source/" title="开源" target="">开源</a></li><li> <a href="https://zwany1.github.io/fragments/" title="片段" target="">片段</a></li><li> <a href="https://zwany1.github.io/about/" title="关于" target="">关于</a></li><li> <a href="https://zwany1.github.io/gallery/" title="回忆录" target="">回忆录</a></li><li><a href="https://zwany1.github.io/feed.xml"><span class="octicon octicon-rss" style="color:orange;"></span></a></li></ul></div></footer><div class="tools-wrapper"> <a class="gotop" href="#" title="回到顶部"><span class="octicon octicon-arrow-up"></span></a></div><script src="https://fastly.jsdelivr.net/gh/zwany1/zwany1.github.io@master/assets/js/geopattern.js"></script> <script> jQuery(document).ready(function($) { $('.geopattern').each(function(){ $(this).geopattern($(this).data('pattern-id')); }); /* hljs.initHighlightingOnLoad(); */ }); </script></body></html>
