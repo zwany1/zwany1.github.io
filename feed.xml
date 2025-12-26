@@ -1,254 +1,351 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="3.10.0">Jekyll</generator><link href="https://zwany1.github.io/feed.xml" rel="self" type="application/atom+xml" /><link href="https://zwany1.github.io/" rel="alternate" type="text/html" /><updated>2025-12-26T15:14:10+08:00</updated><id>https://zwany1.github.io/feed.xml</id><title type="html">朱</title><subtitle>朱的个人博客，公众号：朱猪写作</subtitle><author><name>朱</name></author><entry><title type="html">IO基础与流操作</title><link href="https://zwany1.github.io/2025/12/26/IO%E5%9F%BA%E7%A1%80%E4%B8%8E%E6%B5%81%E6%93%8D%E4%BD%9C/" rel="alternate" type="text/html" title="IO基础与流操作" /><published>2025-12-26T00:00:00+08:00</published><updated>2025-12-26T00:00:00+08:00</updated><id>https://zwany1.github.io/2025/12/26/IO%E5%9F%BA%E7%A1%80%E4%B8%8E%E6%B5%81%E6%93%8D%E4%BD%9C</id><content type="html" xml:base="https://zwany1.github.io/2025/12/26/IO%E5%9F%BA%E7%A1%80%E4%B8%8E%E6%B5%81%E6%93%8D%E4%BD%9C/"><![CDATA[<p>简要导读：本文覆盖 IO 流核心概念、字节流与字符流的常用操作，以及大文件断点续传的实战方案（本地与 HTTP Range）。</p>
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="3.10.0">Jekyll</generator><link href="https://zwany1.github.io/feed.xml" rel="self" type="application/atom+xml" /><link href="https://zwany1.github.io/" rel="alternate" type="text/html" /><updated>2025-12-26T15:28:53+08:00</updated><id>https://zwany1.github.io/feed.xml</id><title type="html">朱</title><subtitle>朱的个人博客，公众号：朱猪写作</subtitle><author><name>朱</name></author><entry><title type="html">IO基础与流操作</title><link href="https://zwany1.github.io/2025/12/26/IO%E5%9F%BA%E7%A1%80%E4%B8%8E%E6%B5%81%E6%93%8D%E4%BD%9C/" rel="alternate" type="text/html" title="IO基础与流操作" /><published>2025-12-26T00:00:00+08:00</published><updated>2025-12-26T00:00:00+08:00</updated><id>https://zwany1.github.io/2025/12/26/IO%E5%9F%BA%E7%A1%80%E4%B8%8E%E6%B5%81%E6%93%8D%E4%BD%9C</id><content type="html" xml:base="https://zwany1.github.io/2025/12/26/IO%E5%9F%BA%E7%A1%80%E4%B8%8E%E6%B5%81%E6%93%8D%E4%BD%9C/"><![CDATA[<style>
+.article-content.markdown-body {
+  line-height: 1.85;
+  font-size: 16px;
+}
+.article-content.markdown-body h2 {
+  margin-top: 28px;
+  padding-bottom: 6px;
+  border-bottom: 1px solid #eee;
+}
+.article-content.markdown-body p {
+  margin: 0 0 1em;
+}
+.article-content.markdown-body ul,
+.article-content.markdown-body ol {
+  margin: 0 0 1em 1.25em;
+}
+.article-content.markdown-body blockquote {
+  border-left: 4px solid #e5e7eb;
+  padding-left: 12px;
+  color: #666;
+}
+.article-content.markdown-body pre,
+.article-content.markdown-body .highlight {
+  background: #f7f8fa;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  padding: 12px 14px;
+  overflow: auto;
+}
+.article-content.markdown-body code {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+  font-size: 0.95em;
+}
+</style>
 
-<ul>
-  <li>目录
-    <ul>
-      <li><a href="#io-core">IO流核心概念</a></li>
-      <li><a href="#byte-stream">字节流操作</a></li>
-      <li><a href="#char-stream">字符流操作</a></li>
-      <li><a href="#resume">实战应用：大文件断点续传</a></li>
-    </ul>
-  </li>
-</ul>
+<h2 id="io流核心概念">IO流核心概念</h2>
 
-<h2 id="io流核心概念--io-core">IO流核心概念 {: #io-core}</h2>
+<p>Java IO包含面向字节与面向字符两类抽象。字节流处理原始二进制数据，字符流在字节与字符之间进行编码转换。阻塞IO在读写时占用线程，NIO通过缓冲区与通道支持更高效的文件与网络传输。</p>
 
-<ul>
-  <li>抽象分层：<code class="language-plaintext highlighter-rouge">InputStream/OutputStream</code>（字节）、<code class="language-plaintext highlighter-rouge">Reader/Writer</code>（字符）</li>
-  <li>阻塞与非阻塞：经典 IO 为阻塞；<code class="language-plaintext highlighter-rouge">NIO</code> 通过缓冲区与通道提升吞吐</li>
-  <li>编码转换：字符流负责字节⇄字符的编码解码（如 UTF-8、GBK）</li>
-</ul>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>IO（Input/Output）是指数据的输入与输出操作。当应用程序需要从外部存储（如文件、数据库、网络）读取数据到内存时,这个过程称为输入;反之,将内存中的数据写出到外部存储的过程称为输出。由于数据传输的特性类似于水流,因此我们将这种数据传输机制称为IO流。
 
-<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">import</span> <span class="nn">java.io.InputStream</span><span class="o">;</span>
-<span class="kn">import</span> <span class="nn">java.io.OutputStream</span><span class="o">;</span>
-<span class="kn">import</span> <span class="nn">java.io.FileInputStream</span><span class="o">;</span>
-<span class="kn">import</span> <span class="nn">java.io.FileOutputStream</span><span class="o">;</span>
+Java的IO流体系以4个抽象基类为核心,派生出40多个具体实现类:
 
-<span class="kd">public</span> <span class="kd">class</span> <span class="nc">CopyBytes</span> <span class="o">{</span>
-    <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="nc">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="kd">throws</span> <span class="nc">Exception</span> <span class="o">{</span>
-        <span class="k">try</span> <span class="o">(</span><span class="nc">InputStream</span> <span class="n">in</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">FileInputStream</span><span class="o">(</span><span class="s">"src.bin"</span><span class="o">);</span>
-             <span class="nc">OutputStream</span> <span class="n">out</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">FileOutputStream</span><span class="o">(</span><span class="s">"dst.bin"</span><span class="o">))</span> <span class="o">{</span>
-            <span class="kt">byte</span><span class="o">[]</span> <span class="n">buf</span> <span class="o">=</span> <span class="k">new</span> <span class="kt">byte</span><span class="o">[</span><span class="mi">8192</span><span class="o">];</span>
-            <span class="kt">int</span> <span class="n">n</span><span class="o">;</span>
-            <span class="k">while</span> <span class="o">((</span><span class="n">n</span> <span class="o">=</span> <span class="n">in</span><span class="o">.</span><span class="na">read</span><span class="o">(</span><span class="n">buf</span><span class="o">))</span> <span class="o">!=</span> <span class="o">-</span><span class="mi">1</span><span class="o">)</span> <span class="o">{</span>
-                <span class="n">out</span><span class="o">.</span><span class="na">write</span><span class="o">(</span><span class="n">buf</span><span class="o">,</span> <span class="mi">0</span><span class="o">,</span> <span class="n">n</span><span class="o">);</span>
-            <span class="o">}</span>
-            <span class="n">out</span><span class="o">.</span><span class="na">flush</span><span class="o">();</span>
-        <span class="o">}</span>
-    <span class="o">}</span>
-<span class="o">}</span>
+InputStream / Reader: 输入流的抽象基类,前者处理字节数据,后者处理字符数据
+OutputStream / Writer: 输出流的抽象基类,前者处理字节数据,后者处理字符数据
+
 </code></pre></div></div>
 
-<h2 id="字节流操作--byte-stream">字节流操作 {: #byte-stream}</h2>
+<h2 id="字节流操作">字节流操作</h2>
+<p>InputStream核心方法​
+InputStream是所有字节输入流的抽象父类,用于从数据源读取字节数据到内存。</p>
 
-<ul>
-  <li>输入：<code class="language-plaintext highlighter-rouge">InputStream</code> 关键方法 <code class="language-plaintext highlighter-rouge">read(...)</code>、<code class="language-plaintext highlighter-rouge">skip(...)</code>、<code class="language-plaintext highlighter-rouge">available()</code>、<code class="language-plaintext highlighter-rouge">close()</code></li>
-  <li>输出：<code class="language-plaintext highlighter-rouge">OutputStream</code> 关键方法 <code class="language-plaintext highlighter-rouge">write(...)</code>、<code class="language-plaintext highlighter-rouge">flush()</code>、<code class="language-plaintext highlighter-rouge">close()</code></li>
-  <li>性能：使用缓冲包装如 <code class="language-plaintext highlighter-rouge">BufferedInputStream/BufferedOutputStream</code></li>
-  <li>大文件：优先使用 <code class="language-plaintext highlighter-rouge">NIO FileChannel.transferTo/transferFrom</code></li>
-</ul>
+<p>核心API方法:</p>
 
-<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">import</span> <span class="nn">java.io.BufferedInputStream</span><span class="o">;</span>
-<span class="kn">import</span> <span class="nn">java.io.BufferedOutputStream</span><span class="o">;</span>
-<span class="kn">import</span> <span class="nn">java.io.FileInputStream</span><span class="o">;</span>
-<span class="kn">import</span> <span class="nn">java.io.FileOutputStream</span><span class="o">;</span>
+<p>read(): 读取单个字节,返回0-255之间的int值,返回-1表示流结束
+read(byte[] b): 将数据读入字节数组,返回实际读取的字节数
+read(byte[] b, int off, int len): 指定偏移量和读取长度的读取操作
+skip(long n): 跳过n个字节
+available(): 返回可读取的字节数估计值
+close(): 关闭流并释放系统资源
+JDK 9新增的便捷方法:</p>
 
-<span class="kd">public</span> <span class="kd">class</span> <span class="nc">BufferedCopy</span> <span class="o">{</span>
-    <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="nc">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="kd">throws</span> <span class="nc">Exception</span> <span class="o">{</span>
-        <span class="k">try</span> <span class="o">(</span><span class="nc">BufferedInputStream</span> <span class="n">in</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">BufferedInputStream</span><span class="o">(</span><span class="k">new</span> <span class="nc">FileInputStream</span><span class="o">(</span><span class="s">"in.dat"</span><span class="o">));</span>
-             <span class="nc">BufferedOutputStream</span> <span class="n">out</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">BufferedOutputStream</span><span class="o">(</span><span class="k">new</span> <span class="nc">FileOutputStream</span><span class="o">(</span><span class="s">"out.dat"</span><span class="o">)))</span> <span class="o">{</span>
-            <span class="kt">byte</span><span class="o">[]</span> <span class="n">buf</span> <span class="o">=</span> <span class="k">new</span> <span class="kt">byte</span><span class="o">[</span><span class="mi">16</span> <span class="o">*</span> <span class="mi">1024</span><span class="o">];</span>
-            <span class="kt">int</span> <span class="n">n</span><span class="o">;</span>
-            <span class="k">while</span> <span class="o">((</span><span class="n">n</span> <span class="o">=</span> <span class="n">in</span><span class="o">.</span><span class="na">read</span><span class="o">(</span><span class="n">buf</span><span class="o">))</span> <span class="o">!=</span> <span class="o">-</span><span class="mi">1</span><span class="o">)</span> <span class="o">{</span>
-                <span class="n">out</span><span class="o">.</span><span class="na">write</span><span class="o">(</span><span class="n">buf</span><span class="o">,</span> <span class="mi">0</span><span class="o">,</span> <span class="n">n</span><span class="o">);</span>
-            <span class="o">}</span>
-            <span class="n">out</span><span class="o">.</span><span class="na">flush</span><span class="o">();</span>
-        <span class="o">}</span>
-    <span class="o">}</span>
-<span class="o">}</span>
+<p>readAllBytes(): 一次性读取所有字节
+readNBytes(byte[] b, int off, int len): 阻塞直到读取len个字节
+transferTo(OutputStream out): 将所有字节传输到输出流
+FileInputStream文件读取示例​
+FileInputStream是最常用的字节输入流实现,可直接读取文件内容:</p>
+
+<p>public class LogFileReader {
+    public void readAccessLog(String logPath) {
+        try (InputStream fis = new FileInputStream(logPath)) {
+            System.out.println(“日志文件可读字节数: “ + fis.available());</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>        // 跳过前10个字节(通常是时间戳)
+        long skipped = fis.skip(10);
+        System.out.println("已跳过字节数: " + skipped);
+        
+        System.out.print("访问记录内容: ");
+        int byteData;
+        while ((byteData = fis.read()) != -1) {
+            System.out.print((char) byteData);
+        }
+    } catch (IOException e) {
+        e.printStackTrace();
+    }
+} }
 </code></pre></div></div>
 
-<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">import</span> <span class="nn">java.nio.channels.FileChannel</span><span class="o">;</span>
-<span class="kn">import</span> <span class="nn">java.nio.file.StandardOpenOption</span><span class="o">;</span>
-<span class="kn">import</span> <span class="nn">java.nio.file.Path</span><span class="o">;</span>
+<p>假设access.log文件内容为:</p>
 
-<span class="kd">public</span> <span class="kd">class</span> <span class="nc">NioTransfer</span> <span class="o">{</span>
-    <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="nc">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="kd">throws</span> <span class="nc">Exception</span> <span class="o">{</span>
-        <span class="k">try</span> <span class="o">(</span><span class="nc">FileChannel</span> <span class="n">src</span> <span class="o">=</span> <span class="nc">FileChannel</span><span class="o">.</span><span class="na">open</span><span class="o">(</span><span class="nc">Path</span><span class="o">.</span><span class="na">of</span><span class="o">(</span><span class="s">"big.src"</span><span class="o">),</span> <span class="nc">StandardOpenOption</span><span class="o">.</span><span class="na">READ</span><span class="o">);</span>
-             <span class="nc">FileChannel</span> <span class="n">dst</span> <span class="o">=</span> <span class="nc">FileChannel</span><span class="o">.</span><span class="na">open</span><span class="o">(</span><span class="nc">Path</span><span class="o">.</span><span class="na">of</span><span class="o">(</span><span class="s">"big.dst"</span><span class="o">),</span> <span class="nc">StandardOpenOption</span><span class="o">.</span><span class="na">CREATE</span><span class="o">,</span> <span class="nc">StandardOpenOption</span><span class="o">.</span><span class="na">WRITE</span><span class="o">))</span> <span class="o">{</span>
-            <span class="kt">long</span> <span class="n">size</span> <span class="o">=</span> <span class="n">src</span><span class="o">.</span><span class="na">size</span><span class="o">();</span>
-            <span class="kt">long</span> <span class="n">pos</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span>
-            <span class="k">while</span> <span class="o">(</span><span class="n">pos</span> <span class="o">&lt;</span> <span class="n">size</span><span class="o">)</span> <span class="o">{</span>
-                <span class="kt">long</span> <span class="n">sent</span> <span class="o">=</span> <span class="n">src</span><span class="o">.</span><span class="na">transferTo</span><span class="o">(</span><span class="n">pos</span><span class="o">,</span> <span class="n">size</span> <span class="o">-</span> <span class="n">pos</span><span class="o">,</span> <span class="n">dst</span><span class="o">);</span>
-                <span class="n">pos</span> <span class="o">+=</span> <span class="n">sent</span><span class="o">;</span>
-            <span class="o">}</span>
-        <span class="o">}</span>
-    <span class="o">}</span>
-<span class="o">}</span>
+<p>2024-11-26 UserLoginSuccess</p>
+
+<p>输出结果:</p>
+
+<p>日志文件可读字节数: 33
+已跳过字节数: 10
+访问记录内容:  UserLoginSuccess</p>
+
+<p>BufferedInputStream缓冲读取​
+实际项目中,我们通常会搭配BufferedInputStream来提升读取性能:</p>
+
+<p>public class ConfigLoader {
+    public String loadConfig(String configPath) throws IOException {
+        try (BufferedInputStream bis = new BufferedInputStream(
+                new FileInputStream(configPath))) {
+            // 使用JDK 9+的便捷方法一次性读取全部内容
+            return new String(bis.readAllBytes());
+        }
+    }
+}</p>
+
+<p>DataInputStream类型化读取​
+DataInputStream可以读取Java基本数据类型,常用于读取二进制配置文件:</p>
+
+<p>public class BinaryConfigReader {
+    public void readDatabaseConfig(String path) throws IOException {
+        try (DataInputStream dis = new DataInputStream(
+                new FileInputStream(path))) {
+            boolean isEnabled = dis.readBoolean();      // 读取布尔值
+            int maxConnections = dis.readInt();         // 读取整数
+            String dbUrl = dis.readUTF();               // 读取字符串</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>        System.out.println("数据库启用状态: " + isEnabled);
+        System.out.println("最大连接数: " + maxConnections);
+        System.out.println("数据库URL: " + dbUrl);
+    }
+} }
 </code></pre></div></div>
 
-<h2 id="字符流操作--char-stream">字符流操作 {: #char-stream}</h2>
+<p>ObjectInputStream对象反序列化​
+ObjectInputStream用于反序列化Java对象,对象必须实现Serializable接口:</p>
 
-<ul>
-  <li>适用场景：文本处理与编码转换（避免中文乱码）</li>
-  <li>桥接：<code class="language-plaintext highlighter-rouge">InputStreamReader</code>/<code class="language-plaintext highlighter-rouge">OutputStreamWriter</code> 在字节与字符之间转换</li>
-  <li>常用：<code class="language-plaintext highlighter-rouge">BufferedReader</code>/<code class="language-plaintext highlighter-rouge">BufferedWriter</code> 处理按行文本</li>
-</ul>
+<p>public class UserSessionManager {
+    public UserSession restoreSession(String sessionFile) throws Exception {
+        try (ObjectInputStream ois = new ObjectInputStream(
+                new FileInputStream(sessionFile))) {
+            return (UserSession) ois.readObject();
+        }
+    }
+}</p>
 
-<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">import</span> <span class="nn">java.io.BufferedReader</span><span class="o">;</span>
-<span class="kn">import</span> <span class="nn">java.io.BufferedWriter</span><span class="o">;</span>
-<span class="kn">import</span> <span class="nn">java.io.FileReader</span><span class="o">;</span>
-<span class="kn">import</span> <span class="nn">java.io.FileWriter</span><span class="o">;</span>
+<p>class UserSession implements Serializable {
+    private static final long serialVersionUID = 1L;</p>
 
-<span class="kd">public</span> <span class="kd">class</span> <span class="nc">TextProcess</span> <span class="o">{</span>
-    <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="nc">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="kd">throws</span> <span class="nc">Exception</span> <span class="o">{</span>
-        <span class="k">try</span> <span class="o">(</span><span class="nc">BufferedReader</span> <span class="n">reader</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">BufferedReader</span><span class="o">(</span><span class="k">new</span> <span class="nc">FileReader</span><span class="o">(</span><span class="s">"input.txt"</span><span class="o">));</span>
-             <span class="nc">BufferedWriter</span> <span class="n">writer</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">BufferedWriter</span><span class="o">(</span><span class="k">new</span> <span class="nc">FileWriter</span><span class="o">(</span><span class="s">"output.txt"</span><span class="o">)))</span> <span class="o">{</span>
-            <span class="nc">String</span> <span class="n">line</span><span class="o">;</span>
-            <span class="k">while</span> <span class="o">((</span><span class="n">line</span> <span class="o">=</span> <span class="n">reader</span><span class="o">.</span><span class="na">readLine</span><span class="o">())</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
-                <span class="nc">String</span> <span class="n">transformed</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="na">toUpperCase</span><span class="o">();</span>
-                <span class="n">writer</span><span class="o">.</span><span class="na">write</span><span class="o">(</span><span class="n">transformed</span><span class="o">);</span>
-                <span class="n">writer</span><span class="o">.</span><span class="na">newLine</span><span class="o">();</span>
-            <span class="o">}</span>
-            <span class="n">writer</span><span class="o">.</span><span class="na">flush</span><span class="o">();</span>
-        <span class="o">}</span>
-    <span class="o">}</span>
-<span class="o">}</span>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>private String userId;
+private String sessionToken;
+private transient String password; // transient字段不会被序列化
+
+// getters and setters... }
 </code></pre></div></div>
 
-<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">import</span> <span class="nn">java.io.InputStreamReader</span><span class="o">;</span>
-<span class="kn">import</span> <span class="nn">java.io.OutputStreamWriter</span><span class="o">;</span>
-<span class="kn">import</span> <span class="nn">java.nio.charset.StandardCharsets</span><span class="o">;</span>
-<span class="kn">import</span> <span class="nn">java.io.FileInputStream</span><span class="o">;</span>
-<span class="kn">import</span> <span class="nn">java.io.FileOutputStream</span><span class="o">;</span>
+<p>OutputStream核心方法​
+OutputStream是所有字节输出流的抽象父类,用于将字节数据写入目标位置。</p>
 
-<span class="kd">public</span> <span class="kd">class</span> <span class="nc">CharsetConvert</span> <span class="o">{</span>
-    <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="nc">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="kd">throws</span> <span class="nc">Exception</span> <span class="o">{</span>
-        <span class="k">try</span> <span class="o">(</span><span class="nc">InputStreamReader</span> <span class="n">reader</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">InputStreamReader</span><span class="o">(</span><span class="k">new</span> <span class="nc">FileInputStream</span><span class="o">(</span><span class="s">"gbk.txt"</span><span class="o">),</span> <span class="s">"GBK"</span><span class="o">);</span>
-             <span class="nc">OutputStreamWriter</span> <span class="n">writer</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">OutputStreamWriter</span><span class="o">(</span><span class="k">new</span> <span class="nc">FileOutputStream</span><span class="o">(</span><span class="s">"utf8.txt"</span><span class="o">),</span> <span class="nc">StandardCharsets</span><span class="o">.</span><span class="na">UTF_8</span><span class="o">))</span> <span class="o">{</span>
-            <span class="kt">char</span><span class="o">[]</span> <span class="n">buf</span> <span class="o">=</span> <span class="k">new</span> <span class="kt">char</span><span class="o">[</span><span class="mi">4096</span><span class="o">];</span>
-            <span class="kt">int</span> <span class="n">n</span><span class="o">;</span>
-            <span class="k">while</span> <span class="o">((</span><span class="n">n</span> <span class="o">=</span> <span class="n">reader</span><span class="o">.</span><span class="na">read</span><span class="o">(</span><span class="n">buf</span><span class="o">))</span> <span class="o">!=</span> <span class="o">-</span><span class="mi">1</span><span class="o">)</span> <span class="o">{</span>
-                <span class="n">writer</span><span class="o">.</span><span class="na">write</span><span class="o">(</span><span class="n">buf</span><span class="o">,</span> <span class="mi">0</span><span class="o">,</span> <span class="n">n</span><span class="o">);</span>
-            <span class="o">}</span>
-            <span class="n">writer</span><span class="o">.</span><span class="na">flush</span><span class="o">();</span>
-        <span class="o">}</span>
-    <span class="o">}</span>
-<span class="o">}</span>
+<p>核心API方法:</p>
+
+<p>write(int b): 写入单个字节
+write(byte[] b): 写入字节数组
+write(byte[] b, int off, int len): 写入字节数组的指定部分
+flush(): 刷新缓冲区,强制写出缓存数据
+close(): 关闭流并释放资源
+FileOutputStream文件写入示例​
+public class AuditLogger {
+    public void logUserAction(String action) {
+        try (FileOutputStream fos = new FileOutputStream(“audit.log”, true)) { // true表示追加模式
+            byte[] actionBytes = action.getBytes();
+            fos.write(actionBytes);
+            fos.write(‘\n’); // 换行
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+}</p>
+
+<p>实际项目中通常搭配BufferedOutputStream使用:</p>
+
+<p>public class ReportExporter {
+    public void exportReport(String reportPath, List<String> data) throws IOException {
+        try (BufferedOutputStream bos = new BufferedOutputStream(
+                new FileOutputStream(reportPath))) {
+            for (String line : data) {
+                bos.write(line.getBytes());
+                bos.write('\n');
+            }
+            // BufferedOutputStream会在close时自动flush,也可手动flush
+            bos.flush();
+        }
+    }
+}</String></p>
+
+<p>DataOutputStream类型化写入​
+public class BinaryConfigWriter {
+    public void saveDatabaseConfig(String path) throws IOException {
+        try (DataOutputStream dos = new DataOutputStream(
+                new FileOutputStream(path))) {
+            dos.writeBoolean(true);                    // 写入布尔值
+            dos.writeInt(100);                         // 写入整数
+            dos.writeUTF(“jdbc:mysql://localhost:3306/app”); // 写入字符串
+        }
+    }
+}</p>
+
+<p>ObjectOutputStream对象序列化​
+public class SessionPersistence {
+    public void saveSession(UserSession session, String path) throws IOException {
+        try (ObjectOutputStream oos = new ObjectOutputStream(
+                new FileOutputStream(path))) {
+            oos.writeObject(session);
+        }
+    }
+}</p>
+
+<hr />
+
+<h2 id="字符流操作">字符流操作</h2>
+
+<p>字节流以字节为单位处理数据,如果直接用字节流处理文本会遇到编码问题。字符流的出现主要解决两个问题:</p>
+
+<p>编码转换开销: 字符流内部已处理好编码转换,避免重复转换
+乱码问题: 字符流会按照指定编码正确解析字符
+让我们看看如果用字节流读取中文会发生什么:</p>
+
+<p>// 错误示例：使用字节流读取中文
+try (FileInputStream fis = new FileInputStream(“message.txt”)) {
+    int b;
+    while ((b = fis.read()) != -1) {
+        System.out.print((char) b); // 输出乱码: è¿æ¯ä¸æ
+    }
+}</p>
+
+<p>字符流默认使用Unicode编码,我们也可以通过构造方法指定编码方式。需要注意的是,Unicode只是字符集(给每个字符分配唯一编号),UTF-8、UTF-16、UTF-32才是具体的编码方案(定义如何存储这些编号)。例如UTF-8编码中,英文占1字节,中文占3字节。</p>
+
+<p>Reader字符输入流​
+Reader是所有字符输入流的抽象基类,用于读取字符数据。</p>
+
+<p>核心API方法:</p>
+
+<p>read(): 读取单个字符
+read(char[] cbuf): 读取字符到数组
+read(char[] cbuf, int off, int len): 读取指定长度的字符
+skip(long n): 跳过n个字符
+close(): 关闭流释放资源
+InputStreamReader桥接转换​
+InputStreamReader是字节流到字符流的桥梁,其子类FileReader进一步简化了文件读取:</p>
+
+<p>// 继承关系
+public class InputStreamReader extends Reader {
+    // 内部使用StreamDecoder进行解码
+}</p>
+
+<p>public class FileReader extends InputStreamReader {
+    // 简化文件读取操作
+}</p>
+
+<p>示例代码:</p>
+
+<p>public class MultiLanguageReader {
+    public void readUserProfile(String profilePath) {
+        try (FileReader reader = new FileReader(profilePath)) {
+            int ch;
+            long skipped = reader.skip(5); // 跳过文件头标识
+            System.out.println(“跳过的字符数: “ + skipped);</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>        System.out.print("用户信息: ");
+        while ((ch = reader.read()) != -1) {
+            System.out.print((char) ch);
+        }
+    } catch (IOException e) {
+        e.printStackTrace();
+    }
+} }
 </code></pre></div></div>
 
-<h2 id="实战应用大文件断点续传--resume">实战应用：大文件断点续传 {: #resume}</h2>
+<p>假设profile.txt内容为:</p>
 
-<ul>
-  <li>本地续传：使用 <code class="language-plaintext highlighter-rouge">RandomAccessFile + FileChannel</code>，记录进度到文件</li>
-  <li>HTTP 续传：使用 <code class="language-plaintext highlighter-rouge">Range</code> 请求头进行断点下载</li>
-  <li>分片合并：后端合并分片到目标文件，按序零拷贝写入</li>
-</ul>
+<p>用户:张三,年龄:28</p>
 
-<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">import</span> <span class="nn">java.io.RandomAccessFile</span><span class="o">;</span>
-<span class="kn">import</span> <span class="nn">java.nio.channels.FileChannel</span><span class="o">;</span>
-<span class="kn">import</span> <span class="nn">java.nio.ByteBuffer</span><span class="o">;</span>
-<span class="kn">import</span> <span class="nn">java.nio.file.Path</span><span class="o">;</span>
-<span class="kn">import</span> <span class="nn">java.nio.file.Files</span><span class="o">;</span>
+<p>输出:</p>
 
-<span class="kd">public</span> <span class="kd">class</span> <span class="nc">ResumeCopy</span> <span class="o">{</span>
-    <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="nc">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="kd">throws</span> <span class="nc">Exception</span> <span class="o">{</span>
-        <span class="nc">Path</span> <span class="n">srcPath</span> <span class="o">=</span> <span class="nc">Path</span><span class="o">.</span><span class="na">of</span><span class="o">(</span><span class="s">"huge.src"</span><span class="o">);</span>
-        <span class="nc">Path</span> <span class="n">dstPath</span> <span class="o">=</span> <span class="nc">Path</span><span class="o">.</span><span class="na">of</span><span class="o">(</span><span class="s">"huge.dst"</span><span class="o">);</span>
-        <span class="nc">Path</span> <span class="n">progressPath</span> <span class="o">=</span> <span class="nc">Path</span><span class="o">.</span><span class="na">of</span><span class="o">(</span><span class="s">"huge.progress"</span><span class="o">);</span>
+<p>跳过的字符数: 5
+用户信息: 三,年龄:28</p>
 
-        <span class="kt">long</span> <span class="n">offset</span> <span class="o">=</span> <span class="nc">Files</span><span class="o">.</span><span class="na">exists</span><span class="o">(</span><span class="n">progressPath</span><span class="o">)</span> <span class="o">?</span> <span class="nc">Long</span><span class="o">.</span><span class="na">parseLong</span><span class="o">(</span><span class="nc">Files</span><span class="o">.</span><span class="na">readString</span><span class="o">(</span><span class="n">progressPath</span><span class="o">))</span> <span class="o">:</span> <span class="mi">0L</span><span class="o">;</span>
+<p>Writer字符输出流​
+Writer是所有字符输出流的抽象基类,用于写入字符数据。</p>
 
-        <span class="k">try</span> <span class="o">(</span><span class="nc">RandomAccessFile</span> <span class="n">src</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">RandomAccessFile</span><span class="o">(</span><span class="n">srcPath</span><span class="o">.</span><span class="na">toFile</span><span class="o">(),</span> <span class="s">"r"</span><span class="o">);</span>
-             <span class="nc">RandomAccessFile</span> <span class="n">dst</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">RandomAccessFile</span><span class="o">(</span><span class="n">dstPath</span><span class="o">.</span><span class="na">toFile</span><span class="o">(),</span> <span class="s">"rw"</span><span class="o">);</span>
-             <span class="nc">FileChannel</span> <span class="n">srcCh</span> <span class="o">=</span> <span class="n">src</span><span class="o">.</span><span class="na">getChannel</span><span class="o">();</span>
-             <span class="nc">FileChannel</span> <span class="n">dstCh</span> <span class="o">=</span> <span class="n">dst</span><span class="o">.</span><span class="na">getChannel</span><span class="o">())</span> <span class="o">{</span>
-            <span class="n">dstCh</span><span class="o">.</span><span class="na">position</span><span class="o">(</span><span class="n">offset</span><span class="o">);</span>
-            <span class="kt">long</span> <span class="n">pos</span> <span class="o">=</span> <span class="n">offset</span><span class="o">;</span>
-            <span class="kt">long</span> <span class="n">size</span> <span class="o">=</span> <span class="n">srcCh</span><span class="o">.</span><span class="na">size</span><span class="o">();</span>
-            <span class="nc">ByteBuffer</span> <span class="n">buf</span> <span class="o">=</span> <span class="nc">ByteBuffer</span><span class="o">.</span><span class="na">allocateDirect</span><span class="o">(</span><span class="mi">8</span> <span class="o">*</span> <span class="mi">1024</span> <span class="o">*</span> <span class="mi">1024</span><span class="o">);</span>
-            <span class="k">while</span> <span class="o">(</span><span class="n">pos</span> <span class="o">&lt;</span> <span class="n">size</span><span class="o">)</span> <span class="o">{</span>
-                <span class="n">buf</span><span class="o">.</span><span class="na">clear</span><span class="o">();</span>
-                <span class="kt">int</span> <span class="n">read</span> <span class="o">=</span> <span class="n">srcCh</span><span class="o">.</span><span class="na">read</span><span class="o">(</span><span class="n">buf</span><span class="o">,</span> <span class="n">pos</span><span class="o">);</span>
-                <span class="k">if</span> <span class="o">(</span><span class="n">read</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="o">)</span> <span class="k">break</span><span class="o">;</span>
-                <span class="n">buf</span><span class="o">.</span><span class="na">flip</span><span class="o">();</span>
-                <span class="k">while</span> <span class="o">(</span><span class="n">buf</span><span class="o">.</span><span class="na">hasRemaining</span><span class="o">())</span> <span class="o">{</span>
-                    <span class="n">dstCh</span><span class="o">.</span><span class="na">write</span><span class="o">(</span><span class="n">buf</span><span class="o">);</span>
-                <span class="o">}</span>
-                <span class="n">pos</span> <span class="o">+=</span> <span class="n">read</span><span class="o">;</span>
-                <span class="nc">Files</span><span class="o">.</span><span class="na">writeString</span><span class="o">(</span><span class="n">progressPath</span><span class="o">,</span> <span class="nc">Long</span><span class="o">.</span><span class="na">toString</span><span class="o">(</span><span class="n">pos</span><span class="o">));</span>
-            <span class="o">}</span>
-        <span class="o">}</span>
+<p>核心API方法:</p>
 
-        <span class="k">if</span> <span class="o">(</span><span class="nc">Files</span><span class="o">.</span><span class="na">size</span><span class="o">(</span><span class="n">dstPath</span><span class="o">)</span> <span class="o">==</span> <span class="nc">Files</span><span class="o">.</span><span class="na">size</span><span class="o">(</span><span class="n">srcPath</span><span class="o">))</span> <span class="o">{</span>
-            <span class="nc">Files</span><span class="o">.</span><span class="na">deleteIfExists</span><span class="o">(</span><span class="n">progressPath</span><span class="o">);</span>
-        <span class="o">}</span>
-    <span class="o">}</span>
-<span class="o">}</span>
-</code></pre></div></div>
+<p>write(int c): 写入单个字符
+write(char[] cbuf): 写入字符数组
+write(char[] cbuf, int off, int len): 写入字符数组的一部分
+write(String str): 写入字符串
+write(String str, int off, int len): 写入字符串的一部分
+append(CharSequence csq): 追加字符序列
+append(char c): 追加单个字符
+flush(): 刷新缓冲区
+close(): 关闭流
+OutputStreamWriter桥接转换​
+OutputStreamWriter是字符流到字节流的桥梁:</p>
 
-<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">import</span> <span class="nn">java.net.HttpURLConnection</span><span class="o">;</span>
-<span class="kn">import</span> <span class="nn">java.net.URL</span><span class="o">;</span>
-<span class="kn">import</span> <span class="nn">java.io.InputStream</span><span class="o">;</span>
-<span class="kn">import</span> <span class="nn">java.io.RandomAccessFile</span><span class="o">;</span>
+<p>public class OutputStreamWriter extends Writer {
+    // 内部使用StreamEncoder进行编码
+}</p>
 
-<span class="kd">public</span> <span class="kd">class</span> <span class="nc">HttpRangeDownload</span> <span class="o">{</span>
-    <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="nc">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="kd">throws</span> <span class="nc">Exception</span> <span class="o">{</span>
-        <span class="nc">String</span> <span class="n">fileUrl</span> <span class="o">=</span> <span class="s">"https://example.com/large.bin"</span><span class="o">;</span>
-        <span class="nc">String</span> <span class="n">target</span> <span class="o">=</span> <span class="s">"large.bin"</span><span class="o">;</span>
-        <span class="nc">String</span> <span class="n">progressFile</span> <span class="o">=</span> <span class="s">"large.bin.offset"</span><span class="o">;</span>
+<p>public class FileWriter extends OutputStreamWriter {
+    // 简化文件写入操作
+}</p>
 
-        <span class="kt">long</span> <span class="n">offset</span> <span class="o">=</span> <span class="mi">0L</span><span class="o">;</span>
-        <span class="n">java</span><span class="o">.</span><span class="na">nio</span><span class="o">.</span><span class="na">file</span><span class="o">.</span><span class="na">Path</span> <span class="n">p</span> <span class="o">=</span> <span class="n">java</span><span class="o">.</span><span class="na">nio</span><span class="o">.</span><span class="na">file</span><span class="o">.</span><span class="na">Path</span><span class="o">.</span><span class="na">of</span><span class="o">(</span><span class="n">progressFile</span><span class="o">);</span>
-        <span class="k">if</span> <span class="o">(</span><span class="n">java</span><span class="o">.</span><span class="na">nio</span><span class="o">.</span><span class="na">file</span><span class="o">.</span><span class="na">Files</span><span class="o">.</span><span class="na">exists</span><span class="o">(</span><span class="n">p</span><span class="o">))</span> <span class="o">{</span>
-            <span class="n">offset</span> <span class="o">=</span> <span class="nc">Long</span><span class="o">.</span><span class="na">parseLong</span><span class="o">(</span><span class="n">java</span><span class="o">.</span><span class="na">nio</span><span class="o">.</span><span class="na">file</span><span class="o">.</span><span class="na">Files</span><span class="o">.</span><span class="na">readString</span><span class="o">(</span><span class="n">p</span><span class="o">));</span>
-        <span class="o">}</span>
+<p>示例代码:</p>
 
-        <span class="nc">HttpURLConnection</span> <span class="n">conn</span> <span class="o">=</span> <span class="o">(</span><span class="nc">HttpURLConnection</span><span class="o">)</span> <span class="k">new</span> <span class="no">URL</span><span class="o">(</span><span class="n">fileUrl</span><span class="o">).</span><span class="na">openConnection</span><span class="o">();</span>
-        <span class="n">conn</span><span class="o">.</span><span class="na">setRequestProperty</span><span class="o">(</span><span class="s">"Range"</span><span class="o">,</span> <span class="s">"bytes="</span> <span class="o">+</span> <span class="n">offset</span> <span class="o">+</span> <span class="s">"-"</span><span class="o">);</span>
-        <span class="n">conn</span><span class="o">.</span><span class="na">connect</span><span class="o">();</span>
+<p>public class NotificationWriter {
+    public void saveNotification(String message) {
+        try (Writer writer = new FileWriter(“notifications.txt”, true)) {
+            writer.write(“【系统通知】”);
+            writer.write(message);
+            writer.write(“\n”);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+}</p>
 
-        <span class="k">try</span> <span class="o">(</span><span class="nc">InputStream</span> <span class="n">in</span> <span class="o">=</span> <span class="n">conn</span><span class="o">.</span><span class="na">getInputStream</span><span class="o">();</span>
-             <span class="nc">RandomAccessFile</span> <span class="n">raf</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">RandomAccessFile</span><span class="o">(</span><span class="n">target</span><span class="o">,</span> <span class="s">"rw"</span><span class="o">))</span> <span class="o">{</span>
-            <span class="n">raf</span><span class="o">.</span><span class="na">seek</span><span class="o">(</span><span class="n">offset</span><span class="o">);</span>
-            <span class="kt">byte</span><span class="o">[]</span> <span class="n">buf</span> <span class="o">=</span> <span class="k">new</span> <span class="kt">byte</span><span class="o">[</span><span class="mi">8192</span><span class="o">];</span>
-            <span class="kt">int</span> <span class="n">n</span><span class="o">;</span>
-            <span class="kt">long</span> <span class="n">pos</span> <span class="o">=</span> <span class="n">offset</span><span class="o">;</span>
-            <span class="k">while</span> <span class="o">((</span><span class="n">n</span> <span class="o">=</span> <span class="n">in</span><span class="o">.</span><span class="na">read</span><span class="o">(</span><span class="n">buf</span><span class="o">))</span> <span class="o">!=</span> <span class="o">-</span><span class="mi">1</span><span class="o">)</span> <span class="o">{</span>
-                <span class="n">raf</span><span class="o">.</span><span class="na">write</span><span class="o">(</span><span class="n">buf</span><span class="o">,</span> <span class="mi">0</span><span class="o">,</span> <span class="n">n</span><span class="o">);</span>
-                <span class="n">pos</span> <span class="o">+=</span> <span class="n">n</span><span class="o">;</span>
-                <span class="n">java</span><span class="o">.</span><span class="na">nio</span><span class="o">.</span><span class="na">file</span><span class="o">.</span><span class="na">Files</span><span class="o">.</span><span class="na">writeString</span><span class="o">(</span><span class="n">p</span><span class="o">,</span> <span class="nc">Long</span><span class="o">.</span><span class="na">toString</span><span class="o">(</span><span class="n">pos</span><span class="o">));</span>
-            <span class="o">}</span>
-        <span class="o">}</span>
-    <span class="o">}</span>
-<span class="o">}</span>
-</code></pre></div></div>
+<h2 id="实战应用大文件断点续传">实战应用:大文件断点续传</h2>
 
-<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">import</span> <span class="nn">java.io.RandomAccessFile</span><span class="o">;</span>
-<span class="kn">import</span> <span class="nn">java.nio.channels.FileChannel</span><span class="o">;</span>
-<span class="kn">import</span> <span class="nn">java.util.List</span><span class="o">;</span>
+<p>`典型应用场景：</p>
 
-<span class="kd">public</span> <span class="kd">class</span> <span class="nc">MergeChunksFast</span> <span class="o">{</span>
-    <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">merge</span><span class="o">(</span><span class="nc">String</span> <span class="n">targetFile</span><span class="o">,</span> <span class="nc">List</span><span class="o">&lt;</span><span class="nc">String</span><span class="o">&gt;</span> <span class="n">chunkFiles</span><span class="o">)</span> <span class="kd">throws</span> <span class="nc">Exception</span> <span class="o">{</span>
-        <span class="k">try</span> <span class="o">(</span><span class="nc">RandomAccessFile</span> <span class="n">raf</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">RandomAccessFile</span><span class="o">(</span><span class="n">targetFile</span><span class="o">,</span> <span class="s">"rw"</span><span class="o">))</span> <span class="o">{</span>
-            <span class="nc">FileChannel</span> <span class="n">out</span> <span class="o">=</span> <span class="n">raf</span><span class="o">.</span><span class="na">getChannel</span><span class="o">();</span>
-            <span class="kt">long</span> <span class="n">position</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span>
-            <span class="k">for</span> <span class="o">(</span><span class="nc">String</span> <span class="n">chunk</span> <span class="o">:</span> <span class="n">chunkFiles</span><span class="o">)</span> <span class="o">{</span>
-                <span class="k">try</span> <span class="o">(</span><span class="nc">RandomAccessFile</span> <span class="n">chunkRaf</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">RandomAccessFile</span><span class="o">(</span><span class="n">chunk</span><span class="o">,</span> <span class="s">"r"</span><span class="o">))</span> <span class="o">{</span>
-                    <span class="nc">FileChannel</span> <span class="n">in</span> <span class="o">=</span> <span class="n">chunkRaf</span><span class="o">.</span><span class="na">getChannel</span><span class="o">();</span>
-                    <span class="kt">long</span> <span class="n">size</span> <span class="o">=</span> <span class="n">in</span><span class="o">.</span><span class="na">size</span><span class="o">();</span>
-                    <span class="kt">long</span> <span class="n">sent</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span>
-                    <span class="k">while</span> <span class="o">(</span><span class="n">sent</span> <span class="o">&lt;</span> <span class="n">size</span><span class="o">)</span> <span class="o">{</span>
-                        <span class="n">sent</span> <span class="o">+=</span> <span class="n">in</span><span class="o">.</span><span class="na">transferTo</span><span class="o">(</span><span class="n">sent</span><span class="o">,</span> <span class="n">size</span> <span class="o">-</span> <span class="n">sent</span><span class="o">,</span> <span class="n">out</span><span class="o">.</span><span class="na">position</span><span class="o">(</span><span class="n">position</span> <span class="o">+</span> <span class="n">sent</span><span class="o">));</span>
-                    <span class="o">}</span>
-                    <span class="n">position</span> <span class="o">+=</span> <span class="n">size</span><span class="o">;</span>
-                <span class="o">}</span>
-            <span class="o">}</span>
-            <span class="n">out</span><span class="o">.</span><span class="na">truncate</span><span class="o">(</span><span class="n">position</span><span class="o">);</span>
-        <span class="o">}</span>
-    <span class="o">}</span>
-<span class="o">}</span>
-</code></pre></div></div>]]></content><author><name>朱</name></author><category term="Java" /><category term="IO" /><category term="Stream" /><category term="NIO" /><category term="文件传输" /><summary type="html"><![CDATA[简要导读：本文覆盖 IO 流核心概念、字节流与字符流的常用操作，以及大文件断点续传的实战方案（本地与 HTTP Range）。]]></summary></entry><entry><title type="html">Best buddy</title><link href="https://zwany1.github.io/2025/12/08/best-buddy/" rel="alternate" type="text/html" title="Best buddy" /><published>2025-12-08T17:56:55+08:00</published><updated>2025-12-08T17:56:55+08:00</updated><id>https://zwany1.github.io/2025/12/08/best-buddy</id><content type="html" xml:base="https://zwany1.github.io/2025/12/08/best-buddy/"><![CDATA[<h1 id="best-friend-memoir">Best Friend Memoir</h1>
+<p>前端上传 10GB 视频 → 切成 100 个 100MB 的分片
+后端逐个接收分片 → 最后调用 mergeChunks() 合并成完整视频
+targetFile：最终要生成的大文件路径，比如 /data/videos/movie.mp4
+chunkFiles：分片文件列表，比如 [“/tmp/chunk_0”, “/tmp/chunk_1”, …]
+chunkSize：每个分片的预期大小（单位：字节），比如 100 * 1024 * 1024（100MB）</p>
+
+<p>public void mergeChunksFast(String targetFile, List<String> chunkFiles) throws IOException {
+    try (RandomAccessFile raf = new RandomAccessFile(targetFile, "rw")) {
+        FileChannel out = raf.getChannel();
+        long position = 0;</String></p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    for (String chunk : chunkFiles) {
+        try (RandomAccessFile chunkRaf = new RandomAccessFile(chunk, "r")) {
+            FileChannel in = chunkRaf.getChannel();
+            // 零拷贝：直接从分片文件通道传输到目标通道
+            in.transferTo(0, in.size(), out.position(position));
+            position += in.size();
+        }
+    }
+    out.truncate(position); // 截断多余空间
+} } ```
+</code></pre></div></div>]]></content><author><name>朱</name></author><category term="Java" /><category term="IO" /><category term="Stream" /><category term="NIO" /><category term="文件传输" /><summary type="html"><![CDATA[]]></summary></entry><entry><title type="html">Best buddy</title><link href="https://zwany1.github.io/2025/12/08/best-buddy/" rel="alternate" type="text/html" title="Best buddy" /><published>2025-12-08T17:56:55+08:00</published><updated>2025-12-08T17:56:55+08:00</updated><id>https://zwany1.github.io/2025/12/08/best-buddy</id><content type="html" xml:base="https://zwany1.github.io/2025/12/08/best-buddy/"><![CDATA[<h1 id="best-friend-memoir">Best Friend Memoir</h1>
 
 <p>这是我最好的朋友的故事。我们一起经历了许多难忘的时光，分享了无数的欢乐和泪水。</p>
 
