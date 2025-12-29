@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="3.10.0">Jekyll</generator><link href="https://zwany1.github.io/feed.xml" rel="self" type="application/atom+xml" /><link href="https://zwany1.github.io/" rel="alternate" type="text/html" /><updated>2025-12-26T15:28:53+08:00</updated><id>https://zwany1.github.io/feed.xml</id><title type="html">朱</title><subtitle>朱的个人博客，公众号：朱猪写作</subtitle><author><name>朱</name></author><entry><title type="html">IO基础与流操作</title><link href="https://zwany1.github.io/2025/12/26/IO%E5%9F%BA%E7%A1%80%E4%B8%8E%E6%B5%81%E6%93%8D%E4%BD%9C/" rel="alternate" type="text/html" title="IO基础与流操作" /><published>2025-12-26T00:00:00+08:00</published><updated>2025-12-26T00:00:00+08:00</updated><id>https://zwany1.github.io/2025/12/26/IO%E5%9F%BA%E7%A1%80%E4%B8%8E%E6%B5%81%E6%93%8D%E4%BD%9C</id><content type="html" xml:base="https://zwany1.github.io/2025/12/26/IO%E5%9F%BA%E7%A1%80%E4%B8%8E%E6%B5%81%E6%93%8D%E4%BD%9C/"><![CDATA[<style>
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="3.10.0">Jekyll</generator><link href="https://zwany1.github.io/feed.xml" rel="self" type="application/atom+xml" /><link href="https://zwany1.github.io/" rel="alternate" type="text/html" /><updated>2025-12-29T10:39:13+08:00</updated><id>https://zwany1.github.io/feed.xml</id><title type="html">朱</title><subtitle>朱的个人博客，公众号：朱猪写作</subtitle><author><name>朱</name></author><entry><title type="html">IO基础与流操作</title><link href="https://zwany1.github.io/2025/12/26/IO%E5%9F%BA%E7%A1%80%E4%B8%8E%E6%B5%81%E6%93%8D%E4%BD%9C/" rel="alternate" type="text/html" title="IO基础与流操作" /><published>2025-12-26T00:00:00+08:00</published><updated>2025-12-26T00:00:00+08:00</updated><id>https://zwany1.github.io/2025/12/26/IO%E5%9F%BA%E7%A1%80%E4%B8%8E%E6%B5%81%E6%93%8D%E4%BD%9C</id><content type="html" xml:base="https://zwany1.github.io/2025/12/26/IO%E5%9F%BA%E7%A1%80%E4%B8%8E%E6%B5%81%E6%93%8D%E4%BD%9C/"><![CDATA[<style>
 .article-content.markdown-body {
   line-height: 1.85;
   font-size: 16px;
@@ -38,18 +38,18 @@
 
 <p>Java IO包含面向字节与面向字符两类抽象。字节流处理原始二进制数据，字符流在字节与字符之间进行编码转换。阻塞IO在读写时占用线程，NIO通过缓冲区与通道支持更高效的文件与网络传输。</p>
 
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>IO（Input/Output）是指数据的输入与输出操作。当应用程序需要从外部存储（如文件、数据库、网络）读取数据到内存时,这个过程称为输入;反之,将内存中的数据写出到外部存储的过程称为输出。由于数据传输的特性类似于水流,因此我们将这种数据传输机制称为IO流。
+<p>IO（Input/Output）是指数据的输入与输出操作。当应用程序需要从外部存储（如文件、数据库、网络）读取数据到内存时,这个过程称为输入;反之,将内存中的数据写出到外部存储的过程称为输出。由于数据传输的特性类似于水流,因此我们将这种数据传输机制称为IO流。</p>
 
-Java的IO流体系以4个抽象基类为核心,派生出40多个具体实现类:
+<p>Java的IO流体系以4个抽象基类为核心,派生出40多个具体实现类:</p>
 
-InputStream / Reader: 输入流的抽象基类,前者处理字节数据,后者处理字符数据
-OutputStream / Writer: 输出流的抽象基类,前者处理字节数据,后者处理字符数据
-
-</code></pre></div></div>
+<ul>
+  <li>InputStream / Reader: 输入流的抽象基类,前者处理字节数据,后者处理字符数据</li>
+  <li>OutputStream / Writer: 输出流的抽象基类,前者处理字节数据,后者处理字符数据</li>
+</ul>
 
 <h2 id="字节流操作">字节流操作</h2>
-<p>InputStream核心方法​
-InputStream是所有字节输入流的抽象父类,用于从数据源读取字节数据到内存。</p>
+<h3 id="inputstream核心方法">InputStream核心方法</h3>
+<p>InputStream是所有字节输入流的抽象父类,用于从数据源读取字节数据到内存。</p>
 
 <p>核心API方法:</p>
 
@@ -67,24 +67,25 @@ transferTo(OutputStream out): 将所有字节传输到输出流
 FileInputStream文件读取示例​
 FileInputStream是最常用的字节输入流实现,可直接读取文件内容:</p>
 
-<p>public class LogFileReader {
-    public void readAccessLog(String logPath) {
-        try (InputStream fis = new FileInputStream(logPath)) {
-            System.out.println(“日志文件可读字节数: “ + fis.available());</p>
-
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>        // 跳过前10个字节(通常是时间戳)
-        long skipped = fis.skip(10);
-        System.out.println("已跳过字节数: " + skipped);
-        
-        System.out.print("访问记录内容: ");
-        int byteData;
-        while ((byteData = fis.read()) != -1) {
-            System.out.print((char) byteData);
-        }
-    } catch (IOException e) {
-        e.printStackTrace();
-    }
-} }
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">class</span> <span class="nc">LogFileReader</span> <span class="o">{</span>
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">readAccessLog</span><span class="o">(</span><span class="nc">String</span> <span class="n">logPath</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">try</span> <span class="o">(</span><span class="nc">InputStream</span> <span class="n">fis</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">FileInputStream</span><span class="o">(</span><span class="n">logPath</span><span class="o">))</span> <span class="o">{</span>
+            <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"日志文件可读字节数: "</span> <span class="o">+</span> <span class="n">fis</span><span class="o">.</span><span class="na">available</span><span class="o">());</span>
+            
+            <span class="c1">// 跳过前10个字节(通常是时间戳)</span>
+            <span class="kt">long</span> <span class="n">skipped</span> <span class="o">=</span> <span class="n">fis</span><span class="o">.</span><span class="na">skip</span><span class="o">(</span><span class="mi">10</span><span class="o">);</span>
+            <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"已跳过字节数: "</span> <span class="o">+</span> <span class="n">skipped</span><span class="o">);</span>
+            
+            <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">print</span><span class="o">(</span><span class="s">"访问记录内容: "</span><span class="o">);</span>
+            <span class="kt">int</span> <span class="n">byteData</span><span class="o">;</span>
+            <span class="k">while</span> <span class="o">((</span><span class="n">byteData</span> <span class="o">=</span> <span class="n">fis</span><span class="o">.</span><span class="na">read</span><span class="o">())</span> <span class="o">!=</span> <span class="o">-</span><span class="mi">1</span><span class="o">)</span> <span class="o">{</span>
+                <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">print</span><span class="o">((</span><span class="kt">char</span><span class="o">)</span> <span class="n">byteData</span><span class="o">);</span>
+            <span class="o">}</span>
+        <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="nc">IOException</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+            <span class="n">e</span><span class="o">.</span><span class="na">printStackTrace</span><span class="o">();</span>
+        <span class="o">}</span>
+    <span class="o">}</span>
+<span class="o">}</span>
 </code></pre></div></div>
 
 <p>假设access.log文件内容为:</p>
@@ -100,54 +101,58 @@ FileInputStream是最常用的字节输入流实现,可直接读取文件内容:
 <p>BufferedInputStream缓冲读取​
 实际项目中,我们通常会搭配BufferedInputStream来提升读取性能:</p>
 
-<p>public class ConfigLoader {
-    public String loadConfig(String configPath) throws IOException {
-        try (BufferedInputStream bis = new BufferedInputStream(
-                new FileInputStream(configPath))) {
-            // 使用JDK 9+的便捷方法一次性读取全部内容
-            return new String(bis.readAllBytes());
-        }
-    }
-}</p>
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">class</span> <span class="nc">ConfigLoader</span> <span class="o">{</span>
+    <span class="kd">public</span> <span class="nc">String</span> <span class="nf">loadConfig</span><span class="o">(</span><span class="nc">String</span> <span class="n">configPath</span><span class="o">)</span> <span class="kd">throws</span> <span class="nc">IOException</span> <span class="o">{</span>
+        <span class="k">try</span> <span class="o">(</span><span class="nc">BufferedInputStream</span> <span class="n">bis</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">BufferedInputStream</span><span class="o">(</span>
+                <span class="k">new</span> <span class="nf">FileInputStream</span><span class="o">(</span><span class="n">configPath</span><span class="o">)))</span> <span class="o">{</span>
+            <span class="c1">// 使用JDK 9+的便捷方法一次性读取全部内容</span>
+            <span class="k">return</span> <span class="k">new</span> <span class="nf">String</span><span class="o">(</span><span class="n">bis</span><span class="o">.</span><span class="na">readAllBytes</span><span class="o">());</span>
+        <span class="o">}</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
 
 <p>DataInputStream类型化读取​
 DataInputStream可以读取Java基本数据类型,常用于读取二进制配置文件:</p>
 
-<p>public class BinaryConfigReader {
-    public void readDatabaseConfig(String path) throws IOException {
-        try (DataInputStream dis = new DataInputStream(
-                new FileInputStream(path))) {
-            boolean isEnabled = dis.readBoolean();      // 读取布尔值
-            int maxConnections = dis.readInt();         // 读取整数
-            String dbUrl = dis.readUTF();               // 读取字符串</p>
-
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>        System.out.println("数据库启用状态: " + isEnabled);
-        System.out.println("最大连接数: " + maxConnections);
-        System.out.println("数据库URL: " + dbUrl);
-    }
-} }
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">class</span> <span class="nc">BinaryConfigReader</span> <span class="o">{</span>
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">readDatabaseConfig</span><span class="o">(</span><span class="nc">String</span> <span class="n">path</span><span class="o">)</span> <span class="kd">throws</span> <span class="nc">IOException</span> <span class="o">{</span>
+        <span class="k">try</span> <span class="o">(</span><span class="nc">DataInputStream</span> <span class="n">dis</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">DataInputStream</span><span class="o">(</span>
+                <span class="k">new</span> <span class="nf">FileInputStream</span><span class="o">(</span><span class="n">path</span><span class="o">)))</span> <span class="o">{</span>
+            <span class="kt">boolean</span> <span class="n">isEnabled</span> <span class="o">=</span> <span class="n">dis</span><span class="o">.</span><span class="na">readBoolean</span><span class="o">();</span>      <span class="c1">// 读取布尔值</span>
+            <span class="kt">int</span> <span class="n">maxConnections</span> <span class="o">=</span> <span class="n">dis</span><span class="o">.</span><span class="na">readInt</span><span class="o">();</span>         <span class="c1">// 读取整数</span>
+            <span class="nc">String</span> <span class="n">dbUrl</span> <span class="o">=</span> <span class="n">dis</span><span class="o">.</span><span class="na">readUTF</span><span class="o">();</span>               <span class="c1">// 读取字符串</span>
+            
+            <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"数据库启用状态: "</span> <span class="o">+</span> <span class="n">isEnabled</span><span class="o">);</span>
+            <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"最大连接数: "</span> <span class="o">+</span> <span class="n">maxConnections</span><span class="o">);</span>
+            <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"数据库URL: "</span> <span class="o">+</span> <span class="n">dbUrl</span><span class="o">);</span>
+        <span class="o">}</span>
+    <span class="o">}</span>
+<span class="o">}</span>
 </code></pre></div></div>
 
 <p>ObjectInputStream对象反序列化​
 ObjectInputStream用于反序列化Java对象,对象必须实现Serializable接口:</p>
 
-<p>public class UserSessionManager {
-    public UserSession restoreSession(String sessionFile) throws Exception {
-        try (ObjectInputStream ois = new ObjectInputStream(
-                new FileInputStream(sessionFile))) {
-            return (UserSession) ois.readObject();
-        }
-    }
-}</p>
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">class</span> <span class="nc">UserSessionManager</span> <span class="o">{</span>
+    <span class="kd">public</span> <span class="nc">UserSession</span> <span class="nf">restoreSession</span><span class="o">(</span><span class="nc">String</span> <span class="n">sessionFile</span><span class="o">)</span> <span class="kd">throws</span> <span class="nc">Exception</span> <span class="o">{</span>
+        <span class="k">try</span> <span class="o">(</span><span class="nc">ObjectInputStream</span> <span class="n">ois</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">ObjectInputStream</span><span class="o">(</span>
+                <span class="k">new</span> <span class="nf">FileInputStream</span><span class="o">(</span><span class="n">sessionFile</span><span class="o">)))</span> <span class="o">{</span>
+            <span class="k">return</span> <span class="o">(</span><span class="nc">UserSession</span><span class="o">)</span> <span class="n">ois</span><span class="o">.</span><span class="na">readObject</span><span class="o">();</span>
+        <span class="o">}</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
 
-<p>class UserSession implements Serializable {
-    private static final long serialVersionUID = 1L;</p>
-
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>private String userId;
-private String sessionToken;
-private transient String password; // transient字段不会被序列化
-
-// getters and setters... }
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">class</span> <span class="nc">UserSession</span> <span class="kd">implements</span> <span class="nc">Serializable</span> <span class="o">{</span>
+    <span class="kd">private</span> <span class="kd">static</span> <span class="kd">final</span> <span class="kt">long</span> <span class="n">serialVersionUID</span> <span class="o">=</span> <span class="mi">1L</span><span class="o">;</span>
+    
+    <span class="kd">private</span> <span class="nc">String</span> <span class="n">userId</span><span class="o">;</span>
+    <span class="kd">private</span> <span class="nc">String</span> <span class="n">sessionToken</span><span class="o">;</span>
+    <span class="kd">private</span> <span class="kd">transient</span> <span class="nc">String</span> <span class="n">password</span><span class="o">;</span> <span class="c1">// transient字段不会被序列化</span>
+    
+    <span class="c1">// getters and setters...</span>
+<span class="o">}</span>
 </code></pre></div></div>
 
 <p>OutputStream核心方法​
@@ -160,56 +165,60 @@ write(byte[] b): 写入字节数组
 write(byte[] b, int off, int len): 写入字节数组的指定部分
 flush(): 刷新缓冲区,强制写出缓存数据
 close(): 关闭流并释放资源
-FileOutputStream文件写入示例​
-public class AuditLogger {
-    public void logUserAction(String action) {
-        try (FileOutputStream fos = new FileOutputStream(“audit.log”, true)) { // true表示追加模式
-            byte[] actionBytes = action.getBytes();
-            fos.write(actionBytes);
-            fos.write(‘\n’); // 换行
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-}</p>
+FileOutputStream文件写入示例​</p>
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">class</span> <span class="nc">AuditLogger</span> <span class="o">{</span>
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">logUserAction</span><span class="o">(</span><span class="nc">String</span> <span class="n">action</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">try</span> <span class="o">(</span><span class="nc">FileOutputStream</span> <span class="n">fos</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">FileOutputStream</span><span class="o">(</span><span class="s">"audit.log"</span><span class="o">,</span> <span class="kc">true</span><span class="o">))</span> <span class="o">{</span> <span class="c1">// true表示追加模式</span>
+            <span class="kt">byte</span><span class="o">[]</span> <span class="n">actionBytes</span> <span class="o">=</span> <span class="n">action</span><span class="o">.</span><span class="na">getBytes</span><span class="o">();</span>
+            <span class="n">fos</span><span class="o">.</span><span class="na">write</span><span class="o">(</span><span class="n">actionBytes</span><span class="o">);</span>
+            <span class="n">fos</span><span class="o">.</span><span class="na">write</span><span class="o">(</span><span class="sc">'\n'</span><span class="o">);</span> <span class="c1">// 换行</span>
+        <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="nc">IOException</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+            <span class="n">e</span><span class="o">.</span><span class="na">printStackTrace</span><span class="o">();</span>
+        <span class="o">}</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
 
 <p>实际项目中通常搭配BufferedOutputStream使用:</p>
 
-<p>public class ReportExporter {
-    public void exportReport(String reportPath, List<String> data) throws IOException {
-        try (BufferedOutputStream bos = new BufferedOutputStream(
-                new FileOutputStream(reportPath))) {
-            for (String line : data) {
-                bos.write(line.getBytes());
-                bos.write('\n');
-            }
-            // BufferedOutputStream会在close时自动flush,也可手动flush
-            bos.flush();
-        }
-    }
-}</String></p>
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">class</span> <span class="nc">ReportExporter</span> <span class="o">{</span>
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">exportReport</span><span class="o">(</span><span class="nc">String</span> <span class="n">reportPath</span><span class="o">,</span> <span class="nc">List</span><span class="o">&lt;</span><span class="nc">String</span><span class="o">&gt;</span> <span class="n">data</span><span class="o">)</span> <span class="kd">throws</span> <span class="nc">IOException</span> <span class="o">{</span>
+        <span class="k">try</span> <span class="o">(</span><span class="nc">BufferedOutputStream</span> <span class="n">bos</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">BufferedOutputStream</span><span class="o">(</span>
+                <span class="k">new</span> <span class="nf">FileOutputStream</span><span class="o">(</span><span class="n">reportPath</span><span class="o">)))</span> <span class="o">{</span>
+            <span class="k">for</span> <span class="o">(</span><span class="nc">String</span> <span class="n">line</span> <span class="o">:</span> <span class="n">data</span><span class="o">)</span> <span class="o">{</span>
+                <span class="n">bos</span><span class="o">.</span><span class="na">write</span><span class="o">(</span><span class="n">line</span><span class="o">.</span><span class="na">getBytes</span><span class="o">());</span>
+                <span class="n">bos</span><span class="o">.</span><span class="na">write</span><span class="o">(</span><span class="sc">'\n'</span><span class="o">);</span>
+            <span class="o">}</span>
+            <span class="c1">// BufferedOutputStream会在close时自动flush,也可手动flush</span>
+            <span class="n">bos</span><span class="o">.</span><span class="na">flush</span><span class="o">();</span>
+        <span class="o">}</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
 
-<p>DataOutputStream类型化写入​
-public class BinaryConfigWriter {
-    public void saveDatabaseConfig(String path) throws IOException {
-        try (DataOutputStream dos = new DataOutputStream(
-                new FileOutputStream(path))) {
-            dos.writeBoolean(true);                    // 写入布尔值
-            dos.writeInt(100);                         // 写入整数
-            dos.writeUTF(“jdbc:mysql://localhost:3306/app”); // 写入字符串
-        }
-    }
-}</p>
+<p>DataOutputStream类型化写入​</p>
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">class</span> <span class="nc">BinaryConfigWriter</span> <span class="o">{</span>
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">saveDatabaseConfig</span><span class="o">(</span><span class="nc">String</span> <span class="n">path</span><span class="o">)</span> <span class="kd">throws</span> <span class="nc">IOException</span> <span class="o">{</span>
+        <span class="k">try</span> <span class="o">(</span><span class="nc">DataOutputStream</span> <span class="n">dos</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">DataOutputStream</span><span class="o">(</span>
+                <span class="k">new</span> <span class="nf">FileOutputStream</span><span class="o">(</span><span class="n">path</span><span class="o">)))</span> <span class="o">{</span>
+            <span class="n">dos</span><span class="o">.</span><span class="na">writeBoolean</span><span class="o">(</span><span class="kc">true</span><span class="o">);</span>                    <span class="c1">// 写入布尔值</span>
+            <span class="n">dos</span><span class="o">.</span><span class="na">writeInt</span><span class="o">(</span><span class="mi">100</span><span class="o">);</span>                         <span class="c1">// 写入整数</span>
+            <span class="n">dos</span><span class="o">.</span><span class="na">writeUTF</span><span class="o">(</span><span class="s">"jdbc:mysql://localhost:3306/app"</span><span class="o">);</span> <span class="c1">// 写入字符串</span>
+        <span class="o">}</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
 
-<p>ObjectOutputStream对象序列化​
-public class SessionPersistence {
-    public void saveSession(UserSession session, String path) throws IOException {
-        try (ObjectOutputStream oos = new ObjectOutputStream(
-                new FileOutputStream(path))) {
-            oos.writeObject(session);
-        }
-    }
-}</p>
+<p>ObjectOutputStream对象序列化​</p>
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">class</span> <span class="nc">SessionPersistence</span> <span class="o">{</span>
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">saveSession</span><span class="o">(</span><span class="nc">UserSession</span> <span class="n">session</span><span class="o">,</span> <span class="nc">String</span> <span class="n">path</span><span class="o">)</span> <span class="kd">throws</span> <span class="nc">IOException</span> <span class="o">{</span>
+        <span class="k">try</span> <span class="o">(</span><span class="nc">ObjectOutputStream</span> <span class="n">oos</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">ObjectOutputStream</span><span class="o">(</span>
+                <span class="k">new</span> <span class="nf">FileOutputStream</span><span class="o">(</span><span class="n">path</span><span class="o">)))</span> <span class="o">{</span>
+            <span class="n">oos</span><span class="o">.</span><span class="na">writeObject</span><span class="o">(</span><span class="n">session</span><span class="o">);</span>
+        <span class="o">}</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
 
 <hr />
 
@@ -221,13 +230,14 @@ public class SessionPersistence {
 乱码问题: 字符流会按照指定编码正确解析字符
 让我们看看如果用字节流读取中文会发生什么:</p>
 
-<p>// 错误示例：使用字节流读取中文
-try (FileInputStream fis = new FileInputStream(“message.txt”)) {
-    int b;
-    while ((b = fis.read()) != -1) {
-        System.out.print((char) b); // 输出乱码: è¿æ¯ä¸æ
-    }
-}</p>
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// 错误示例：使用字节流读取中文</span>
+<span class="k">try</span> <span class="o">(</span><span class="nc">FileInputStream</span> <span class="n">fis</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">FileInputStream</span><span class="o">(</span><span class="s">"message.txt"</span><span class="o">))</span> <span class="o">{</span>
+    <span class="kt">int</span> <span class="n">b</span><span class="o">;</span>
+    <span class="k">while</span> <span class="o">((</span><span class="n">b</span> <span class="o">=</span> <span class="n">fis</span><span class="o">.</span><span class="na">read</span><span class="o">())</span> <span class="o">!=</span> <span class="o">-</span><span class="mi">1</span><span class="o">)</span> <span class="o">{</span>
+        <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">print</span><span class="o">((</span><span class="kt">char</span><span class="o">)</span> <span class="n">b</span><span class="o">);</span> <span class="c1">// 输出乱码: è¿æ¯ä¸æ</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
 
 <p>字符流默认使用Unicode编码,我们也可以通过构造方法指定编码方式。需要注意的是,Unicode只是字符集(给每个字符分配唯一编号),UTF-8、UTF-16、UTF-32才是具体的编码方案(定义如何存储这些编号)。例如UTF-8编码中,英文占1字节,中文占3字节。</p>
 
@@ -244,32 +254,35 @@ close(): 关闭流释放资源
 InputStreamReader桥接转换​
 InputStreamReader是字节流到字符流的桥梁,其子类FileReader进一步简化了文件读取:</p>
 
-<p>// 继承关系
-public class InputStreamReader extends Reader {
-    // 内部使用StreamDecoder进行解码
-}</p>
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// 继承关系</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">InputStreamReader</span> <span class="kd">extends</span> <span class="nc">Reader</span> <span class="o">{</span>
+    <span class="c1">// 内部使用StreamDecoder进行解码</span>
+<span class="o">}</span>
+</code></pre></div></div>
 
-<p>public class FileReader extends InputStreamReader {
-    // 简化文件读取操作
-}</p>
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">class</span> <span class="nc">FileReader</span> <span class="kd">extends</span> <span class="nc">InputStreamReader</span> <span class="o">{</span>
+    <span class="c1">// 简化文件读取操作</span>
+<span class="o">}</span>
+</code></pre></div></div>
 
 <p>示例代码:</p>
 
-<p>public class MultiLanguageReader {
-    public void readUserProfile(String profilePath) {
-        try (FileReader reader = new FileReader(profilePath)) {
-            int ch;
-            long skipped = reader.skip(5); // 跳过文件头标识
-            System.out.println(“跳过的字符数: “ + skipped);</p>
-
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>        System.out.print("用户信息: ");
-        while ((ch = reader.read()) != -1) {
-            System.out.print((char) ch);
-        }
-    } catch (IOException e) {
-        e.printStackTrace();
-    }
-} }
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">class</span> <span class="nc">MultiLanguageReader</span> <span class="o">{</span>
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">readUserProfile</span><span class="o">(</span><span class="nc">String</span> <span class="n">profilePath</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">try</span> <span class="o">(</span><span class="nc">FileReader</span> <span class="n">reader</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">FileReader</span><span class="o">(</span><span class="n">profilePath</span><span class="o">))</span> <span class="o">{</span>
+            <span class="kt">int</span> <span class="n">ch</span><span class="o">;</span>
+            <span class="kt">long</span> <span class="n">skipped</span> <span class="o">=</span> <span class="n">reader</span><span class="o">.</span><span class="na">skip</span><span class="o">(</span><span class="mi">5</span><span class="o">);</span> <span class="c1">// 跳过文件头标识</span>
+            <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"跳过的字符数: "</span> <span class="o">+</span> <span class="n">skipped</span><span class="o">);</span>
+            
+            <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">print</span><span class="o">(</span><span class="s">"用户信息: "</span><span class="o">);</span>
+            <span class="k">while</span> <span class="o">((</span><span class="n">ch</span> <span class="o">=</span> <span class="n">reader</span><span class="o">.</span><span class="na">read</span><span class="o">())</span> <span class="o">!=</span> <span class="o">-</span><span class="mi">1</span><span class="o">)</span> <span class="o">{</span>
+                <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">print</span><span class="o">((</span><span class="kt">char</span><span class="o">)</span> <span class="n">ch</span><span class="o">);</span>
+            <span class="o">}</span>
+        <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="nc">IOException</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+            <span class="n">e</span><span class="o">.</span><span class="na">printStackTrace</span><span class="o">();</span>
+        <span class="o">}</span>
+    <span class="o">}</span>
+<span class="o">}</span>
 </code></pre></div></div>
 
 <p>假设profile.txt内容为:</p>
@@ -298,31 +311,34 @@ close(): 关闭流
 OutputStreamWriter桥接转换​
 OutputStreamWriter是字符流到字节流的桥梁:</p>
 
-<p>public class OutputStreamWriter extends Writer {
-    // 内部使用StreamEncoder进行编码
-}</p>
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">class</span> <span class="nc">OutputStreamWriter</span> <span class="kd">extends</span> <span class="nc">Writer</span> <span class="o">{</span>
+    <span class="c1">// 内部使用StreamEncoder进行编码</span>
+<span class="o">}</span>
+</code></pre></div></div>
 
-<p>public class FileWriter extends OutputStreamWriter {
-    // 简化文件写入操作
-}</p>
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">class</span> <span class="nc">FileWriter</span> <span class="kd">extends</span> <span class="nc">OutputStreamWriter</span> <span class="o">{</span>
+    <span class="c1">// 简化文件写入操作</span>
+<span class="o">}</span>
+</code></pre></div></div>
 
 <p>示例代码:</p>
 
-<p>public class NotificationWriter {
-    public void saveNotification(String message) {
-        try (Writer writer = new FileWriter(“notifications.txt”, true)) {
-            writer.write(“【系统通知】”);
-            writer.write(message);
-            writer.write(“\n”);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-}</p>
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">class</span> <span class="nc">NotificationWriter</span> <span class="o">{</span>
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">saveNotification</span><span class="o">(</span><span class="nc">String</span> <span class="n">message</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">try</span> <span class="o">(</span><span class="nc">Writer</span> <span class="n">writer</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">FileWriter</span><span class="o">(</span><span class="s">"notifications.txt"</span><span class="o">,</span> <span class="kc">true</span><span class="o">))</span> <span class="o">{</span>
+            <span class="n">writer</span><span class="o">.</span><span class="na">write</span><span class="o">(</span><span class="s">"【系统通知】"</span><span class="o">);</span>
+            <span class="n">writer</span><span class="o">.</span><span class="na">write</span><span class="o">(</span><span class="n">message</span><span class="o">);</span>
+            <span class="n">writer</span><span class="o">.</span><span class="na">write</span><span class="o">(</span><span class="s">"\n"</span><span class="o">);</span>
+        <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="nc">IOException</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+            <span class="n">e</span><span class="o">.</span><span class="na">printStackTrace</span><span class="o">();</span>
+        <span class="o">}</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
 
 <h2 id="实战应用大文件断点续传">实战应用:大文件断点续传</h2>
 
-<p>`典型应用场景：</p>
+<h3 id="典型应用场景">典型应用场景：</h3>
 
 <p>前端上传 10GB 视频 → 切成 100 个 100MB 的分片
 后端逐个接收分片 → 最后调用 mergeChunks() 合并成完整视频
@@ -330,21 +346,22 @@ targetFile：最终要生成的大文件路径，比如 /data/videos/movie.mp4
 chunkFiles：分片文件列表，比如 [“/tmp/chunk_0”, “/tmp/chunk_1”, …]
 chunkSize：每个分片的预期大小（单位：字节），比如 100 * 1024 * 1024（100MB）</p>
 
-<p>public void mergeChunksFast(String targetFile, List<String> chunkFiles) throws IOException {
-    try (RandomAccessFile raf = new RandomAccessFile(targetFile, "rw")) {
-        FileChannel out = raf.getChannel();
-        long position = 0;</String></p>
-
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    for (String chunk : chunkFiles) {
-        try (RandomAccessFile chunkRaf = new RandomAccessFile(chunk, "r")) {
-            FileChannel in = chunkRaf.getChannel();
-            // 零拷贝：直接从分片文件通道传输到目标通道
-            in.transferTo(0, in.size(), out.position(position));
-            position += in.size();
-        }
-    }
-    out.truncate(position); // 截断多余空间
-} } ```
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">public</span> <span class="kt">void</span> <span class="nf">mergeChunksFast</span><span class="o">(</span><span class="nc">String</span> <span class="n">targetFile</span><span class="o">,</span> <span class="nc">List</span><span class="o">&lt;</span><span class="nc">String</span><span class="o">&gt;</span> <span class="n">chunkFiles</span><span class="o">)</span> <span class="kd">throws</span> <span class="nc">IOException</span> <span class="o">{</span>
+    <span class="k">try</span> <span class="o">(</span><span class="nc">RandomAccessFile</span> <span class="n">raf</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">RandomAccessFile</span><span class="o">(</span><span class="n">targetFile</span><span class="o">,</span> <span class="s">"rw"</span><span class="o">))</span> <span class="o">{</span>
+        <span class="nc">FileChannel</span> <span class="n">out</span> <span class="o">=</span> <span class="n">raf</span><span class="o">.</span><span class="na">getChannel</span><span class="o">();</span>
+        <span class="kt">long</span> <span class="n">position</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span>
+        
+        <span class="k">for</span> <span class="o">(</span><span class="nc">String</span> <span class="n">chunk</span> <span class="o">:</span> <span class="n">chunkFiles</span><span class="o">)</span> <span class="o">{</span>
+            <span class="k">try</span> <span class="o">(</span><span class="nc">RandomAccessFile</span> <span class="n">chunkRaf</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">RandomAccessFile</span><span class="o">(</span><span class="n">chunk</span><span class="o">,</span> <span class="s">"r"</span><span class="o">))</span> <span class="o">{</span>
+                <span class="nc">FileChannel</span> <span class="n">in</span> <span class="o">=</span> <span class="n">chunkRaf</span><span class="o">.</span><span class="na">getChannel</span><span class="o">();</span>
+                <span class="c1">// 零拷贝：直接从分片文件通道传输到目标通道</span>
+                <span class="n">in</span><span class="o">.</span><span class="na">transferTo</span><span class="o">(</span><span class="mi">0</span><span class="o">,</span> <span class="n">in</span><span class="o">.</span><span class="na">size</span><span class="o">(),</span> <span class="n">out</span><span class="o">.</span><span class="na">position</span><span class="o">(</span><span class="n">position</span><span class="o">));</span>
+                <span class="n">position</span> <span class="o">+=</span> <span class="n">in</span><span class="o">.</span><span class="na">size</span><span class="o">();</span>
+            <span class="o">}</span>
+        <span class="o">}</span>
+        <span class="n">out</span><span class="o">.</span><span class="na">truncate</span><span class="o">(</span><span class="n">position</span><span class="o">);</span> <span class="c1">// 截断多余空间</span>
+    <span class="o">}</span>
+<span class="o">}</span>
 </code></pre></div></div>]]></content><author><name>朱</name></author><category term="Java" /><category term="IO" /><category term="Stream" /><category term="NIO" /><category term="文件传输" /><summary type="html"><![CDATA[]]></summary></entry><entry><title type="html">Best buddy</title><link href="https://zwany1.github.io/2025/12/08/best-buddy/" rel="alternate" type="text/html" title="Best buddy" /><published>2025-12-08T17:56:55+08:00</published><updated>2025-12-08T17:56:55+08:00</updated><id>https://zwany1.github.io/2025/12/08/best-buddy</id><content type="html" xml:base="https://zwany1.github.io/2025/12/08/best-buddy/"><![CDATA[<h1 id="best-friend-memoir">Best Friend Memoir</h1>
 
 <p>这是我最好的朋友的故事。我们一起经历了许多难忘的时光，分享了无数的欢乐和泪水。</p>
