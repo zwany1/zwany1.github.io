@@ -50,8 +50,10 @@ body {
     grid-template-columns: repeat(3, 1fr);
     grid-template-rows: repeat(3, 1fr);
     gap: 0;
+    width: 100%;
     max-width: 800px;
     margin: 0 auto;
+    border: none;
 }
 
 /* 确保九宫格为正方形 */
@@ -69,12 +71,17 @@ body {
 
 .grid-item {
     position: relative;
+    border: none;
+    outline: none;
 }
 
 .grid-item img {
     width: 100%;
     height: 100%;
-    object-fit: contain;
+    object-fit: cover;
+    border: none;
+    outline: none;
+    display: block;
 }
 
 /* 响应式设计 */
