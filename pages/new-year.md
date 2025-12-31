@@ -8,31 +8,27 @@ permalink: /new-year/
 ---
 
 <style>
-/* 新年页面样式 */
+/* 新年九宫格页面样式 */
+body {
+    background-color: #f5f5f5;
+    margin: 0;
+    padding: 0;
+    font-family: 'Arial', sans-serif;
+}
+
 .new-year-container {
     max-width: 1200px;
     margin: 0 auto;
     padding: 40px 20px;
     text-align: center;
-    background: linear-gradient(135deg, #ff6b6b, #4ecdc4, #45b7d1, #96ceb4, #ffeaa7, #dfe6e9);
-    background-size: 400% 400%;
-    animation: gradientShift 15s ease infinite;
-    border-radius: 20px;
-    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
-}
-
-@keyframes gradientShift {
-    0% { background-position: 0% 50%; }
-    50% { background-position: 100% 50%; }
-    100% { background-position: 0% 50%; }
 }
 
 .new-year-title {
     font-size: 64px;
     font-weight: 900;
-    color: #fff;
-    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
-    margin-bottom: 30px;
+    color: #ff6b6b;
+    margin-bottom: 20px;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
     animation: bounce 2s ease infinite;
 }
 
@@ -43,93 +39,82 @@ permalink: /new-year/
 }
 
 .new-year-subtitle {
-    font-size: 32px;
-    color: #fff;
-    margin-bottom: 40px;
-    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
-}
-
-.new-year-wishes {
-    font-size: 24px;
-    color: #fff;
-    margin-bottom: 50px;
-    line-height: 1.8;
-    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
-}
-
-.new-year-countdown {
-    background-color: rgba(255, 255, 255, 0.2);
-    padding: 30px;
-    border-radius: 15px;
-    margin-bottom: 50px;
-    backdrop-filter: blur(10px);
-    border: 1px solid rgba(255, 255, 255, 0.3);
-}
-
-.countdown-title {
     font-size: 28px;
-    color: #fff;
-    margin-bottom: 20px;
-    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+    color: #666;
+    margin-bottom: 40px;
 }
 
-.countdown-display {
-    display: flex;
-    justify-content: center;
-    gap: 20px;
-    flex-wrap: wrap;
-}
-
-.countdown-item {
-    background-color: rgba(255, 255, 255, 0.3);
+/* 九宫格布局 */
+.photo-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-rows: repeat(3, 1fr);
+    gap: 10px;
+    max-width: 800px;
+    margin: 0 auto;
+    background-color: #fff;
     padding: 20px;
+    border-radius: 20px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+}
+
+/* 确保九宫格为正方形 */
+.photo-grid::before {
+    content: '';
+    padding-bottom: 100%;
+    grid-row: 1 / 1;
+    grid-column: 1 / 1;
+}
+
+.photo-grid > *:first-child {
+    grid-row: 1 / 1;
+    grid-column: 1 / 1;
+}
+
+.grid-item {
+    position: relative;
+    overflow: hidden;
     border-radius: 10px;
-    min-width: 100px;
-    border: 1px solid rgba(255, 255, 255, 0.4);
-    backdrop-filter: blur(5px);
+    cursor: pointer;
+    transition: all 0.3s ease;
 }
 
-.countdown-number {
-    font-size: 48px;
-    font-weight: bold;
-    color: #fff;
-    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+.grid-item:hover {
+    transform: scale(1.02);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
 }
 
-.countdown-label {
-    font-size: 16px;
-    color: #fff;
-    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
-    margin-top: 5px;
+.grid-item img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.5s ease;
 }
 
-.new-year-decoration {
-    margin: 50px 0;
+.grid-item:hover img {
+    transform: scale(1.1);
 }
 
-.decoration-emoji {
-    font-size: 64px;
-    margin: 0 10px;
-    animation: float 3s ease-in-out infinite;
+/* 图片标题 */
+.grid-item::after {
+    content: attr(data-title);
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: linear-gradient(transparent, rgba(0, 0, 0, 0.7));
+    color: white;
+    padding: 20px 15px 15px;
+    font-size: 14px;
+    opacity: 0;
+    transform: translateY(100%);
+    transition: all 0.3s ease;
+    text-align: center;
 }
 
-@keyframes float {
-    0%, 100% { transform: translateY(0px); }
-    50% { transform: translateY(-20px); }
-}
-
-.decoration-emoji:nth-child(1) { animation-delay: 0s; }
-.decoration-emoji:nth-child(2) { animation-delay: 0.5s; }
-.decoration-emoji:nth-child(3) { animation-delay: 1s; }
-.decoration-emoji:nth-child(4) { animation-delay: 1.5s; }
-.decoration-emoji:nth-child(5) { animation-delay: 2s; }
-
-.new-year-quote {
-    font-size: 20px;
-    color: #fff;
-    font-style: italic;
-    margin-top: 40px;
-    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+.grid-item:hover::after {
+    opacity: 1;
+    transform: translateY(0);
 }
 
 /* 响应式设计 */
@@ -142,26 +127,10 @@ permalink: /new-year/
         font-size: 24px;
     }
     
-    .new-year-wishes {
-        font-size: 20px;
-    }
-    
-    .countdown-display {
-        gap: 10px;
-    }
-    
-    .countdown-item {
-        min-width: 80px;
+    .photo-grid {
+        gap: 8px;
         padding: 15px;
-    }
-    
-    .countdown-number {
-        font-size: 36px;
-    }
-    
-    .decoration-emoji {
-        font-size: 48px;
-        margin: 0 5px;
+        max-width: 90%;
     }
 }
 
@@ -174,25 +143,14 @@ permalink: /new-year/
         font-size: 20px;
     }
     
-    .new-year-wishes {
-        font-size: 18px;
-    }
-    
-    .countdown-item {
-        min-width: 60px;
+    .photo-grid {
+        gap: 5px;
         padding: 10px;
+        border-radius: 10px;
     }
     
-    .countdown-number {
-        font-size: 28px;
-    }
-    
-    .countdown-label {
-        font-size: 14px;
-    }
-    
-    .decoration-emoji {
-        font-size: 36px;
+    .grid-item {
+        border-radius: 5px;
     }
 }
 </style>
@@ -201,80 +159,34 @@ permalink: /new-year/
     <h1 class="new-year-title">🎉 新年快乐 🎉</h1>
     <h2 class="new-year-subtitle">2026 新年快乐</h2>
     
-    <div class="new-year-decoration">
-        <span class="decoration-emoji">🎊</span>
-        <span class="decoration-emoji">🎁</span>
-        <span class="decoration-emoji">🎈</span>
-        <span class="decoration-emoji">✨</span>
-        <span class="decoration-emoji">🎊</span>
-    </div>
-    
-    <div class="new-year-wishes">
-        <p>愿新的一年里：</p>
-        <p>🍀 万事如意，心想事成</p>
-        <p>💰 财源广进，事业有成</p>
-        <p>❤️ 身体健康，家庭幸福</p>
-        <p>🌟 前程似锦，美梦成真</p>
-        <p>🎈 快乐常伴，笑容满面</p>
-    </div>
-    
-    <div class="new-year-countdown">
-        <h3 class="countdown-title">距离新年还有</h3>
-        <div class="countdown-display">
-            <div class="countdown-item">
-                <div class="countdown-number" id="days">00</div>
-                <div class="countdown-label">天</div>
-            </div>
-            <div class="countdown-item">
-                <div class="countdown-number" id="hours">00</div>
-                <div class="countdown-label">时</div>
-            </div>
-            <div class="countdown-item">
-                <div class="countdown-number" id="minutes">00</div>
-                <div class="countdown-label">分</div>
-            </div>
-            <div class="countdown-item">
-                <div class="countdown-number" id="seconds">00</div>
-                <div class="countdown-label">秒</div>
-            </div>
+    <!-- 九宫格照片墙 -->
+    <div class="photo-grid">
+        <div class="grid-item" data-title="新年大吉">
+            <img src="/images/kuanian/09bf3aff6c4829f312d97ba4246d1cb0.jpg" alt="新年大吉" loading="lazy">
+        </div>
+        <div class="grid-item" data-title="福到">
+            <img src="/images/kuanian/16e61fd03ef4a3d217b4452e0f305c50.jpg" alt="福到" loading="lazy">
+        </div>
+        <div class="grid-item" data-title="新年快乐">
+            <img src="/images/kuanian/1a1034079ae5b092aa76e0ca12f7a1c5.jpg" alt="新年快乐" loading="lazy">
+        </div>
+        <div class="grid-item" data-title="马到成功">
+            <img src="/images/kuanian/36f9e09baeee6147b39475dec1e4f58d.jpg" alt="马到成功" loading="lazy">
+        </div>
+        <div class="grid-item" data-title="新年祝福">
+            <img src="/images/kuanian/42482904d828ceea3795d8d12c3d31b9.jpg" alt="新年祝福" loading="lazy">
+        </div>
+        <div class="grid-item" data-title="恭喜发财">
+            <img src="/images/kuanian/4f039159e17a8ce3a60932e6dec23795.jpg" alt="恭喜发财" loading="lazy">
+        </div>
+        <div class="grid-item" data-title="福如东海">
+            <img src="/images/kuanian/6195dbc6da416bdc342784bb42f085eb.jpg" alt="福如东海" loading="lazy">
+        </div>
+        <div class="grid-item" data-title="万事如意">
+            <img src="/images/kuanian/6c130f4dea83d5e6354db93c04ed4e25.jpg" alt="万事如意" loading="lazy">
+        </div>
+        <div class="grid-item" data-title="吉星高照">
+            <img src="/images/kuanian/961d5038f39fe0728888be1920f49eb9.jpg" alt="吉星高照" loading="lazy">
         </div>
     </div>
-    
-    <div class="new-year-decoration">
-        <span class="decoration-emoji">🎊</span>
-        <span class="decoration-emoji">🎁</span>
-        <span class="decoration-emoji">🎈</span>
-        <span class="decoration-emoji">✨</span>
-        <span class="decoration-emoji">🎊</span>
-    </div>
-    
-    <div class="new-year-quote">
-        "新的一年，新的开始，新的希望，新的梦想。"
-    </div>
 </div>
-
-<!-- 倒计时脚本 -->
-<script>
-function updateCountdown() {
-    // 设置目标日期为2026年1月1日
-    const targetDate = new Date('2026-01-01T00:00:00');
-    const now = new Date();
-    const difference = targetDate - now;
-    
-    // 计算剩余时间
-    const days = Math.floor(difference / (1000 * 60 * 60 * 24));
-    const hours = Math.floor((difference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-    const minutes = Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60));
-    const seconds = Math.floor((difference % (1000 * 60)) / 1000);
-    
-    // 更新显示
-    document.getElementById('days').textContent = String(days).padStart(2, '0');
-    document.getElementById('hours').textContent = String(hours).padStart(2, '0');
-    document.getElementById('minutes').textContent = String(minutes).padStart(2, '0');
-    document.getElementById('seconds').textContent = String(seconds).padStart(2, '0');
-}
-
-// 初始调用一次，然后每秒更新一次
-updateCountdown();
-setInterval(updateCountdown, 1000);
-</script>
