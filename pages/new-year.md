@@ -162,28 +162,28 @@ body {
     <!-- 九宫格照片墙 -->
     <div class="photo-grid">
         <div class="grid-item" data-title="新年大吉">
-            <img src="/images/kuanian/09bf3aff6c4829f312d97ba4246d1cb0.jpg" alt="新年大吉" loading="lazy">
+            <img src="/images/kuanian/36f9e09baeee6147b39475dec1e4f58d.jpg" alt="新年大吉" loading="lazy">
         </div>
         <div class="grid-item" data-title="福到">
-            <img src="/images/kuanian/16e61fd03ef4a3d217b4452e0f305c50.jpg" alt="福到" loading="lazy">
+            <img src="/images/kuanian/09bf3aff6c4829f312d97ba4246d1cb0.jpg" alt="福到" loading="lazy">
         </div>
         <div class="grid-item" data-title="新年快乐">
-            <img src="/images/kuanian/1a1034079ae5b092aa76e0ca12f7a1c5.jpg" alt="新年快乐" loading="lazy">
+            <img src="/images/kuanian/6c130f4dea83d5e6354db93c04ed4e25.jpg" alt="新年快乐" loading="lazy">
         </div>
         <div class="grid-item" data-title="马到成功">
-            <img src="/images/kuanian/36f9e09baeee6147b39475dec1e4f58d.jpg" alt="马到成功" loading="lazy">
+            <img src="/images/kuanian/1a1034079ae5b092aa76e0ca12f7a1c5.jpg" alt="马到成功" loading="lazy">
         </div>
         <div class="grid-item" data-title="新年祝福">
-            <img src="/images/kuanian/42482904d828ceea3795d8d12c3d31b9.jpg" alt="新年祝福" loading="lazy">
+            <img src="/images/kuanian/6195dbc6da416bdc342784bb42f085eb.jpg" alt="新年祝福" loading="lazy">
         </div>
         <div class="grid-item" data-title="恭喜发财">
-            <img src="/images/kuanian/4f039159e17a8ce3a60932e6dec23795.jpg" alt="恭喜发财" loading="lazy">
+            <img src="/images/kuanian/16e61fd03ef4a3d217b4452e0f305c50.jpg" alt="恭喜发财" loading="lazy">
         </div>
         <div class="grid-item" data-title="福如东海">
-            <img src="/images/kuanian/6195dbc6da416bdc342784bb42f085eb.jpg" alt="福如东海" loading="lazy">
+            <img src="/images/kuanian/4f039159e17a8ce3a60932e6dec23795.jpg" alt="福如东海" loading="lazy">
         </div>
         <div class="grid-item" data-title="万事如意">
-            <img src="/images/kuanian/6c130f4dea83d5e6354db93c04ed4e25.jpg" alt="万事如意" loading="lazy">
+            <img src="/images/kuanian/42482904d828ceea3795d8d12c3d31b9.jpg" alt="万事如意" loading="lazy">
         </div>
         <div class="grid-item" data-title="吉星高照">
             <img src="/images/kuanian/961d5038f39fe0728888be1920f49eb9.jpg" alt="吉星高照" loading="lazy">
