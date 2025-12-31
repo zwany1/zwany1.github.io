@@ -25,10 +25,12 @@ body {
 }
 
 .grid-item img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
+    width: 50%;
+    height: 50%;
+    object-fit: contain;
     display: block;
+    margin: 10% auto;
+    background-color: white;
 }
 </style>
 
