@@ -53,9 +53,9 @@ body {
     max-width: 800px;
     margin: 0 auto;
     background-color: #fff;
-    padding: 20px;
-    border-radius: 20px;
-    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+    padding: 0;
+    border-radius: 0;
+    box-shadow: none;
 }
 
 /* 确保九宫格为正方形 */
@@ -74,7 +74,7 @@ body {
 .grid-item {
     position: relative;
     overflow: hidden;
-    border-radius: 10px;
+    border-radius: 0;
     cursor: pointer;
     transition: all 0.3s ease;
 }
@@ -129,7 +129,7 @@ body {
     
     .photo-grid {
         gap: 0;
-        padding: 15px;
+        padding: 0;
         max-width: 90%;
     }
 }
@@ -145,12 +145,12 @@ body {
     
     .photo-grid {
         gap: 0;
-        padding: 10px;
-        border-radius: 10px;
+        padding: 0;
+        border-radius: 0;
     }
     
     .grid-item {
-        border-radius: 5px;
+        border-radius: 0;
     }
 }
 </style>
