@@ -21,7 +21,9 @@ body {
     grid-template-rows: repeat(3, 1fr);
     gap: 0;
     width: 100vw;
-    height: 100vh;
+    aspect-ratio: 1 / 1;
+    max-width: 100vh;
+    margin: 0 auto;
 }
 
 .grid-item img {
