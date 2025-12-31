@@ -52,10 +52,6 @@ body {
     gap: 0;
     max-width: 800px;
     margin: 0 auto;
-    background-color: #fff;
-    padding: 0;
-    border-radius: 0;
-    box-shadow: none;
 }
 
 /* 确保九宫格为正方形 */
@@ -73,32 +69,12 @@ body {
 
 .grid-item {
     position: relative;
-    overflow: hidden;
-    border-radius: 0;
-    cursor: pointer;
-    transition: all 0.3s ease;
-}
-
-.grid-item:hover {
-    transform: scale(1.02);
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
 }
 
 .grid-item img {
     width: 100%;
     height: 100%;
     object-fit: contain;
-    transition: transform 0.5s ease;
-    background-color: white;
-}
-
-.grid-item:hover img {
-    transform: scale(1.1);
-}
-
-/* 移除图片标题 */
-.grid-item::after {
-    display: none;
 }
 
 /* 响应式设计 */
