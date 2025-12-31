@@ -49,7 +49,7 @@ body {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     grid-template-rows: repeat(3, 1fr);
-    gap: 10px;
+    gap: 0;
     max-width: 800px;
     margin: 0 auto;
     background-color: #fff;
@@ -128,7 +128,7 @@ body {
     }
     
     .photo-grid {
-        gap: 8px;
+        gap: 0;
         padding: 15px;
         max-width: 90%;
     }
@@ -144,7 +144,7 @@ body {
     }
     
     .photo-grid {
-        gap: 5px;
+        gap: 0;
         padding: 10px;
         border-radius: 10px;
     }
