@@ -87,34 +87,18 @@ body {
 .grid-item img {
     width: 100%;
     height: 100%;
-    object-fit: cover;
+    object-fit: contain;
     transition: transform 0.5s ease;
+    background-color: white;
 }
 
 .grid-item:hover img {
     transform: scale(1.1);
 }
 
-/* 图片标题 */
+/* 移除图片标题 */
 .grid-item::after {
-    content: attr(data-title);
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    background: linear-gradient(transparent, rgba(0, 0, 0, 0.7));
-    color: white;
-    padding: 20px 15px 15px;
-    font-size: 14px;
-    opacity: 0;
-    transform: translateY(100%);
-    transition: all 0.3s ease;
-    text-align: center;
-}
-
-.grid-item:hover::after {
-    opacity: 1;
-    transform: translateY(0);
+    display: none;
 }
 
 /* 响应式设计 */
