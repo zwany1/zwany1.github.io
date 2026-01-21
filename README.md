@@ -1,6 +1,6 @@
 # z.w..YI
 
-我的个人博客：<https://zwany1.github.io>，欢迎 Star 和 Fork。
+我的个人博客：<https://zwany1.github.io>or<https://myzwy.qzz.io>欢迎 Star 和 Fork。
 
 ## 概览
 
