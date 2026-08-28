@@ -5,7 +5,7 @@
   
     {
       "title"    : "页面没有找到",
-      "url"      : "https://zwany1.github.io/404.html",
+      "url"      : "/404.html",
       "keywords" : "404"
     } ,
   
@@ -13,7 +13,7 @@
   
     {
       "title"    : "关于",
-      "url"      : "https://zwany1.github.io/about/",
+      "url"      : "/about/",
       "keywords" : "朱, zwany1"
     } ,
   
@@ -21,7 +21,7 @@
   
     {
       "title"    : "归档",
-      "url"      : "https://zwany1.github.io/archives/",
+      "url"      : "/archives/",
       "keywords" : ""
     } ,
   
@@ -29,7 +29,7 @@
   
     {
       "title"    : "分类",
-      "url"      : "https://zwany1.github.io/categories/",
+      "url"      : "/categories/",
       "keywords" : ""
     } ,
   
@@ -37,7 +37,7 @@
   
     {
       "title"    : "Fragments",
-      "url"      : "https://zwany1.github.io/fragments/",
+      "url"      : "/fragments/",
       "keywords" : "fragments"
     } ,
   
@@ -45,7 +45,7 @@
   
     {
       "title"    : "回忆录",
-      "url"      : "https://zwany1.github.io/gallery/",
+      "url"      : "/gallery/",
       "keywords" : ""
     } ,
   
@@ -55,7 +55,7 @@
   
     {
       "title"    : "新年快乐",
-      "url"      : "https://zwany1.github.io/new-year/",
+      "url"      : "/new-year/",
       "keywords" : "新年, 祝福, 新年快乐"
     } ,
   
@@ -63,7 +63,7 @@
   
     {
       "title"    : "Open Source Projects",
-      "url"      : "https://zwany1.github.io/open-source/",
+      "url"      : "/open-source/",
       "keywords" : "开源,open-source,GitHub,开源项目"
     } ,
   
@@ -71,7 +71,7 @@
   
     {
       "title"    : "项目",
-      "url"      : "https://zwany1.github.io/projects/",
+      "url"      : "/projects/",
       "keywords" : ""
     } ,
   
@@ -83,7 +83,7 @@
   
     {
       "title"    : "标签",
-      "url"      : "https://zwany1.github.io/tags/",
+      "url"      : "/tags/",
       "keywords" : ""
     } ,
   
@@ -91,7 +91,7 @@
   
     {
       "title"    : "测试页面",
-      "url"      : "https://zwany1.github.io/test/",
+      "url"      : "/test/",
       "keywords" : ""
     } ,
   
@@ -110,7 +110,7 @@
       "title"    : "Best buddy",
       "category" : "life",
       
-      "url"      : "https://zwany1.github.io/2025/12/08/best-buddy/",
+      "url"      : "/2025/12/08/best-buddy/",
       "keywords" : ""
     } ,
   
@@ -118,7 +118,7 @@
       "title"    : "IO基础与流操作",
       "category" : "Java",
       
-      "url"      : "https://zwany1.github.io/2025/12/26/IO%E5%9F%BA%E7%A1%80%E4%B8%8E%E6%B5%81%E6%93%8D%E4%BD%9C/",
+      "url"      : "/2025/12/26/IO%E5%9F%BA%E7%A1%80%E4%B8%8E%E6%B5%81%E6%93%8D%E4%BD%9C/",
       "keywords" : ""
     } ,
   
@@ -126,7 +126,7 @@
       "title"    : "Redis 主从复制",
       "category" : "Redis",
       
-      "url"      : "https://zwany1.github.io/2026/08/28/redis/",
+      "url"      : "/2026/08/28/redis/",
       "keywords" : ""
     } ,
   
@@ -134,7 +134,7 @@
       "title"    : "Android Image 里的 pixelStride 和 rowStride",
       "category" : "",
       
-      "url"      : "https://zwany1.github.io/fragment/android-image-pixelstride-and-rowstride/",
+      "url"      : "/fragment/android-image-pixelstride-and-rowstride/",
       "keywords" : "Android, ImageReader, pixelStride, rowStride"
     } ,
   
@@ -142,7 +142,7 @@
       "title"    : "自动传递密码给多个 SSH 命令",
       "category" : "",
       
-      "url"      : "https://zwany1.github.io/fragment/auto-pass-password-to-multi-ssh-commands/",
+      "url"      : "/fragment/auto-pass-password-to-multi-ssh-commands/",
       "keywords" : "ssh, shell"
     } ,
   
@@ -150,7 +150,7 @@
       "title"    : "Edge 浏览器本地安装 crx 插件",
       "category" : "",
       
-      "url"      : "https://zwany1.github.io/fragment/edge-local-install-crx-extensions/",
+      "url"      : "/fragment/edge-local-install-crx-extensions/",
       "keywords" : "crx"
     } ,
   
@@ -158,7 +158,7 @@
       "title"    : "生成自签名证书",
       "category" : "",
       
-      "url"      : "https://zwany1.github.io/fragment/gen-self-sign-cert/",
+      "url"      : "/fragment/gen-self-sign-cert/",
       "keywords" : "openssl, https"
     } ,
   
@@ -166,7 +166,7 @@
       "title"    : "给 GitHub 配置 SSH 代理",
       "category" : "",
       
-      "url"      : "https://zwany1.github.io/fragment/github-ssh-proxy/",
+      "url"      : "/fragment/github-ssh-proxy/",
       "keywords" : "GitHub, SSH, 代理"
     } ,
   
@@ -174,7 +174,7 @@
       "title"    : "IDEA 无法 import 自己工程中的类",
       "category" : "",
       
-      "url"      : "https://zwany1.github.io/fragment/idea-cannot-resolve-class-in-current-application/",
+      "url"      : "/fragment/idea-cannot-resolve-class-in-current-application/",
       "keywords" : "Java, IDEA"
     } ,
   
@@ -182,7 +182,7 @@
       "title"    : "让 UITabBarController 在 iOS 18 的 iPad 上显示在底部",
       "category" : "",
       
-      "url"      : "https://zwany1.github.io/fragment/ios-18-UITabBarController-style-in-ipad/",
+      "url"      : "/fragment/ios-18-UITabBarController-style-in-ipad/",
       "keywords" : "iOS, iPad, UITabBarController"
     } ,
   
@@ -190,7 +190,7 @@
       "title"    : "Kindle 字典安装",
       "category" : "",
       
-      "url"      : "https://zwany1.github.io/fragment/kindle-dict-setup/",
+      "url"      : "/fragment/kindle-dict-setup/",
       "keywords" : "Kindle, 字典"
     } ,
   
@@ -198,7 +198,7 @@
       "title"    : "解决 Kindle 生字注音功能无法使用的问题",
       "category" : "",
       
-      "url"      : "https://zwany1.github.io/fragment/kindle-shengzizhuyin/",
+      "url"      : "/fragment/kindle-shengzizhuyin/",
       "keywords" : "Kindle"
     } ,
   
@@ -206,7 +206,7 @@
       "title"    : "Mac 访问 IPv6 SMB 共享",
       "category" : "",
       
-      "url"      : "https://zwany1.github.io/fragment/mac-access-ipv6-smb/",
+      "url"      : "/fragment/mac-access-ipv6-smb/",
       "keywords" : "Mac, IPv6, SMB, 共享"
     } ,
   
@@ -214,7 +214,7 @@
       "title"    : "Mac 清理磁盘空间",
       "category" : "",
       
-      "url"      : "https://zwany1.github.io/fragment/mac-clean-up-disk-space/",
+      "url"      : "/fragment/mac-clean-up-disk-space/",
       "keywords" : "Mac, clean up disk space"
     } ,
   
@@ -222,7 +222,7 @@
       "title"    : "Mac 下删除 zip 文件里的隐藏文件",
       "category" : "",
       
-      "url"      : "https://zwany1.github.io/fragment/mac-clean-zip/",
+      "url"      : "/fragment/mac-clean-zip/",
       "keywords" : "Mac, zip, DS_Store, MACOSX"
     } ,
   
@@ -230,7 +230,7 @@
       "title"    : "macOS 下提取 .dmg 文件的内容",
       "category" : "",
       
-      "url"      : "https://zwany1.github.io/fragment/mac-extract-dmg/",
+      "url"      : "/fragment/mac-extract-dmg/",
       "keywords" : "macOS, dmg"
     } ,
   
@@ -238,7 +238,7 @@
       "title"    : "Mac 卸载输入法",
       "category" : "",
       
-      "url"      : "https://zwany1.github.io/fragment/mac-remove-input-method/",
+      "url"      : "/fragment/mac-remove-input-method/",
       "keywords" : "Mac, 输入法"
     } ,
   
@@ -246,7 +246,7 @@
       "title"    : "Mac 打开应用程序时出现「你不能打开应用程序」错误",
       "category" : "",
       
-      "url"      : "https://zwany1.github.io/fragment/mac-sonoma-application-cannot-open/",
+      "url"      : "/fragment/mac-sonoma-application-cannot-open/",
       "keywords" : "Mac, Microsoft Edge, sonoma"
     } ,
   
@@ -254,7 +254,7 @@
       "title"    : "Mac 下让 Spotlight 显示英汉汉英互译",
       "category" : "",
       
-      "url"      : "https://zwany1.github.io/fragment/mac-spotlight-c2ee2c/",
+      "url"      : "/fragment/mac-spotlight-c2ee2c/",
       "keywords" : "Mac, Spotlight, 翻译"
     } ,
   
@@ -262,7 +262,7 @@
       "title"    : "MacBook Pro 使用 PD 充电时，指纹解锁失效",
       "category" : "",
       
-      "url"      : "https://zwany1.github.io/fragment/macbook-fingerprint-invalid/",
+      "url"      : "/fragment/macbook-fingerprint-invalid/",
       "keywords" : "Mac, 指纹"
     } ,
   
@@ -270,7 +270,7 @@
       "title"    : "macOS 下 Python3 提示 No module named _tkinter",
       "category" : "",
       
-      "url"      : "https://zwany1.github.io/fragment/macos-python3-tkinter/",
+      "url"      : "/fragment/macos-python3-tkinter/",
       "keywords" : "macOS, Python3, tkinter"
     } ,
   
@@ -278,7 +278,7 @@
       "title"    : "消除错误 Since Maven 3.8.1 http repositories are blocked",
       "category" : "",
       
-      "url"      : "https://zwany1.github.io/fragment/maven-http-repositories-are-blocked/",
+      "url"      : "/fragment/maven-http-repositories-are-blocked/",
       "keywords" : "maven"
     } ,
   
@@ -286,7 +286,7 @@
       "title"    : "Maven 项目引用本地 jar 包",
       "category" : "",
       
-      "url"      : "https://zwany1.github.io/fragment/maven-include-local-jar/",
+      "url"      : "/fragment/maven-include-local-jar/",
       "keywords" : "Maven, Java"
     } ,
   
@@ -294,7 +294,7 @@
       "title"    : "Maven 项目只在某台机器上报找不到某个类",
       "category" : "",
       
-      "url"      : "https://zwany1.github.io/fragment/maven-zero-byte-jar/",
+      "url"      : "/fragment/maven-zero-byte-jar/",
       "keywords" : "Java, Maven"
     } ,
   
@@ -302,7 +302,7 @@
       "title"    : "MySQL 表空间碎片回收",
       "category" : "",
       
-      "url"      : "https://zwany1.github.io/fragment/mysql-space-recover/",
+      "url"      : "/fragment/mysql-space-recover/",
       "keywords" : "MySQL"
     } ,
   
@@ -310,7 +310,7 @@
       "title"    : "给 OrbStack 配置代理",
       "category" : "",
       
-      "url"      : "https://zwany1.github.io/fragment/orbstack-proxy/",
+      "url"      : "/fragment/orbstack-proxy/",
       "keywords" : "OrbStack, Docker, 代理"
     } ,
   
@@ -318,7 +318,7 @@
       "title"    : "SpringMVC Controller 单元测试示例",
       "category" : "",
       
-      "url"      : "https://zwany1.github.io/fragment/springmvc-controller-unittest/",
+      "url"      : "/fragment/springmvc-controller-unittest/",
       "keywords" : "Java, Spring, SpringMVC"
     } ,
   
@@ -326,7 +326,7 @@
       "title"    : "ssh 报错 no matching host key type found",
       "category" : "",
       
-      "url"      : "https://zwany1.github.io/fragment/ssh-no-matching-host-key-type-found/",
+      "url"      : "/fragment/ssh-no-matching-host-key-type-found/",
       "keywords" : "ssh"
     } ,
   
@@ -334,7 +334,7 @@
       "title"    : "Swagger Springfox NumberFormatException",
       "category" : "",
       
-      "url"      : "https://zwany1.github.io/fragment/swagger-springfox-NumberFormatException/",
+      "url"      : "/fragment/swagger-springfox-NumberFormatException/",
       "keywords" : "Java, Swagger, Springfox, NumberFormatException"
     } ,
   
@@ -342,7 +342,7 @@
       "title"    : "禁止 Swagger 文档里的 Timestamp 类型展开",
       "category" : "",
       
-      "url"      : "https://zwany1.github.io/fragment/swagger-timestamp/",
+      "url"      : "/fragment/swagger-timestamp/",
       "keywords" : "Java, Swagger, Timestamp"
     } ,
   
@@ -350,7 +350,7 @@
       "title"    : "Fragment Template",
       "category" : "",
       
-      "url"      : "https://zwany1.github.io/fragment/template/",
+      "url"      : "/fragment/template/",
       "keywords" : "keyword1, keyword2"
     } ,
   
@@ -358,7 +358,7 @@
       "title"    : "VSCode 自动识别 Markdown 文件类型错误",
       "category" : "",
       
-      "url"      : "https://zwany1.github.io/fragment/vscode-markdown-auto-detect-filetype-error/",
+      "url"      : "/fragment/vscode-markdown-auto-detect-filetype-error/",
       "keywords" : "VSCode, Markdown, File Type"
     } ,
   
@@ -366,7 +366,7 @@
       "title"    : "VSCode 自定义 Markdown 预览样式",
       "category" : "",
       
-      "url"      : "https://zwany1.github.io/fragment/vscode-markdown-preview-custom-css/",
+      "url"      : "/fragment/vscode-markdown-preview-custom-css/",
       "keywords" : "VSCode, Markdown"
     } 
   
