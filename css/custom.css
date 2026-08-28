@@ -1,0 +1,63 @@
+/* ============================================================
+   custom.css — 站点 UI 打磨层（在主题样式之后加载，仅做视觉微调）
+   跟随主题 CSS 变量，深色模式自动适配。
+   ============================================================ */
+
+/* ---------- 全局 ---------- */
+html { scroll-behavior: smooth; }
+::selection { background: rgba(73, 177, 245, .25); }
+
+/* ---------- 首页文章卡片：圆角、悬浮上浮 ---------- */
+#recent-posts .recent-post-item {
+  border-radius: 12px;
+  border: 1px solid rgba(128, 128, 128, .12);
+}
+#recent-posts .recent-post-item:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, .12);
+}
+#recent-posts .recent-post-item:hover .article-title { color: #49b1f5; }
+.recent-post-info { padding: 26px 32px; }
+.recent-post-info .content { opacity: .85; }
+
+/* 首页卡片 meta：Created 标签与日期之间的间距（主题只处理了 .post-meta-label） */
+.article-meta-wrap .article-meta-label { margin-right: .35em; }
+.article-meta-wrap time { margin-left: .25em; }
+
+/* ---------- 侧栏卡片 ---------- */
+.card-widget { border-radius: 12px; }
+.card-widget:hover { box-shadow: 0 8px 24px rgba(0, 0, 0, .10); }
+
+/* Follow Me 按钮：渐变 + 悬浮微动 */
+#card-info-btn {
+  background: linear-gradient(135deg, #49b1f5, #6f7ef2);
+  box-shadow: 0 4px 12px rgba(73, 177, 245, .35);
+}
+#card-info-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(73, 177, 245, .45);
+}
+
+/* ---------- 文章页排版 ---------- */
+#article-container { line-height: 1.9; }
+#article-container img {
+  border-radius: 10px;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, .10);
+}
+#article-container a:not(.fancybox):not(.post-meta-categories):not(.post-meta-categories-links) {
+  text-decoration: none;
+  border-bottom: 1px dashed rgba(73, 177, 245, .6);
+  transition: color .3s, border-color .3s;
+}
+#article-container a:not(.fancybox):hover { color: #49b1f5; border-bottom-color: #49b1f5; }
+
+/* 文章头 meta 日期间距 */
+#post-info #post-meta time { margin-left: .2em; }
+
+/* ---------- 分页 ---------- */
+.pagination .page-number:hover,
+.pagination .extend:hover { color: #fff; background: #49b1f5; }
+
+/* ---------- 右侧悬浮按钮 ---------- */
+#rightside button:hover,
+#rightside a:hover { background: #49b1f5; color: #fff; }
