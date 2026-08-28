@@ -1,4 +1,352 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="3.10.0">Jekyll</generator><link href="https://zwany1.github.io/feed.xml" rel="self" type="application/atom+xml" /><link href="https://zwany1.github.io/" rel="alternate" type="text/html" /><updated>2026-01-21T09:43:26+08:00</updated><id>https://zwany1.github.io/feed.xml</id><title type="html">朱</title><subtitle>朱的个人博客，公众号：朱猪写作</subtitle><author><name>朱</name></author><entry><title type="html">IO基础与流操作</title><link href="https://zwany1.github.io/2025/12/26/IO%E5%9F%BA%E7%A1%80%E4%B8%8E%E6%B5%81%E6%93%8D%E4%BD%9C/" rel="alternate" type="text/html" title="IO基础与流操作" /><published>2025-12-26T00:00:00+08:00</published><updated>2025-12-26T00:00:00+08:00</updated><id>https://zwany1.github.io/2025/12/26/IO%E5%9F%BA%E7%A1%80%E4%B8%8E%E6%B5%81%E6%93%8D%E4%BD%9C</id><content type="html" xml:base="https://zwany1.github.io/2025/12/26/IO%E5%9F%BA%E7%A1%80%E4%B8%8E%E6%B5%81%E6%93%8D%E4%BD%9C/"><![CDATA[<style>
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="3.10.0">Jekyll</generator><link href="https://zwany1.github.io/feed.xml" rel="self" type="application/atom+xml" /><link href="https://zwany1.github.io/" rel="alternate" type="text/html" /><updated>2026-08-28T17:45:51+08:00</updated><id>https://zwany1.github.io/feed.xml</id><title type="html">朱的小屋</title><subtitle>朱的个人博客，公众号：朱猪写作</subtitle><author><name>朱</name></author><entry><title type="html">Redis 主从复制</title><link href="https://zwany1.github.io/2026/08/28/redis/" rel="alternate" type="text/html" title="Redis 主从复制" /><published>2026-08-28T17:30:00+08:00</published><updated>2026-08-28T17:30:00+08:00</updated><id>https://zwany1.github.io/2026/08/28/redis</id><content type="html" xml:base="https://zwany1.github.io/2026/08/28/redis/"><![CDATA[<p>首先我先说说主从复制是什么？为了减轻redis的压力，使用了读写分离的形式，也就是主节点写，从节点读，这样就要求主从节点数据必须一致，所以就有了主从复制。主从复制就是，将一个主节点上的数据全部复制到其他的从节点上，以保持主从节点的数据一致。</p>
+
+<p>具体怎么实现的呢？首先，其他节点需要先向主节点发送psync命令来发起开始同步。接着，主节点通过发送来的psync来判断是进行全局同步还是增量复制。假如是第一次进行同步，或者是之前的连接失效，就会进行全量复制。全量复制完毕后，主从节点之间会维护一个长链接，在此期间会将主节点的操作进行增量复制到从节点，维护主从节点一致性。</p>
+<h2 id="为什么需要主从复制">为什么需要主从复制？</h2>
+
+<ol>
+  <li><strong>降低数据冗余:</strong> 主从复制实现了数据的热备份，是持久化之外的一种数据冗余方式。</li>
+  <li><strong>提供故障恢复：</strong> 当主节点出现问题时，可以由从节点提供服务，实现快速的故障恢复；</li>
+  <li><strong>支持负载均衡:</strong> 主从复制配合读写分离，主节点写服务，从节点读服务，写数据连主节点，读数据连从节点，可分担服务器负载。写少读多场景下，多个从节点分担读负载，提高 Redis 服务器并发量。</li>
+  <li><strong>高可用：</strong> 主从复制是 Redis 高可用的基础，也是哨兵和集群实施的基础。</li>
+</ol>
+
+<p><strong>主从库之间采用的是 <code class="language-plaintext highlighter-rouge">读写分离</code> 的方式：</strong></p>
+
+<ol>
+  <li>读操作: 主库、从库可以接收</li>
+  <li>写操作: 仅主库可执行，然后主库将写操作同步给从库</li>
+</ol>
+
+<p><img src="/assets/notes/Pasted-image-20260828154041.png" alt="" /></p>
+
+<h3 id="两种同步复制方式">两种同步复制方式</h3>
+
+<ol>
+  <li><strong>全量复制：</strong> 第一次同步时</li>
+  <li><strong>增量复制:</strong> 只会把主从库网络断联期间主库收到的命令同步交给从库</li>
+</ol>
+
+<h2 id="全量复制">全量复制</h2>
+
+<p>基于 TCP 长连接避免频繁建立 TCP 链接和断开带来的性能开销，分为三阶段如图：</p>
+
+<ul>
+  <li>假设主机 Master 在 <code class="language-plaintext highlighter-rouge">6379</code> 端口，从机 Slave 在 <code class="language-plaintext highlighter-rouge">6380</code>端口; 基于本机 (方便理解后续扩展内容: 搭建一主多从)</li>
+  <li>其中 <code class="language-plaintext highlighter-rouge">repl buffer</code> 是 <code class="language-plaintext highlighter-rouge">replication buffer</code> 简写</li>
+</ul>
+
+<p><img src="/assets/notes/Pasted-image-20260828154104.png" alt="" /></p>
+
+<h3 id="第一阶段">第一阶段</h3>
+
+<p>slave 向 master 发送 <code class="language-plaintext highlighter-rouge">psync</code>指令，表示进行数据同步，</p>
+
+<p><code class="language-plaintext highlighter-rouge">psync</code>包含两个参数，分别是 <code class="language-plaintext highlighter-rouge">主服务器的 runID</code> 和 <code class="language-plaintext highlighter-rouge">复制进度 offset</code></p>
+
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">runID</code>: 标识每一个 Redis 服务器</li>
+  <li><code class="language-plaintext highlighter-rouge">offset</code>: 第一次同步表示 -1</li>
+</ul>
+
+<p>FULLRESYNC 响应命令意图是全量复制，主服务器将所有数据同步给从服务器。</p>
+
+<h3 id="第二阶段">第二阶段</h3>
+
+<p>Master 执行 <code class="language-plaintext highlighter-rouge">bgsave</code> 指令来生成 RDB 文件，然后把文件发送给从服务器</p>
+
+<p>Slave 接收到 Master 传输的 RDB 之后，会先清空当前的数据，然后载入 RDB 文件</p>
+
+<p>Master 通过 <code class="language-plaintext highlighter-rouge">bgsave</code>指令会产生一个子进程来进行 RDB 文件生成的工作，是异步工作的。</p>
+
+<blockquote>
+  <p>这期间写操作命令未记录到刚生成的 RDB 文件中，主从服务器数据不一致。</p>
+</blockquote>
+
+<p>为了保证一致性，Master 在三个时间间隙将写操作命令写入 <code class="language-plaintext highlighter-rouge">replication buffer</code> 缓冲区。</p>
+
+<ol>
+  <li>Master 生成 RDB 文件期间</li>
+  <li>Master 发送 RDB 文件给 Slave 服务器期间</li>
+  <li>Slave 加载 RDB 文件期间</li>
+</ol>
+
+<h3 id="第三阶段">第三阶段</h3>
+
+<p>Master 生成的 RDB 文件发送完，Slave 收到后，丢弃旧数据，载入 RDB 数据到内存，完成载入后回复确认消息给 Master。</p>
+
+<p>然后 Master 需要将这期间记载的在 <code class="language-plaintext highlighter-rouge">replication buffer</code> 缓冲区内的写操作记录也发送给 Slave, 保证一致性</p>
+
+<p><strong>问题：</strong></p>
+
+<p>但是第一次全量复制之后如果遇到网络问题无法进行命令传播，Slave 就无法和 Master 保持同步了，导致不一致性 而如果恢复连接之后使用全量复制保证一致性的话开销太大，因为有一部分数据已经一致。有什么办法吗？</p>
+
+<h2 id="增量复制">增量复制</h2>
+
+<p>图示：</p>
+
+<ul>
+  <li><strong>repl backlog</strong> 表示 <code class="language-plaintext highlighter-rouge">repl_backlog_buffer</code></li>
+  <li><strong>repl buffer</strong> 表示 <code class="language-plaintext highlighter-rouge">replication buffer</code></li>
+</ul>
+
+<p><img src="/assets/notes/Pasted-image-20260828154123.png" alt="" /></p>
+
+<h3 id="过程">过程</h3>
+
+<ol>
+  <li>服务器恢复网络后，会向主服务器发送 <code class="language-plaintext highlighter-rouge">psync</code> 命令（offset 非 -1）。</li>
+  <li>主服务器收到后，用 <code class="language-plaintext highlighter-rouge">CONTINUE</code> 响应命令告知从服务器采用增量复制同步数据。</li>
+  <li>接着，主服务器将断线期间执行的写命令发给从服务器，从服务器执行这些命令。</li>
+</ol>
+
+<p>其中:</p>
+
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">repl_backlog_buffer</code> 是一个 ⌈环形⌋ 缓冲区，用于主从服务器断开连接后，从中找到差异的数据</li>
+  <li><code class="language-plaintext highlighter-rouge">replication offset</code>标记同步进度，Master 用于记录自己写的未知，Slave 记录自己读的未知</li>
+</ul>
+
+<p><strong>repl_backlog_buffer 缓存的写入时机</strong></p>
+
+<ul>
+  <li>Master 在将写指令发送给 Slave 的同时，将其写入到 <code class="language-plaintext highlighter-rouge">repl_backlog_buffer</code> 缓冲区内</li>
+</ul>
+
+<h3 id="如何辨别应该向-slave-执行全量复制还是增量复制">如何辨别应该向 Slave 执行全量复制还是增量复制</h3>
+
+<p>Slave 通过 <code class="language-plaintext highlighter-rouge">psync</code>指令将自己的 <code class="language-plaintext highlighter-rouge">slave_repl_offset</code> 发送给主服务器；服务器依据 <code class="language-plaintext highlighter-rouge">master_repl_offset</code> 与 <code class="language-plaintext highlighter-rouge">slave_repl_offset</code> 的差距决定对从服务器的同步操作。</p>
+
+<ol>
+  <li>若从服务器所需数据在 <code class="language-plaintext highlighter-rouge">repl_backlog_buffer</code> 缓冲区，主服务器采用增量同步；</li>
+  <li>若不在，主服务器采用全量同步。</li>
+</ol>
+
+<p>由于 <code class="language-plaintext highlighter-rouge">repl_backlog_buffer</code> 缓冲区的默认大小是 <code class="language-plaintext highlighter-rouge">1M</code>。 由于时一个环形缓冲区，如果写满，会发生 <strong>覆盖问题</strong> 。网络恢复时，若服务器想读的数据被覆盖，主服务器采用全量同步，此方式比增量同步性能损耗大很多。</p>
+
+<p>因此为了避免频繁的全量同步，应该调大 <code class="language-plaintext highlighter-rouge">repl_backlog_buffer</code></p>
+
+<p>推荐大小</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>second <span class="k">*</span> write_size_per_second
+</code></pre></div></div>
+
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">second</code> 为从服务器断线后重新连接上主服务器所需的平均时间 (单位 s)</li>
+  <li><code class="language-plaintext highlighter-rouge">write_size_per_second</code> 则是主服务器平均每秒产生的写命令数据量大小。</li>
+</ul>
+
+<p>支持基于 <code class="language-plaintext highlighter-rouge">redis.conf</code> 配置项修改 <code class="language-plaintext highlighter-rouge">repl_backlog_buffer</code> 缓冲区大小</p>
+
+<p><img src="/assets/notes/Pasted-image-20260828154149.png" alt="" /></p>
+
+<h2 id="扩展---如何搭建一主多从">(扩展) - 如何搭建一主多从？</h2>
+
+<p>创建一个测试目录</p>
+
+<p>修改 <code class="language-plaintext highlighter-rouge">redis.conf</code></p>
+
+<ul>
+  <li>确认其中的配置项为 <code class="language-plaintext highlighter-rouge">daemonize = yes</code></li>
+</ul>
+
+<p><img src="/assets/notes/Pasted-image-20260828154205.png" alt="" /></p>
+
+<p>并且仅开启 RDB 备份持久化策略</p>
+
+<ul>
+  <li>关闭混合持久化策略 <code class="language-plaintext highlighter-rouge">aof-user-rdb-preamble</code> 设置为 <code class="language-plaintext highlighter-rouge">no</code></li>
+  <li>关闭 AOF 持久化策略 <code class="language-plaintext highlighter-rouge">appendonly</code> 设置为 <code class="language-plaintext highlighter-rouge">no</code></li>
+</ul>
+
+<p><img src="/assets/notes/Pasted-image-20260828154215.png" alt="" /> <img src="/assets/notes/Pasted-image-20260828154222.png" alt="" /></p>
+
+<h3 id="分别创建三个配置文件">分别创建三个配置文件</h3>
+
+<p>示例: <code class="language-plaintext highlighter-rouge">redis6379.conf</code>、<code class="language-plaintext highlighter-rouge">redis6380.conf</code>、<code class="language-plaintext highlighter-rouge">redis6381.conf</code></p>
+
+<p>并且分别添加如下配置</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>include <span class="o">[</span>放置配置文件的目录路径]/redis.conf
+pidfile /var/run/redis_6379.pid
+port <span class="o">[</span>基于文件后缀，比如 6379 端口]
+dbfilename dump[端口].rdb
+</code></pre></div></div>
+
+<p>参考配置</p>
+
+<p><img src="/assets/notes/Pasted-image-20260828154238.png" alt="" /></p>
+
+<h3 id="分别启动三台-redis-服务器">分别启动三台 redis 服务器</h3>
+
+<p><img src="/assets/notes/Pasted-image-20260828154249.png" alt="" /></p>
+
+<p>连接查看相关信息</p>
+
+<ul>
+  <li>指令 <code class="language-plaintext highlighter-rouge">info replication</code> 用于打印主从复制的相关信息</li>
+</ul>
+
+<p><img src="/assets/notes/Pasted-image-20260828154258.png" alt="" /></p>
+
+<h3 id="配置主从关系">配置主从关系</h3>
+
+<p>将 6380 和 6381 配置成为 Slave ; 而 6379 作为主机 Master 借助如下指令，配置某个实例的从服务器</p>
+
+<ul>
+  <li>指令 <code class="language-plaintext highlighter-rouge">slaveof &lt;master_ip&gt; &lt;master_port&gt;</code></li>
+</ul>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>127.0.0.1:6380&gt; slaveof 127.0.0.1 6379
+OK
+127.0.0.1:6380&gt; info replication
+<span class="c"># Replication</span>
+role:slave
+master_host:127.0.0.1
+master_port:6379
+master_link_status:up
+master_last_io_seconds_ago:4
+master_sync_in_progress:0
+slave_read_repl_offset:0
+slave_repl_offset:0
+slave_priority:100
+slave_read_only:1
+replica_announced:1
+connected_slaves:0
+master_failover_state:no-failover
+master_replid:6635dfe974961f6624785748ea2ed035bc670b99
+master_replid2:0000000000000000000000000000000000000000
+master_repl_offset:0
+second_repl_offset:-1
+repl_backlog_active:1
+repl_backlog_size:1048576
+repl_backlog_first_byte_offset:1
+repl_backlog_histlen:0
+</code></pre></div></div>
+
+<p><img src="/assets/notes/Pasted-image-20260828154310.png" alt="" /> <img src="/assets/notes/Pasted-image-20260828154319.png" alt="" /></p>
+
+<p>查看主机信息</p>
+
+<p>配置了两个从节点</p>
+
+<ul>
+  <li>一个为端口 <code class="language-plaintext highlighter-rouge">6380</code> 的服务</li>
+  <li>一个为端口 <code class="language-plaintext highlighter-rouge">6381</code> 的服务</li>
+</ul>
+
+<p><img src="/assets/notes/Pasted-image-20260828154338.png" alt="" /></p>
+
+<h3 id="测试-主机支持读写但是从机仅支持读">测试: 主机支持读写，但是从机仅支持读</h3>
+
+<p><strong>主机 Master 支持读写</strong> <img src="/assets/notes/Pasted-image-20260828154346.png" alt="" /></p>
+
+<p><strong>从机 Slave 仅支持读</strong></p>
+
+<blockquote>
+  <p>尝试写报错: READONLY You can’t write against a read only replice.</p>
+
+  <p><img src="/assets/notes/Pasted-image-20260828154404.png" alt="" /></p>
+</blockquote>
+
+<h2 id="扩展---测试主从复制-之-全量复制">(扩展) - 测试主从复制 之 全量复制</h2>
+
+<p><strong>流程简述：</strong></p>
+
+<ol>
+  <li><strong>Slave</strong> 启动成功会连接到 <code class="language-plaintext highlighter-rouge">master</code> 后会发送一个 <code class="language-plaintext highlighter-rouge">sync</code> 指令</li>
+  <li><strong>Master</strong> 接到命令启动后台的存盘进程，同时收集所有接收到的用于修改数据的指令，在后台进程执行完毕之后，<strong>Master</strong> 将传送整个数据文件到 <strong>slave</strong>, 完成一次完全同步</li>
+  <li><strong>Slave</strong> 服务在接收到数据库文件数据之后，将其存盘并且加载到内存之中，即 <code class="language-plaintext highlighter-rouge">全量复制</code></li>
+</ol>
+
+<h3 id="测试slave-down-后重启仍然获取到-master-最新数据">测试：Slave down 后重启仍然获取到 Master 最新数据</h3>
+
+<p>Master 添加数据</p>
+
+<ul>
+  <li>推荐这个好用的 Redis 可视化工具 <code class="language-plaintext highlighter-rouge">Another Redis Desktop Manager</code> (๑•̀ㅂ•́)و✧</li>
+</ul>
+
+<p><img src="/assets/notes/Pasted-image-20260828154419.png" alt="" /></p>
+
+<p>查看从库</p>
+
+<ul>
+  <li>已经自动同步</li>
+</ul>
+
+<p><img src="/assets/notes/Pasted-image-20260828154426.png" alt="" /></p>
+
+<p>停止从库</p>
+
+<p><img src="/assets/notes/Pasted-image-20260828154434.png" alt="" /></p>
+
+<p>主库继续添加新的数据</p>
+
+<p><img src="/assets/notes/Pasted-image-20260828154443.png" alt="" /></p>
+
+<p>当前还存活: <strong>6379 主(Master)， 6380 从（Slave）</strong> <img src="/assets/notes/Pasted-image-20260828154452.png" alt="" /></p>
+
+<p>重启从库 <code class="language-plaintext highlighter-rouge">6381</code> 从库启动之后，默认仍然是 <strong>master</strong> <img src="/assets/notes/Pasted-image-20260828154501.png" alt="" /></p>
+
+<p>再次将其绑定 <strong>Master</strong>, 设置为从库 <img src="/assets/notes/Pasted-image-20260828154521.png" alt="" /></p>
+
+<p>获取从库内的所有 key</p>
+
+<ul>
+  <li>进行全量复制，<code class="language-plaintext highlighter-rouge">6381</code>从库仍然可以得到最新的数据</li>
+</ul>
+
+<p><img src="/assets/notes/Pasted-image-20260828154531.png" alt="" /></p>
+
+<p>主库 Master 内此时的最新数据 <img src="/assets/notes/Pasted-image-20260828154553.png" alt="" /></p>
+
+<h3 id="测试master-意外-down-后重启自动恢复-master-地位">测试：Master 意外 down 后重启自动恢复 Master 地位</h3>
+
+<p><strong>现象:</strong> 当 master 恢复之后，从服务器 Slave 仍然指向原来的主服务器</p>
+
+<p>在 <code class="language-plaintext highlighter-rouge">6379</code> 主 Master 服务器内执行</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>SHUTDOWN
+</code></pre></div></div>
+
+<p><img src="/assets/notes/Pasted-image-20260828154718.png" alt="" /></p>
+
+<p>确认 Master 已经 Down <img src="/assets/notes/Pasted-image-20260828154726.png" alt="" /></p>
+
+<p>此时从服务器 <img src="/assets/notes/Pasted-image-20260828154734.png" alt="" /></p>
+
+<p><strong>重启端口为 <code class="language-plaintext highlighter-rouge">6379</code> 的 Master</strong></p>
+
+<p>查看当前各个服务节点是否启动</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">[</span>root@xxx]# redis-server redis6379.conf
+<span class="o">[</span>root@xxx]# ps <span class="nt">-ef</span> | <span class="nb">grep </span>redis
+root      372752       1  0 06:30 ?        00:00:10 redis-server <span class="k">*</span>:6380
+root      374411       1  0 06:50 ?        00:00:03 redis-server <span class="k">*</span>:6381
+root      374416  366219  0 06:50 pts/1    00:00:00 redis-cli <span class="nt">-p</span> 6381
+root      375125       1  5 06:58 ?        00:00:00 redis-server <span class="k">*</span>:6379
+root      375135  374917  0 06:58 pts/2    00:00:00 <span class="nb">grep</span> <span class="nt">--color</span><span class="o">=</span>auto redis
+</code></pre></div></div>
+
+<p><code class="language-plaintext highlighter-rouge">6379</code>主服务器启动之后仍然是 <code class="language-plaintext highlighter-rouge">master</code></p>
+
+<p><img src="/assets/notes/Pasted-image-20260828154745.png" alt="" /></p>
+
+<p>查询从服务器 Slave 信息 可以监控到主服务器已经启动 <img src="/assets/notes/Pasted-image-20260828154754.png" alt="" />提问：从节点能不能再挂从节点？形成级联复制？</p>
+
+<p>回答：可以的。从节点可以配置成另一个从节点的主节点，形成链式结构。这样做的好处是减轻主节点的复制压力。假设有 10 个从节点都直接连主节点，主节点要维护 10 个 replication buffer，要发 10 份数据。如果用级联结构，主节点只连 2 个从节点，这 2 个再各自连 4 个，主节点的压力就小多了。缺点是链路越长延迟越高，最底层的从节点数据延迟会叠加。</p>
+
+<p>提问：主从复制的时候从节点还能对外提供读服务吗？</p>
+
+<p>回答：默认可以，但读到的可能是旧数据。如果要求严格，可以配置 <code class="language-plaintext highlighter-rouge">slave-serve-stale-data no</code>，这样从节点在同步完成前拒绝所有读请求，只返回 SYNC with master in progress 错误。一般不建议这么配，会影响可用性。</p>
+
+<p>提问：主节点挂了从节点会自动升级成主节点吗？</p>
+
+<p>回答：不会。单纯的主从复制没有自动故障转移能力。从节点发现主节点挂了，就一直等着，不会自己升级。要实现自动切换得上哨兵或者 Redis Cluster。哨兵会监控主从节点状态，主节点挂了自动选一个从节点提升成新主节点。</p>
+
+<p>提问：repl_backlog_buffer 是所有从节点共用一个，那怎么知道每个从节点同步到哪了？</p>
+
+<p>回答：每个从节点会记录自己的复制偏移量 offset，主节点也记录自己当前写到哪个 offset 了。从节点重连时把自己的 offset 告诉主节点，主节点拿这个 offset 去 repl_backlog_buffer 里查。buffer 里每条数据都有对应的 offset 范围，能查到就增量同步，查不到说明数据被覆盖了就全量同步。</p>]]></content><author><name>朱</name></author><category term="Redis" /><category term="redis" /><category term="主从复制" /><summary type="html"><![CDATA[首先我先说说主从复制是什么？为了减轻redis的压力，使用了读写分离的形式，也就是主节点写，从节点读，这样就要求主从节点数据必须一致，所以就有了主从复制。主从复制就是，将一个主节点上的数据全部复制到其他的从节点上，以保持主从节点的数据一致。]]></summary></entry><entry><title type="html">IO基础与流操作</title><link href="https://zwany1.github.io/2025/12/26/IO%E5%9F%BA%E7%A1%80%E4%B8%8E%E6%B5%81%E6%93%8D%E4%BD%9C/" rel="alternate" type="text/html" title="IO基础与流操作" /><published>2025-12-26T00:00:00+08:00</published><updated>2025-12-26T00:00:00+08:00</updated><id>https://zwany1.github.io/2025/12/26/IO%E5%9F%BA%E7%A1%80%E4%B8%8E%E6%B5%81%E6%93%8D%E4%BD%9C</id><content type="html" xml:base="https://zwany1.github.io/2025/12/26/IO%E5%9F%BA%E7%A1%80%E4%B8%8E%E6%B5%81%E6%93%8D%E4%BD%9C/"><![CDATA[<style>
 .article-content.markdown-body {
   line-height: 1.85;
   font-size: 16px;

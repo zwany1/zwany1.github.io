@@ -1,0 +1,56 @@
+/* 项目页 GitHub 仓库卡片样式
+   使用 butterfly 主题内置 CSS 变量，自动适配暗色/亮色模式 */
+.gh-projects {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 1.2rem;
+  margin: 1.2rem 0;
+}
+
+.gh-project-card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  padding: 1.2rem 1.3rem;
+  border: 1px solid var(--card-border, #e3e8f7);
+  border-radius: 10px;
+  background: var(--card-bg, #fff);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.04);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.gh-project-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.1);
+}
+
+.gh-project-title {
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: var(--theme-color, #4c8bf5);
+  text-decoration: none;
+}
+
+.gh-project-title:hover {
+  text-decoration: underline;
+}
+
+.gh-project-desc {
+  flex: 1;
+  font-size: 0.9rem;
+  color: var(--font-color, #4c4948);
+  line-height: 1.6;
+  word-break: break-word;
+}
+
+.gh-project-meta {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  font-size: 0.85rem;
+  color: var(--font-color, #4c4948);
+}
+
+.gh-project-meta span {
+  opacity: 0.85;
+}

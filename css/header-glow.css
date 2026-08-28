@@ -1,0 +1,16 @@
+/* 头部鼠标跟随光斑
+   抄自 WeGraduated 前端 Home.vue 的 .cursor-glow，做进 #page-header::before。
+   full_page=首页，not-home-page=归档/标签/分类/关于。
+   中心由 JS 写入的 --mx / --my 控制，保留主题原有深色遮罩 var(--mark-bg)。 */
+/* 头部鼠标跟随光斑
+   由 JS 检测到 header 使用渐变背景时动态加上 .glow-header 类触发，
+   不区分页面类型，任何界面只要 header 是渐变就生效。 */
+#page-header.glow-header::before {
+  background-color: var(--mark-bg);
+  background-image: radial-gradient(
+    circle 120px at var(--mx, 50%) var(--my, 50%),
+    rgba(255, 255, 255, 0.15) 0%,
+    rgba(255, 255, 255, 0.05) 40%,
+    transparent 60%
+  );
+}

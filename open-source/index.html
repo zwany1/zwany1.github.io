@@ -1,1 +1,258 @@
-<!DOCTYPE html><html lang="zh-cmn-Hans" prefix="og: http://ogp.me/ns#" class="han-init"><head><meta charset="utf-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" /><title>Open Source Projects &mdash; 朱</title><link rel="stylesheet" href="https://fastly.jsdelivr.net/gh/zwany1/zwany1.github.io@master/assets/vendor/primer-css/css/primer.css"><link rel="stylesheet" href="https://fastly.jsdelivr.net/gh/zwany1/zwany1.github.io@master/assets/css/globals/common.css"><link rel="stylesheet" href="https://fastly.jsdelivr.net/gh/zwany1/zwany1.github.io@master/assets/css/globals/responsive.css"><link rel="stylesheet" href="https://fastly.jsdelivr.net/gh/zwany1/zwany1.github.io@master/assets/css/components/collection.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://fastly.jsdelivr.net/gh/zwany1/zwany1.github.io@master/assets/css/components/repo-card.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://fastly.jsdelivr.net/gh/zwany1/zwany1.github.io@master/assets/css/sections/repo-list.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://fastly.jsdelivr.net/gh/zwany1/zwany1.github.io@master/assets/css/components/boxed-group.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://fastly.jsdelivr.net/gh/zwany1/zwany1.github.io@master/assets/css/posts/index.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://fastly.jsdelivr.net/gh/zwany1/zwany1.github.io@master/assets/css/globals/animations.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://fastly.jsdelivr.net/gh/zwany1/zwany1.github.io@master/assets/vendor/octicons/octicons/octicons.css"><link rel="stylesheet" href="https://fastly.jsdelivr.net/gh/mzlogin/rouge-themes@master/dist/github.css"><link rel="canonical" href="https://zwany1.github.io/open-source/"><link rel="alternate" type="application/atom+xml" title="朱" href="https://zwany1.github.io/feed.xml"><link rel="shortcut icon" href="https://fastly.jsdelivr.net/gh/zwany1/zwany1.github.io@master/assets/images/d56012bab88f5aabe76bb1fc7eeeb9c6.jpg"><meta property="og:title" content="Open Source Projects"><meta name="keywords" content="开源,open-source,GitHub,开源项目"><meta name="og:keywords" content="开源,open-source,GitHub,开源项目"><meta name="description" content="开源改变世界。"><meta name="og:description" content="开源改变世界。"><meta property="og:url" content="https://zwany1.github.io/open-source/"><meta property="og:site_name" content="朱"><meta property="og:type" content="article"><meta property="og:locale" content="zh_CN" /> <script src="https://fastly.jsdelivr.net/gh/zwany1/zwany1.github.io@master/assets/vendor/jquery/dist/jquery.min.js"></script> <script defer src="https://fastly.jsdelivr.net/gh/zwany1/zwany1.github.io@master/assets/js/main.js"></script> <script> // 全局showImage函数 window.showImage = function(imageURL, event) { if (event) event.preventDefault(); // 阻止默认链接行为 // 确保模态框元素存在 var modal = document.getElementById('imageModal'); var modalImg = document.getElementById('modalImage'); if (modal && modalImg) { modalImg.src = imageURL; modal.style.display = 'block'; } else { console.error('模态框元素不存在'); } }; </script></head><body class="" data-mz=""><header class="site-header"><div class="container"><h1><a href="https://zwany1.github.io/" title="朱"><span class="octicon octicon-mark-github"></span> 朱</a></h1><a href="https://www.travellings.cn/go-by-clouds.html" class="travel-link mobile-hidden" title="遨游世界" target="_blank"> <span class="octicon octicon-globe"></span> 遨游世界 </a> <a href="https://zwany1.github.io/new-year/" class="travel-link mobile-hidden" title="新年快乐"> <span class="octicon octicon-gift"></span> 新年快乐 </a> <button class="collapsed mobile-visible" type="button" onclick="toggleMenu();"> <span class="icon-bar"></span> <span class="icon-bar"></span> <span class="icon-bar"></span> </button><nav class="site-header-nav" role="navigation"> <a href="https://zwany1.github.io/" class="site-header-nav-item" title="首页">首页</a><div class="dropdown mobile-hidden"> <a href="/pages/" class="site-header-nav-item dropdown-toggle" title="页面">页面👉</a><div class="dropdown-menu"> <a href="/about/" class="dropdown-item">关于</a> <a href="/categories/" class="dropdown-item">分类</a> <a href="/fragments/" class="dropdown-item">片段</a> <a href="/open-source/" class="dropdown-item">开源</a> <a href="/gallery/" class="dropdown-item">回忆录</a></div></div><a class="mobile-hidden" href="https://zwany1.github.io/feed.xml"><span class="octicon octicon-rss" style="color:orange;"></span></a></nav><style> /* 水平展开菜单样式 */ .dropdown { position: relative; display: inline-block; z-index: 10; /* 降低菜单容器层级 */ } .dropdown-toggle { cursor: pointer; position: relative; z-index: 12; } .dropdown-menu { display: none; position: absolute; top: 0; left: 100%; background-color: white; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15); border-radius: 4px; padding: 0; margin: 0; z-index: 11; /* 降低菜单内容层级 */ border: 1px solid #e1e4e8; white-space: nowrap; } .dropdown:hover .dropdown-menu { display: block; } .dropdown-item { display: inline-block; padding: 8px 16px; color: #24292e; text-decoration: none; background-color: transparent; border: none; text-align: center; font-size: 14px; line-height: 1.5; } .dropdown-item:hover { background-color: #f6f8fa; } /* 遨游世界链接样式 */ .travel-link { display: inline-block; margin-right: 15px; padding: 8px 12px; color: #35ff35; /* 绿色文字 */ font-size: 18px; /* 适中的字体大小 */ font-weight: bold; text-decoration: none; transition: all 0.3s ease; position: relative; z-index: 10; } .travel-link .octicon { margin-right: 5px; /* 图标与文字之间的间距 */ font-size: 24px; /* 图标大小略大于文字 */ vertical-align: middle; } .travel-link:hover { color: #ff4500; /* 悬停时颜色变为橙色 */ transform: scale(1.05); /* 悬停时轻微放大 */ }</style></div></header><section class="container"><header class="text-center"><h1>Open Source Projects</h1><p class="lead">I have <span class="repo-count">17</span> projects on Github</p></header><div class="repo-list"> <a href="https://github.com/zwany1/zwany1.github.io" target="_blank" class="one-third-column card text-center"><div class="thumbnail"><div class="card-image geopattern" data-pattern-id="zwany1.github.io"><div class="card-image-cell"><h3 class="card-title"> zwany1.github.io</h3></div></div><div class="caption"><div class="card-description"><p class="card-text">Jekyll Themes / GitHub Pages 博客模板 / A template repository for Jekyll based blog</p></div><div class="card-text"> <span class="meta-info" title="1 stars"> <span class="octicon octicon-star"></span> 1 </span> <span class="meta-info" title="0 forks"> <span class="octicon octicon-git-branch"></span> 0 </span> <span class="meta-info" title="Last updated：2026-01-21 01:43:22 UTC"> <span class="octicon octicon-clock"></span> <time datetime="2026-01-21 01:43:22 UTC">2026-01-21</time> </span></div></div></div></a> <a href="https://github.com/zwany1/blog-main" target="_blank" class="one-third-column card text-center"><div class="thumbnail"><div class="card-image geopattern" data-pattern-id="blog-main"><div class="card-image-cell"><h3 class="card-title"> blog-main</h3></div></div><div class="caption"><div class="card-description"><p class="card-text">为了方便实验室内部技术交流，应导师要求设计了多人共享博客推荐系统，采用 springboot 和 VUE 的前后端分离技术，主要功能有留言、友链、多级评论、说说、相册等功能。</p></div><div class="card-text"> <span class="meta-info" title="1 stars"> <span class="octicon octicon-star"></span> 1 </span> <span class="meta-info" title="0 forks"> <span class="octicon octicon-git-branch"></span> 0 </span> <span class="meta-info" title="Last updated：2024-12-10 06:47:42 UTC"> <span class="octicon octicon-clock"></span> <time datetime="2024-12-10 06:47:42 UTC">2024-12-10</time> </span></div></div></div></a> <a href="https://github.com/zwany1/zzyl" target="_blank" class="one-third-column card text-center"><div class="thumbnail"><div class="card-image geopattern" data-pattern-id="zzyl"><div class="card-image-cell"><h3 class="card-title"> zzyl</h3></div></div><div class="caption"><div class="card-description"><p class="card-text"></p></div><div class="card-text"> <span class="meta-info" title="0 stars"> <span class="octicon octicon-star"></span> 0 </span> <span class="meta-info" title="0 forks"> <span class="octicon octicon-git-branch"></span> 0 </span> <span class="meta-info" title="Last updated：2025-12-17 03:27:14 UTC"> <span class="octicon octicon-clock"></span> <time datetime="2025-12-17 03:27:14 UTC">2025-12-17</time> </span></div></div></div></a> <a href="https://github.com/zwany1/zwanY1" target="_blank" class="one-third-column card text-center"><div class="thumbnail"><div class="card-image geopattern" data-pattern-id="zwanY1"><div class="card-image-cell"><h3 class="card-title"> zwanY1</h3></div></div><div class="caption"><div class="card-description"><p class="card-text"></p></div><div class="card-text"> <span class="meta-info" title="0 stars"> <span class="octicon octicon-star"></span> 0 </span> <span class="meta-info" title="0 forks"> <span class="octicon octicon-git-branch"></span> 0 </span> <span class="meta-info" title="Last updated：2025-12-05 06:58:43 UTC"> <span class="octicon octicon-clock"></span> <time datetime="2025-12-05 06:58:43 UTC">2025-12-05</time> </span></div></div></div></a> <a href="https://github.com/zwany1/wxqyh" target="_blank" class="one-third-column card text-center"><div class="thumbnail"><div class="card-image geopattern" data-pattern-id="wxqyh"><div class="card-image-cell"><h3 class="card-title"> wxqyh</h3></div></div><div class="caption"><div class="card-description"><p class="card-text">微信企业号实例代码java版 jssdk，access_token，ticket，oauth媒体文件的上传下载，通讯录管理，菜单管理</p></div><div class="card-text"> <span class="meta-info" title="0 stars"> <span class="octicon octicon-star"></span> 0 </span> <span class="meta-info" title="0 forks"> <span class="octicon octicon-git-branch"></span> 0 </span> <span class="meta-info" title="Last updated：2024-12-19 03:50:30 UTC"> <span class="octicon octicon-clock"></span> <time datetime="2024-12-19 03:50:30 UTC">2024-12-19</time> </span></div></div></div></a> <a href="https://github.com/zwany1/sky-take-out" target="_blank" class="one-third-column card text-center"><div class="thumbnail"><div class="card-image geopattern" data-pattern-id="sky-take-out"><div class="card-image-cell"><h3 class="card-title"> sky-take-out</h3></div></div><div class="caption"><div class="card-description"><p class="card-text"></p></div><div class="card-text"> <span class="meta-info" title="0 stars"> <span class="octicon octicon-star"></span> 0 </span> <span class="meta-info" title="0 forks"> <span class="octicon octicon-git-branch"></span> 0 </span> <span class="meta-info" title="Last updated：2025-01-03 03:43:26 UTC"> <span class="octicon octicon-clock"></span> <time datetime="2025-01-03 03:43:26 UTC">2025-01-03</time> </span></div></div></div></a> <a href="https://github.com/zwany1/order_mq_sms" target="_blank" class="one-third-column card text-center"><div class="thumbnail"><div class="card-image geopattern" data-pattern-id="order_mq_sms"><div class="card-image-cell"><h3 class="card-title"> order_mq_sms</h3></div></div><div class="caption"><div class="card-description"><p class="card-text"></p></div><div class="card-text"> <span class="meta-info" title="0 stars"> <span class="octicon octicon-star"></span> 0 </span> <span class="meta-info" title="0 forks"> <span class="octicon octicon-git-branch"></span> 0 </span> <span class="meta-info" title="Last updated：2025-01-03 03:52:47 UTC"> <span class="octicon octicon-clock"></span> <time datetime="2025-01-03 03:52:47 UTC">2025-01-03</time> </span></div></div></div></a> <a href="https://github.com/zwany1/newWechat" target="_blank" class="one-third-column card text-center"><div class="thumbnail"><div class="card-image geopattern" data-pattern-id="newWechat"><div class="card-image-cell"><h3 class="card-title"> newWechat</h3></div></div><div class="caption"><div class="card-description"><p class="card-text"></p></div><div class="card-text"> <span class="meta-info" title="0 stars"> <span class="octicon octicon-star"></span> 0 </span> <span class="meta-info" title="0 forks"> <span class="octicon octicon-git-branch"></span> 0 </span> <span class="meta-info" title="Last updated：2025-01-03 03:50:31 UTC"> <span class="octicon octicon-clock"></span> <time datetime="2025-01-03 03:50:31 UTC">2025-01-03</time> </span></div></div></div></a> <a href="https://github.com/zwany1/moyu" target="_blank" class="one-third-column card text-center"><div class="thumbnail"><div class="card-image geopattern" data-pattern-id="moyu"><div class="card-image-cell"><h3 class="card-title"> moyu</h3></div></div><div class="caption"><div class="card-description"><p class="card-text">2000个摸鱼小游戏、小工具源码集合及在线演示</p></div><div class="card-text"> <span class="meta-info" title="0 stars"> <span class="octicon octicon-star"></span> 0 </span> <span class="meta-info" title="0 forks"> <span class="octicon octicon-git-branch"></span> 0 </span> <span class="meta-info" title="Last updated：2025-12-17 08:47:10 UTC"> <span class="octicon octicon-clock"></span> <time datetime="2025-12-17 08:47:10 UTC">2025-12-17</time> </span></div></div></div></a> <a href="https://github.com/zwany1/Memoir" target="_blank" class="one-third-column card text-center"><div class="thumbnail"><div class="card-image geopattern" data-pattern-id="Memoir"><div class="card-image-cell"><h3 class="card-title"> Memoir</h3></div></div><div class="caption"><div class="card-description"><p class="card-text"></p></div><div class="card-text"> <span class="meta-info" title="0 stars"> <span class="octicon octicon-star"></span> 0 </span> <span class="meta-info" title="0 forks"> <span class="octicon octicon-git-branch"></span> 0 </span> <span class="meta-info" title="Last updated：2025-12-04 06:45:40 UTC"> <span class="octicon octicon-clock"></span> <time datetime="2025-12-04 06:45:40 UTC">2025-12-04</time> </span></div></div></div></a> <a href="https://github.com/zwany1/lpanda" target="_blank" class="one-third-column card text-center"><div class="thumbnail"><div class="card-image geopattern" data-pattern-id="lpanda"><div class="card-image-cell"><h3 class="card-title"> lpanda</h3></div></div><div class="caption"><div class="card-description"><p class="card-text">AI 小说生成推文漫画视频</p></div><div class="card-text"> <span class="meta-info" title="0 stars"> <span class="octicon octicon-star"></span> 0 </span> <span class="meta-info" title="0 forks"> <span class="octicon octicon-git-branch"></span> 0 </span> <span class="meta-info" title="Last updated：2025-07-03 03:51:51 UTC"> <span class="octicon octicon-clock"></span> <time datetime="2025-07-03 03:51:51 UTC">2025-07-03</time> </span></div></div></div></a> <a href="https://github.com/zwany1/jekyll-multiverse-template" target="_blank" class="one-third-column card text-center"><div class="thumbnail"><div class="card-image geopattern" data-pattern-id="jekyll-multiverse-template"><div class="card-image-cell"><h3 class="card-title"> jekyll-multiverse-template</h3></div></div><div class="caption"><div class="card-description"><p class="card-text">HTML5UP's Multiverse theme for Jekyll</p></div><div class="card-text"> <span class="meta-info" title="0 stars"> <span class="octicon octicon-star"></span> 0 </span> <span class="meta-info" title="0 forks"> <span class="octicon octicon-git-branch"></span> 0 </span> <span class="meta-info" title="Last updated：2025-12-04 09:01:25 UTC"> <span class="octicon octicon-clock"></span> <time datetime="2025-12-04 09:01:25 UTC">2025-12-04</time> </span></div></div></div></a> <a href="https://github.com/zwany1/jarvis" target="_blank" class="one-third-column card text-center"><div class="thumbnail"><div class="card-image geopattern" data-pattern-id="jarvis"><div class="card-image-cell"><h3 class="card-title"> jarvis</h3></div></div><div class="caption"><div class="card-description"><p class="card-text"></p></div><div class="card-text"> <span class="meta-info" title="0 stars"> <span class="octicon octicon-star"></span> 0 </span> <span class="meta-info" title="0 forks"> <span class="octicon octicon-git-branch"></span> 0 </span> <span class="meta-info" title="Last updated：2025-12-29 13:20:56 UTC"> <span class="octicon octicon-clock"></span> <time datetime="2025-12-29 13:20:56 UTC">2025-12-29</time> </span></div></div></div></a> <a href="https://github.com/zwany1/clash-verge-rev" target="_blank" class="one-third-column card text-center"><div class="thumbnail"><div class="card-image geopattern" data-pattern-id="clash-verge-rev"><div class="card-image-cell"><h3 class="card-title"> clash-verge-rev</h3></div></div><div class="caption"><div class="card-description"><p class="card-text">A modern GUI client based on Tauri, designed to run in Windows, macOS and Linux for tailored proxy experience</p></div><div class="card-text"> <span class="meta-info" title="0 stars"> <span class="octicon octicon-star"></span> 0 </span> <span class="meta-info" title="0 forks"> <span class="octicon octicon-git-branch"></span> 0 </span> <span class="meta-info" title="Last updated：2026-01-04 08:00:43 UTC"> <span class="octicon octicon-clock"></span> <time datetime="2026-01-04 08:00:43 UTC">2026-01-04</time> </span></div></div></div></a> <a href="https://github.com/zwany1/birthday-cake" target="_blank" class="one-third-column card text-center"><div class="thumbnail"><div class="card-image geopattern" data-pattern-id="birthday-cake"><div class="card-image-cell"><h3 class="card-title"> birthday-cake</h3></div></div><div class="caption"><div class="card-description"><p class="card-text"></p></div><div class="card-text"> <span class="meta-info" title="0 stars"> <span class="octicon octicon-star"></span> 0 </span> <span class="meta-info" title="0 forks"> <span class="octicon octicon-git-branch"></span> 0 </span> <span class="meta-info" title="Last updated：2025-12-19 03:18:36 UTC"> <span class="octicon octicon-clock"></span> <time datetime="2025-12-19 03:18:36 UTC">2025-12-19</time> </span></div></div></div></a> <a href="https://github.com/zwany1/3DPhotoAlbum" target="_blank" class="one-third-column card text-center"><div class="thumbnail"><div class="card-image geopattern" data-pattern-id="3DPhotoAlbum"><div class="card-image-cell"><h3 class="card-title"> 3DPhotoAlbum</h3></div></div><div class="caption"><div class="card-description"><p class="card-text"></p></div><div class="card-text"> <span class="meta-info" title="0 stars"> <span class="octicon octicon-star"></span> 0 </span> <span class="meta-info" title="0 forks"> <span class="octicon octicon-git-branch"></span> 0 </span> <span class="meta-info" title="Last updated：2025-12-19 01:49:41 UTC"> <span class="octicon octicon-clock"></span> <time datetime="2025-12-19 01:49:41 UTC">2025-12-19</time> </span></div></div></div></a> <a href="https://github.com/zwany1/3d" target="_blank" class="one-third-column card text-center"><div class="thumbnail"><div class="card-image geopattern" data-pattern-id="3d"><div class="card-image-cell"><h3 class="card-title"> 3d</h3></div></div><div class="caption"><div class="card-description"><p class="card-text"></p></div><div class="card-text"> <span class="meta-info" title="0 stars"> <span class="octicon octicon-star"></span> 0 </span> <span class="meta-info" title="0 forks"> <span class="octicon octicon-git-branch"></span> 0 </span> <span class="meta-info" title="Last updated：2025-12-19 06:19:18 UTC"> <span class="octicon octicon-clock"></span> <time datetime="2025-12-19 06:19:18 UTC">2025-12-19</time> </span></div></div></div></a></div></section><div id="imageModal"> <img id="modalImage"></div><footer class="container"><div class="site-footer" role="contentinfo"><div class="copyright left mobile-block"> © 2025 <span title="朱">朱</span> <a href="javascript:window.scrollTo(0,0)" class="right mobile-visible">TOP</a></div><ul class="site-footer-links right mobile-hidden"><li> <a href="javascript:window.scrollTo(0,0)" >TOP</a></li></ul><a href="https://github.com/zwany1/zwany1.github.io" target="_blank" aria-label="view source code"> <span class="mega-octicon octicon-mark-github" title="GitHub"></span> </a><ul class="site-footer-links mobile-hidden"><li> <a href="https://zwany1.github.io/" title="首页" target="">首页</a></li><li> <a href="https://zwany1.github.io/categories/" title="分类" target="">分类</a></li><li> <a href="https://zwany1.github.io/pages/" title="页面" target="">页面</a></li><li> <a href="https://zwany1.github.io/open-source/" title="开源" target="">开源</a></li><li> <a href="https://zwany1.github.io/fragments/" title="片段" target="">片段</a></li><li> <a href="https://zwany1.github.io/about/" title="关于" target="">关于</a></li><li> <a href="https://zwany1.github.io/gallery/" title="回忆录" target="">回忆录</a></li><li><a href="https://zwany1.github.io/feed.xml"><span class="octicon octicon-rss" style="color:orange;"></span></a></li></ul></div></footer><div class="tools-wrapper"> <a class="gotop" href="#" title="回到顶部"><span class="octicon octicon-arrow-up"></span></a></div><script src="https://fastly.jsdelivr.net/gh/zwany1/zwany1.github.io@master/assets/js/geopattern.js"></script> <script> jQuery(document).ready(function($) { $('.geopattern').each(function(){ $(this).geopattern($(this).data('pattern-id')); }); /* hljs.initHighlightingOnLoad(); */ }); </script></body></html>
+<!DOCTYPE html>
+<html lang="zh-cmn-Hans" data-theme="light">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>Open Source Projects - 朱的小屋</title>
+    <meta name="author" content="朱">
+    <meta name="copyright" content="朱">
+    <meta name="format-detection" content="telephone=no">
+    <meta name="theme-color" content="#ffffff">
+    <meta name="description" content="开源改变世界。">
+    <meta name="keywords" content="开源,open-source,GitHub,开源项目">
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="Open Source Projects">
+    <meta property="og:url" content="https://zwany1.github.io/open-source/">
+    <meta property="og:site_name" content="朱的小屋">
+    <meta property="og:description" content="开源改变世界。">
+    <meta property="og:image" content="https://github.com/zwany1.png">
+    <link rel="shortcut icon" href="/favicon.ico">
+    <link rel="canonical" href="https://zwany1.github.io/open-source/">
+    <link rel="alternate" type="application/atom+xml" title="朱的小屋" href="https://zwany1.github.io/feed.xml">
+    <link rel="preconnect" href="//cdn.jsdelivr.net">
+    <link rel="preconnect" href="//busuanzi.ibruce.info">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.3.1/css/all.min.css">
+    <link rel="stylesheet" href="/assets/css/butterfly.css">
+    <link rel="stylesheet" href="/css/header-glow.css?v=1787910351">
+    <link rel="stylesheet" href="/css/time-greeting.css?v=1787910351">
+    <link rel="stylesheet" href="/css/gh-projects.css?v=1787910351">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui@6.1.14/dist/fancybox/fancybox.min.css" media="print" onload="this.media='all'">
+    
+    <link rel="stylesheet" href="https://fastly.jsdelivr.net/gh/mzlogin/rouge-themes@master/dist/github.css">
+    <script>
+    (() => {
+      const saveToLocal = {
+        set: (key, value, ttl) => { const data = { value }; if (ttl != null) data.expiry = Date.now() + ttl * 86400000; localStorage.setItem(key, JSON.stringify(data)); },
+        get: key => { const itemStr = localStorage.getItem(key); if (!itemStr) return; try { const data = JSON.parse(itemStr); if (data.expiry && Date.now() > data.expiry) { localStorage.removeItem(key); return; } return data.value; } catch { localStorage.removeItem(key); } }
+      };
+      const scriptCache = new Map();
+      const cssCache = new Map();
+      window.btf = {
+        saveToLocal,
+        getScript: (url, attr = {}) => { if (scriptCache.has(url)) return scriptCache.get(url); const promise = new Promise((resolve, reject) => { const script = document.createElement('script'); script.src = url; script.async = true; for (const key in attr) script.setAttribute(key, attr[key]); script.onload = resolve; script.onerror = reject; document.head.appendChild(script); }); scriptCache.set(url, promise); return promise; },
+        getCSS: (url, id) => { if (cssCache.has(url)) return cssCache.get(url); const promise = new Promise((resolve, reject) => { const link = document.createElement('link'); link.rel = 'stylesheet'; link.href = url; if (id) link.id = id; link.onload = resolve; link.onerror = reject; document.head.appendChild(link); }); cssCache.set(url, promise); return promise; },
+        addGlobalFn: (key, fn, name = false, parent = window) => { if (!false && key.startsWith('pjax')) return; const globalFn = parent.globalFn || {}; globalFn[key] = globalFn[key] || {}; globalFn[key][name || Object.keys(globalFn[key]).length] = fn; parent.globalFn = globalFn; }
+      };
+      const metaThemeColor = document.querySelector('meta[name="theme-color"]');
+      const activateDarkMode = () => { document.documentElement.dataset.theme = 'dark'; if (metaThemeColor !== null) metaThemeColor.setAttribute('content', '#0d0d0d'); };
+      const activateLightMode = () => { document.documentElement.dataset.theme = 'light'; if (metaThemeColor !== null) metaThemeColor.setAttribute('content', '#ffffff'); };
+      btf.activateDarkMode = activateDarkMode;
+      btf.activateLightMode = activateLightMode;
+      const theme = saveToLocal.get('theme');
+      theme === 'dark' ? activateDarkMode() : theme === 'light' ? activateLightMode() : null;
+      const asideStatus = saveToLocal.get('aside-status');
+      if (asideStatus !== undefined) document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide');
+      const detectApple = () => { if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) document.documentElement.classList.add('apple'); };
+      detectApple();
+    })();
+    window.GLOBAL_CONFIG = {
+      root: '/',
+      algolia: undefined,
+      localSearch: { "path": "/search.xml?v=1787910351", "preload": false, "top_n_per_article": 1, "unescape": false, "pagination": { "enable": false, "hitsPerPage": 8 }, "languages": { "hits_empty": "未找到包含 ${query} 的文章", "hits_stats": "找到 ${hits} 篇文章" } },
+      translate: undefined,
+      highlight: { "plugin": "prismjs", "highlightCopy": true, "highlightLang": true, "highlightHeightLimit": false, "highlightFullpage": false, "highlightMacStyle": false },
+      copy: { success: '复制成功', error: '复制失败', noSupport: '浏览器不支持' },
+      relativeDate: { homepage: false, post: false },
+      runtime: '',
+      dateSuffix: { just: '刚刚', min: '分钟前', hour: '小时前', day: '天前', month: '个月前' },
+      copyright: undefined,
+      lightbox: 'fancybox',
+      Snackbar: undefined,
+      infinitegrid: { js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid@4.13.0/dist/infinitegrid.min.js', buttonText: '加载更多' },
+      isPhotoFigcaption: false,
+      islazyloadPlugin: true,
+      isAnchor: false,
+      percent: { toc: true, rightside: false },
+      autoDarkmode: false
+    };
+    window.GLOBAL_CONFIG_SITE = {
+      title: 'Open Source Projects',
+      isHighlightShrink: false,
+      isToc: false,
+      pageType: 'page'
+    };
+    </script>
+</head>
+<body class=" type-page">
+<div id="web_bg"></div>
+<div id="sidebar">
+    <div id="menu-mask"></div>
+    <div id="sidebar-menus">
+        <div class="avatar-img text-center">
+            <img src="https://github.com/zwany1.png" alt="avatar" onerror="this.onerror=null;this.src='/assets/images/d56012bab88f5aabe76bb1fc7eeeb9c6.jpg'"/>
+        </div>
+        <div class="site-data text-center">
+            <a href="/archives/"><div class="headline">Articles</div><div class="length-num">3</div></a>
+            <a href="/tags/"><div class="headline">Tags</div><div class="length-num">8</div></a>
+            <a href="/categories/"><div class="headline">Categories</div><div class="length-num">3</div></a>
+        </div>
+        <div class="menus_items">
+            <div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div>
+            <div class="menus_item"><a class="site-page" href="/projects/"><i class="fa-fw fas fa-rocket"></i><span> 项目</span></a></div>
+            <div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></div>
+            <div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div>
+            <div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div>
+            <div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-user"></i><span> 关于</span></a></div>
+        </div>
+    </div>
+</div>
+<div class="page" id="body-wrap">
+    <header class="not-home-page" id="page-header" style="background: linear-gradient(135deg, #4c8bf5 0%, #9a6cf5 50%, #f56ec6 100%);">
+        <nav id="nav">
+            <span id="blog-info">
+                <a class="nav-site-title" href="/"><span class="site-name">朱的小屋</span></a>
+            </span>
+            <div id="menus">
+                <div id="search-button">
+                    <span class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> Search</span></span>
+                </div>
+                <div class="menus_items">
+                    <div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div>
+                    <div class="menus_item"><a class="site-page" href="/projects/"><i class="fa-fw fas fa-rocket"></i><span> 项目</span></a></div>
+                    <div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></div>
+                    <div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div>
+                    <div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div>
+                    <div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-user"></i><span> 关于</span></a></div>
+                </div>
+                <div id="toggle-menu">
+                    <span class="site-page"><i class="fas fa-bars fa-fw"></i></span>
+                </div>
+            </div>
+        </nav>
+        
+        <div id="page-site-info">
+            <h1 id="site-title">Open Source Projects</h1>
+        </div>
+        
+    </header>
+    <main class="layout hide-aside" id="content-inner">
+
+<div id="page">
+    <div class="container" id="article-container">
+    <div class="gh-projects">
+    
+    <div class="gh-project-card">
+        <a class="gh-project-title" href="https://zwany1.github.io/" target="_blank" rel="noopener">Zwy 主页</a>
+        <div class="gh-project-desc">个人博客主页</div>
+    </div>
+    
+    <div class="gh-project-card">
+        <a class="gh-project-title" href="https://github.com/zwany1" target="_blank" rel="noopener">Zwy 主题</a>
+        <div class="gh-project-desc">基于 butterfly 风格的 Jekyll 博客主题</div>
+    </div>
+    
+    <div class="gh-project-card">
+        <a class="gh-project-title" href="https://github.com/zwany1" target="_blank" rel="noopener">GitHub</a>
+        <div class="gh-project-desc">我的 GitHub 主页，欢迎 Follow</div>
+    </div>
+    
+</div>
+
+    </div>
+    <hr class="custom-hr"/>
+    <div id="post-comment">
+    
+
+    </div>
+</div>
+
+
+    </main>
+    <footer id="footer">
+        <div class="footer-other">
+            <div class="footer-copyright">
+                <span class="copyright">&copy;&nbsp;2025 - 2026 By 朱</span>
+            </div>
+            <div class="footer_custom_text">
+                <a href="https://github.com/zwany1" target="_blank">GitHub</a> · Obsidian 笔记驱动
+            </div>
+        </div>
+    </footer>
+</div>
+<div id="rightside">
+    <div id="rightside-config-hide">
+        <button id="darkmode" type="button" title="切换深色模式"><i class="fas fa-adjust"></i></button>
+        <button id="hide-aside-btn" type="button" title="切换单/双栏"><i class="fas fa-arrows-alt-h"></i></button>
+    </div>
+    <div id="rightside-config-show">
+        <button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button>
+        <button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button>
+    </div>
+</div>
+<div id="local-search">
+    <div class="search-dialog">
+        <nav class="search-nav">
+            <span class="search-dialog-title">Search</span>
+            <i class="fas fa-spinner fa-pulse" id="loading-status" hidden></i>
+            <button class="search-close-button"><i class="fas fa-times"></i></button>
+        </nav>
+        <div class="text-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  Loading Database</span></div>
+        <div class="local-search-input"><input placeholder="搜索文章..." type="text"/></div>
+        <hr/>
+        <div id="local-search-results"></div>
+        <div class="ais-Pagination" id="local-search-pagination" style="display:none;"><ul class="ais-Pagination-list"></ul></div>
+        <div id="local-search-stats"></div>
+    </div>
+    <div id="search-mask"></div>
+</div>
+<div id="imageModal" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;z-index:1000;background-color:rgba(0,0,0,.8);cursor:pointer;">
+    <img id="modalImage" style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);max-width:90vw;max-height:90vh;"/>
+</div>
+<script src="/js/utils.js?v=1787910351"></script>
+<script src="/js/main.js?v=1787910351"></script>
+<script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui@6.1.14/dist/fancybox/fancybox.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/vanilla-lazyload@19.1.3/dist/lazyload.iife.min.js"></script>
+<div class="js-pjax"><script>
+window.typedJSFn = {
+  init: str => { window.typed = new Typed('#subtitle', Object.assign({ strings: str, startDelay: 300, typeSpeed: 150, loop: true, backSpeed: 50 }, null)); },
+  run: subtitleType => {
+    if (true) {
+      if (typeof Typed === 'function') { subtitleType(); }
+      else { btf.getScript('https://cdn.jsdelivr.net/npm/typed.js@3.0.0/dist/typed.umd.min.js').then(subtitleType); }
+    } else { subtitleType(); }
+  },
+  processSubtitle: (content, extraContents = []) => {
+    if (true) {
+      const sub = ["打码改变世界","公众号：朱猪写作","保持热爱，奔赴山海"].slice();
+      if (extraContents.length > 0) sub.unshift(...extraContents);
+      if (typeof content === 'string') sub.unshift(content);
+      else if (Array.isArray(content)) sub.unshift(...content);
+      sub.length > 0 && typedJSFn.init(sub);
+    } else {
+      document.getElementById('subtitle').textContent = typeof content === 'string' ? content : (Array.isArray(content) && content.length > 0 ? content[0] : '');
+    }
+  }
+};
+btf.addGlobalFn('pjaxSendOnce', () => { typed && typed.destroy(); }, 'typedDestroy');
+</script><script>
+function subtitleType () { typedJSFn.processSubtitle(["打码改变世界","公众号：朱猪写作","保持热爱，奔赴山海"]); }
+typedJSFn.run(subtitleType);
+</script></div>
+<script src="/js/time-greeting.js?v=1787910351"></script>
+<script src="/js/header-glow.js?v=1787910351"></script>
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+<script src="/js/search/local-search.js?v=1787910351"></script>
+<script>
+window.showImage = function(imageURL, event){ if(event) event.preventDefault(); var m=document.getElementById('imageModal'),i=document.getElementById('modalImage'); if(m&&i){ i.src=imageURL; m.style.display='block'; } };
+document.addEventListener('DOMContentLoaded', function(){
+    var modal=document.getElementById('imageModal');
+    if(modal){ modal.addEventListener('click', function(){ modal.style.display='none'; }); }
+});
+</script>
+
+
+
+</body>
+</html>
+
