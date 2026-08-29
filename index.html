@@ -24,10 +24,10 @@
     <link rel="preconnect" href="//busuanzi.ibruce.info">
     <link rel="stylesheet" href="/assets/vendor/fontawesome/css/all.min.css">
     <link rel="stylesheet" href="/assets/css/butterfly.css">
-    <link rel="stylesheet" href="/css/header-glow.css?v=1788001272">
-    <link rel="stylesheet" href="/css/time-greeting.css?v=1788001272">
-    <link rel="stylesheet" href="/css/gh-projects.css?v=1788001272">
-    <link rel="stylesheet" href="/css/custom.css?v=1788001272">
+    <link rel="stylesheet" href="/css/header-glow.css?v=1788008827">
+    <link rel="stylesheet" href="/css/time-greeting.css?v=1788008827">
+    <link rel="stylesheet" href="/css/gh-projects.css?v=1788008827">
+    <link rel="stylesheet" href="/css/custom.css?v=1788008827">
     <link rel="manifest" href="/manifest.webmanifest">
     <link rel="stylesheet" href="/assets/vendor/fancybox/fancybox.min.css" media="print" onload="this.media='all'">
     
@@ -61,7 +61,7 @@
     window.GLOBAL_CONFIG = {
       root: '/',
       algolia: undefined,
-      localSearch: { "path": "/search.xml?v=1788001272", "preload": false, "top_n_per_article": 1, "unescape": false, "pagination": { "enable": false, "hitsPerPage": 8 }, "languages": { "hits_empty": "未找到包含 ${query} 的文章", "hits_stats": "找到 ${hits} 篇文章" } },
+      localSearch: { "path": "/search.xml?v=1788008827", "preload": false, "top_n_per_article": 1, "unescape": false, "pagination": { "enable": false, "hitsPerPage": 8 }, "languages": { "hits_empty": "未找到包含 ${query} 的文章", "hits_stats": "找到 ${hits} 篇文章" } },
       translate: undefined,
       highlight: { "plugin": "highlight.js", "highlightCopy": true, "highlightLang": true, "highlightHeightLimit": false, "highlightFullpage": false, "highlightMacStyle": false },
       copy: { success: '复制成功', error: '复制失败', noSupport: '浏览器不支持' },
@@ -147,6 +147,107 @@
     </header>
     <main class="layout" id="content-inner">
 
+
+
+<section class="ios-desktop" id="ios-desktop">
+    <div class="ios-statusbar">
+        <span id="ios-clock">--:--</span>
+        <span class="ios-statusbar__right">
+            <i class="fas fa-signal"></i>
+            <i class="fas fa-wifi"></i>
+            <i class="fas fa-battery-three-quarters"></i>
+        </span>
+    </div>
+
+    <div class="ios-widgets">
+        <div class="ios-widget ios-widget--clock">
+            <div class="ios-widget__time" id="ios-widget-time">--:--</div>
+            <div class="ios-widget__date" id="ios-widget-date"></div>
+        </div>
+        <div class="ios-widget ios-widget--greet">
+            <div class="ios-widget__hi" id="ios-greet"></div>
+            <div class="ios-widget__sub">朱的小屋 · 记录技术与生活</div>
+        </div>
+    </div>
+
+    <div class="ios-grid">
+        
+        <a class="ios-app" href="/archives/"
+           
+           >
+            <span class="ios-app__icon" style="background:linear-gradient(135deg, #49b1f5, #2b7fd4)"><i class="fa-solid fa-book"></i></span>
+            <span class="ios-app__label">文章</span>
+        </a>
+        
+        <a class="ios-app" href="/categories/"
+           
+           >
+            <span class="ios-app__icon" style="background:linear-gradient(135deg, #ffb86b, #f0932b)"><i class="fa-solid fa-folder-open"></i></span>
+            <span class="ios-app__label">分类</span>
+        </a>
+        
+        <a class="ios-app" href="/tags/"
+           
+           >
+            <span class="ios-app__icon" style="background:linear-gradient(135deg, #43d9c0, #22a6b3)"><i class="fa-solid fa-tags"></i></span>
+            <span class="ios-app__label">标签</span>
+        </a>
+        
+        <a class="ios-app" href="/links/"
+           
+           >
+            <span class="ios-app__icon" style="background:linear-gradient(135deg, #fd79a8, #e84393)"><i class="fa-solid fa-link"></i></span>
+            <span class="ios-app__label">友链</span>
+        </a>
+        
+        <a class="ios-app" href="/projects/"
+           
+           >
+            <span class="ios-app__icon" style="background:linear-gradient(135deg, #a29bfe, #6c5ce7)"><i class="fa-solid fa-rocket"></i></span>
+            <span class="ios-app__label">项目</span>
+        </a>
+        
+        <a class="ios-app" href="/about/"
+           
+           >
+            <span class="ios-app__icon" style="background:linear-gradient(135deg, #95a5a6, #576574)"><i class="fa-solid fa-user"></i></span>
+            <span class="ios-app__label">关于</span>
+        </a>
+        
+        <a class="ios-app" href="javascript:void(0)"
+           data-action="qrcode"
+           >
+            <span class="ios-app__icon" style="background:linear-gradient(135deg, #2ed573, #1aa34a)"><i class="fa-brands fa-weixin"></i></span>
+            <span class="ios-app__label">公众号</span>
+        </a>
+        
+        <a class="ios-app" href="https://github.com/zwany1"
+           
+           target="_blank" rel="noopener">
+            <span class="ios-app__icon" style="background:linear-gradient(135deg, #4a4a4a, #17181c)"><i class="fa-brands fa-github"></i></span>
+            <span class="ios-app__label">GitHub</span>
+        </a>
+        
+    </div>
+
+    <div class="ios-dock">
+        <a class="ios-app" href="javascript:void(0)" data-action="search">
+            <span class="ios-app__icon"><i class="fas fa-magnifying-glass"></i></span>
+        </a>
+        <a class="ios-app" href="javascript:void(0)" data-action="random">
+            <span class="ios-app__icon"><i class="fas fa-shuffle"></i></span>
+        </a>
+        <a class="ios-app" href="javascript:void(0)" data-action="qrcode">
+            <span class="ios-app__icon"><i class="fa-brands fa-weixin"></i></span>
+        </a>
+        <a class="ios-app" href="#recent-posts">
+            <span class="ios-app__icon"><i class="fa-solid fa-list"></i></span>
+        </a>
+    </div>
+
+    <a class="ios-scroll-hint" href="#recent-posts" aria-label="向下滚动"><i class="fas fa-chevron-down"></i></a>
+</section>
+
 <div id="recent-posts" class="recent-posts nc">
     <div class="recent-post-items">
         
@@ -227,15 +328,51 @@
 
 </div>
 <script>
-// 视频封面：鼠标悬浮卡片自动播放，移开时暂停并复位
+// iOS 桌面交互：时钟 / 问候 / 搜索 / 随机 / 二维码
 (function () {
-    document.querySelectorAll('.recent-post-item.has-cover').forEach(function (card) {
-        var v = card.querySelector('video.cover-img');
-        if (!v) return;
-        card.addEventListener('mouseenter', function () { v.play().catch(function () {}); });
-        card.addEventListener('mouseleave', function () {
-            v.pause();
-            try { v.currentTime = 0; } catch (e) {}
+    var pad = function (n) { return n < 10 ? '0' + n : n };
+    var clockEl = document.getElementById('ios-clock');
+    var timeEl = document.getElementById('ios-widget-time');
+    var dateEl = document.getElementById('ios-widget-date');
+    var tick = function () {
+        var now = new Date();
+        var hm = pad(now.getHours()) + ':' + pad(now.getMinutes());
+        if (clockEl) clockEl.textContent = hm;
+        if (timeEl) timeEl.textContent = hm;
+        if (dateEl) {
+            var weeks = ['日', '一', '二', '三', '四', '五', '六'];
+            dateEl.textContent = (now.getMonth() + 1) + '月' + now.getDate() + '日 星期' + weeks[now.getDay()];
+        }
+    };
+    tick();
+    setInterval(tick, 15000);
+
+    var h = new Date().getHours();
+    var greet = h < 6 ? '夜深了，注意休息 🌙'
+        : h < 11 ? '早上好呀，今天也要元气满满 ☀️'
+        : h < 14 ? '中午好，休息一下吧 🌤️'
+        : h < 18 ? '下午好，来杯下午茶 🍵'
+        : '晚上好，慢慢逛 🌆';
+    var greetEl = document.getElementById('ios-greet');
+    if (greetEl) greetEl.textContent = greet;
+
+    var postUrls = ["/2026/08/28/redis/","/2025/12/26/IO%E5%9F%BA%E7%A1%80%E4%B8%8E%E6%B5%81%E6%93%8D%E4%BD%9C/","/2025/12/08/best-buddy/"];
+
+    document.querySelectorAll('.ios-app[data-action], .ios-dock .ios-app[data-action]').forEach(function (el) {
+        el.addEventListener('click', function (e) {
+            e.preventDefault();
+            var action = el.getAttribute('data-action');
+            if (action === 'search') {
+                var btn = document.querySelector('#search-button .search');
+                if (btn) btn.click();
+            } else if (action === 'random') {
+                if (!postUrls.length) return;
+                var pick;
+                do { pick = postUrls[Math.floor(Math.random() * postUrls.length)]; } while (postUrls.length > 1 && pick === location.pathname);
+                location.href = pick;
+            } else if (action === 'qrcode') {
+                if (window.showImage) window.showImage('/assets/images/qrcode.jpg');
+            }
         });
     });
 })();
@@ -417,7 +554,7 @@
         <div class="webinfo-item"><div class="item-name">运行时间 :</div><div class="item-count" id="site-uptime">—</div></div>
         <div class="webinfo-item"><div class="item-name">Unique Visitors :</div><div class="item-count" id="busuanzi_value_site_uv"><i class="fa-solid fa-spinner fa-spin"></i></div></div>
         <div class="webinfo-item"><div class="item-name">Page Views :</div><div class="item-count" id="busuanzi_value_site_pv"><i class="fa-solid fa-spinner fa-spin"></i></div></div>
-        <div class="webinfo-item"><div class="item-name">Last Update :</div><div class="item-count" id="last-push-date" data-lastPushDate="2026-08-29T19:01:12+08:00"><i class="fa-solid fa-spinner fa-spin"></i></div></div>
+        <div class="webinfo-item"><div class="item-name">Last Update :</div><div class="item-count" id="last-push-date" data-lastPushDate="2026-08-29T21:07:07+08:00"><i class="fa-solid fa-spinner fa-spin"></i></div></div>
     </div>
 </div>
 
@@ -467,8 +604,8 @@
 <div id="imageModal" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;z-index:1000;background-color:rgba(0,0,0,.8);cursor:pointer;">
     <img id="modalImage" style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);max-width:90vw;max-height:90vh;"/>
 </div>
-<script src="/js/utils.js?v=1788001272"></script>
-<script src="/js/main.js?v=1788001272"></script>
+<script src="/js/utils.js?v=1788008827"></script>
+<script src="/js/main.js?v=1788008827"></script>
 <script src="/assets/vendor/fancybox/fancybox.umd.min.js"></script>
 <script src="/assets/vendor/lazyload/lazyload.iife.min.js"></script>
 <div class="js-pjax"><script>
@@ -497,8 +634,8 @@ btf.addGlobalFn('pjaxSendOnce', () => { typed && typed.destroy(); }, 'typedDestr
 function subtitleType () { typedJSFn.processSubtitle(["打码改变世界","公众号：朱猪写作","保持热爱，奔赴山海"]); }
 typedJSFn.run(subtitleType);
 </script></div>
-<script src="/js/time-greeting.js?v=1788001272"></script>
-<script src="/js/header-glow.js?v=1788001272"></script>
+<script src="/js/time-greeting.js?v=1788008827"></script>
+<script src="/js/header-glow.js?v=1788008827"></script>
 <script async src="/assets/vendor/busuanzi/2.3/busuanzi.pure.mini.js"></script>
 <script>
 // Post Views（文章浏览次数）：
@@ -597,7 +734,7 @@ typedJSFn.run(subtitleType);
     }, 500);
 })();
 </script>
-<script src="/js/search/local-search.js?v=1788001272"></script>
+<script src="/js/search/local-search.js?v=1788008827"></script>
 <script>
 // 站点增强：阅读进度条 / Ctrl+K 搜索 / 随机一读 / 建站天数 / Service Worker
 (function () {
