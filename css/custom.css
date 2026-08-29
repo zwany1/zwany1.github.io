@@ -61,3 +61,41 @@ html { scroll-behavior: smooth; }
 /* ---------- 右侧悬浮按钮 ---------- */
 #rightside button:hover,
 #rightside a:hover { background: #49b1f5; color: #fff; }
+
+/* ---------- 首页文章卡片封面 ----------
+   卡片固定高度，所有封面统一长宽；
+   桌面端封面与文字左右排布，奇偶交替方向；
+   移动端（<=768px）封面全宽置顶，高度统一 180px。 */
+#recent-posts .recent-post-item.has-cover {
+  display: flex;
+  align-items: stretch;
+  height: 250px;
+}
+#recent-posts .recent-post-item.has-cover.cover-right { flex-direction: row-reverse; }
+#recent-posts .recent-post-item.has-cover .post-cover {
+  display: block;
+  flex: 0 0 42%;
+  overflow: hidden;
+}
+#recent-posts .recent-post-item.has-cover .cover-img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform .6s ease;
+}
+#recent-posts .recent-post-item.has-cover:hover .cover-img { transform: scale(1.06); }
+#recent-posts .recent-post-item.has-cover .recent-post-info { flex: 1; min-width: 0; overflow: hidden; }
+
+@media (max-width: 768px) {
+  #recent-posts .recent-post-item.has-cover,
+  #recent-posts .recent-post-item.has-cover.cover-right {
+    flex-direction: column;
+    height: auto;
+  }
+  #recent-posts .recent-post-item.has-cover .post-cover {
+    flex: none;
+    width: 100%;
+    height: 180px;
+  }
+}

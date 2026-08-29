@@ -24,10 +24,10 @@
     <link rel="preconnect" href="//busuanzi.ibruce.info">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.3.1/css/all.min.css">
     <link rel="stylesheet" href="/assets/css/butterfly.css">
-    <link rel="stylesheet" href="/css/header-glow.css?v=1787938503">
-    <link rel="stylesheet" href="/css/time-greeting.css?v=1787938503">
-    <link rel="stylesheet" href="/css/gh-projects.css?v=1787938503">
-    <link rel="stylesheet" href="/css/custom.css?v=1787938503">
+    <link rel="stylesheet" href="/css/header-glow.css?v=1787987073">
+    <link rel="stylesheet" href="/css/time-greeting.css?v=1787987073">
+    <link rel="stylesheet" href="/css/gh-projects.css?v=1787987073">
+    <link rel="stylesheet" href="/css/custom.css?v=1787987073">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui@6.1.14/dist/fancybox/fancybox.min.css" media="print" onload="this.media='all'">
     
     <link rel="stylesheet" href="https://fastly.jsdelivr.net/gh/mzlogin/rouge-themes@master/dist/github.css">
@@ -60,7 +60,7 @@
     window.GLOBAL_CONFIG = {
       root: '/',
       algolia: undefined,
-      localSearch: { "path": "/search.xml?v=1787938503", "preload": false, "top_n_per_article": 1, "unescape": false, "pagination": { "enable": false, "hitsPerPage": 8 }, "languages": { "hits_empty": "未找到包含 ${query} 的文章", "hits_stats": "找到 ${hits} 篇文章" } },
+      localSearch: { "path": "/search.xml?v=1787987073", "preload": false, "top_n_per_article": 1, "unescape": false, "pagination": { "enable": false, "hitsPerPage": 8 }, "languages": { "hits_empty": "未找到包含 ${query} 的文章", "hits_stats": "找到 ${hits} 篇文章" } },
       translate: undefined,
       highlight: { "plugin": "prismjs", "highlightCopy": true, "highlightLang": true, "highlightHeightLimit": false, "highlightFullpage": false, "highlightMacStyle": false },
       copy: { success: '复制成功', error: '复制失败', noSupport: '浏览器不支持' },
@@ -147,8 +147,17 @@
 <div id="recent-posts" class="recent-posts nc">
     <div class="recent-post-items">
         
-        <div class="recent-post-item">
-            <div class="recent-post-info no-cover">
+        
+        
+        <div class="recent-post-item has-cover cover-left">
+            
+            <a class="post-cover" href="/2026/08/28/redis/" title="Redis 主从复制" aria-hidden="true">
+                
+                <img class="cover-img" src="/assets/notes/Pasted-image-20260828154041.png" alt="Redis 主从复制" loading="lazy">
+                
+            </a>
+            
+            <div class="recent-post-info">
                 <a class="article-title" href="/2026/08/28/redis/" title="Redis 主从复制">Redis 主从复制</a>
                 <div class="article-meta-wrap">
                     <span class="post-meta-date"><i class="far fa-calendar-alt"></i><span class="article-meta-label">Created</span><time datetime="2026-08-28T17:30:00+08:00" title="Created 2026-08-28 17:30:00">2026-08-28</time></span>
@@ -160,8 +169,17 @@
             </div>
         </div>
         
-        <div class="recent-post-item">
-            <div class="recent-post-info no-cover">
+        
+        
+        <div class="recent-post-item has-cover cover-right">
+            
+            <a class="post-cover" href="/2025/12/26/IO%E5%9F%BA%E7%A1%80%E4%B8%8E%E6%B5%81%E6%93%8D%E4%BD%9C/" title="IO基础与流操作" aria-hidden="true">
+                
+                <img class="cover-img" src="/assets/covers/io-stream.svg" alt="IO基础与流操作" loading="lazy">
+                
+            </a>
+            
+            <div class="recent-post-info">
                 <a class="article-title" href="/2025/12/26/IO%E5%9F%BA%E7%A1%80%E4%B8%8E%E6%B5%81%E6%93%8D%E4%BD%9C/" title="IO基础与流操作">IO基础与流操作</a>
                 <div class="article-meta-wrap">
                     <span class="post-meta-date"><i class="far fa-calendar-alt"></i><span class="article-meta-label">Created</span><time datetime="2025-12-26T00:00:00+08:00" title="Created 2025-12-26 00:00:00">2025-12-26</time></span>
@@ -173,8 +191,17 @@
             </div>
         </div>
         
-        <div class="recent-post-item">
-            <div class="recent-post-info no-cover">
+        
+        
+        <div class="recent-post-item has-cover cover-left">
+            
+            <a class="post-cover" href="/2025/12/08/best-buddy/" title="Best buddy" aria-hidden="true">
+                
+                <video class="cover-img" src="/assets/images/111.mp4" poster="/images/gallery/yhs.jpg" muted loop playsinline preload="metadata"></video>
+                
+            </a>
+            
+            <div class="recent-post-info">
                 <a class="article-title" href="/2025/12/08/best-buddy/" title="Best buddy">Best buddy</a>
                 <div class="article-meta-wrap">
                     <span class="post-meta-date"><i class="far fa-calendar-alt"></i><span class="article-meta-label">Created</span><time datetime="2025-12-08T17:56:55+08:00" title="Created 2025-12-08 17:56:55">2025-12-08</time></span>
@@ -202,6 +229,20 @@
 </div></nav>
 
 </div>
+<script>
+// 视频封面：鼠标悬浮卡片自动播放，移开时暂停并复位
+(function () {
+    document.querySelectorAll('.recent-post-item.has-cover').forEach(function (card) {
+        var v = card.querySelector('video.cover-img');
+        if (!v) return;
+        card.addEventListener('mouseenter', function () { v.play().catch(function () {}); });
+        card.addEventListener('mouseleave', function () {
+            v.pause();
+            try { v.currentTime = 0; } catch (e) {}
+        });
+    });
+})();
+</script>
 
 <div class="aside-content" id="aside-content">
     <div class="card-widget card-info text-center">
@@ -377,7 +418,7 @@
         <div class="webinfo-item"><div class="item-name">Article Count :</div><div class="item-count">3</div></div>
         <div class="webinfo-item"><div class="item-name">Unique Visitors :</div><div class="item-count" id="busuanzi_value_site_uv"><i class="fa-solid fa-spinner fa-spin"></i></div></div>
         <div class="webinfo-item"><div class="item-name">Page Views :</div><div class="item-count" id="busuanzi_value_site_pv"><i class="fa-solid fa-spinner fa-spin"></i></div></div>
-        <div class="webinfo-item"><div class="item-name">Last Update :</div><div class="item-count" id="last-push-date" data-lastPushDate="2026-08-29T01:35:03+08:00"><i class="fa-solid fa-spinner fa-spin"></i></div></div>
+        <div class="webinfo-item"><div class="item-name">Last Update :</div><div class="item-count" id="last-push-date" data-lastPushDate="2026-08-29T15:04:33+08:00"><i class="fa-solid fa-spinner fa-spin"></i></div></div>
     </div>
 </div>
 
@@ -425,8 +466,8 @@
 <div id="imageModal" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;z-index:1000;background-color:rgba(0,0,0,.8);cursor:pointer;">
     <img id="modalImage" style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);max-width:90vw;max-height:90vh;"/>
 </div>
-<script src="/js/utils.js?v=1787938503"></script>
-<script src="/js/main.js?v=1787938503"></script>
+<script src="/js/utils.js?v=1787987073"></script>
+<script src="/js/main.js?v=1787987073"></script>
 <script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui@6.1.14/dist/fancybox/fancybox.umd.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/vanilla-lazyload@19.1.3/dist/lazyload.iife.min.js"></script>
 <div class="js-pjax"><script>
@@ -455,8 +496,8 @@ btf.addGlobalFn('pjaxSendOnce', () => { typed && typed.destroy(); }, 'typedDestr
 function subtitleType () { typedJSFn.processSubtitle(["打码改变世界","公众号：朱猪写作","保持热爱，奔赴山海"]); }
 typedJSFn.run(subtitleType);
 </script></div>
-<script src="/js/time-greeting.js?v=1787938503"></script>
-<script src="/js/header-glow.js?v=1787938503"></script>
+<script src="/js/time-greeting.js?v=1787987073"></script>
+<script src="/js/header-glow.js?v=1787987073"></script>
 <script async src="/assets/vendor/busuanzi/2.3/busuanzi.pure.mini.js"></script>
 <script>
 // Post Views（文章浏览次数）：
@@ -555,7 +596,7 @@ typedJSFn.run(subtitleType);
     }, 500);
 })();
 </script>
-<script src="/js/search/local-search.js?v=1787938503"></script>
+<script src="/js/search/local-search.js?v=1787987073"></script>
 <script>
 window.showImage = function(imageURL, event){ if(event) event.preventDefault(); var m=document.getElementById('imageModal'),i=document.getElementById('modalImage'); if(m&&i){ i.src=imageURL; m.style.display='block'; } };
 document.addEventListener('DOMContentLoaded', function(){

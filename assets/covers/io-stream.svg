@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="800" height="450" viewBox="0 0 800 450">
+  <defs>
+    <linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#49b1f5"/>
+      <stop offset="1" stop-color="#6f7ef2"/>
+    </linearGradient>
+  </defs>
+  <rect width="800" height="450" fill="url(#g)"/>
+  <circle cx="670" cy="60" r="180" fill="rgba(255,255,255,.08)"/>
+  <circle cx="90" cy="400" r="220" fill="rgba(255,255,255,.06)"/>
+  <path d="M60 360 h120 M60 340 h90 M60 380 h100" stroke="rgba(255,255,255,.35)" stroke-width="8" stroke-linecap="round"/>
+  <text x="58" y="220" font-family="'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif" font-size="110" font-weight="700" fill="#ffffff">IO</text>
+  <text x="62" y="278" font-family="'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif" font-size="30" fill="rgba(255,255,255,.85)">NIO · Stream · Channel</text>
+</svg>
