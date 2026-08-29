@@ -156,3 +156,129 @@ html { scroll-behavior: smooth; }
     height: 180px;
   }
 }
+
+/* ---------- 阅读进度条 ---------- */
+#reading-progress {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 1001;
+  height: 3px;
+  width: 0;
+  background: linear-gradient(90deg, #49b1f5, #6f7ef2);
+  transition: width .1s linear;
+  pointer-events: none;
+}
+.type-post #reading-progress { display: block; }
+
+/* ---------- 文末公众号引流卡片 ---------- */
+.qrcode-promo {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  margin: 30px 0;
+  padding: 22px 26px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, rgba(73, 177, 245, .10), rgba(111, 126, 242, .12));
+  border: 1px solid rgba(73, 177, 245, .25);
+}
+.qrcode-promo__text { flex: 1; }
+.qrcode-promo__title { font-size: 1.05rem; font-weight: 600; margin-bottom: 8px; }
+.qrcode-promo__desc { font-size: .9rem; line-height: 1.8; opacity: .9; }
+.qrcode-promo__desc b { color: #49b1f5; }
+.qrcode-promo__img {
+  flex: 0 0 110px;
+  width: 110px;
+  height: 110px;
+  object-fit: cover;
+  border-radius: 10px;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, .12);
+}
+@media (max-width: 600px) {
+  .qrcode-promo { flex-direction: column; text-align: center; }
+}
+
+/* ---------- 相关文章（延伸阅读） ---------- */
+.related-posts { margin: 26px 0; }
+.related-posts__title { font-size: 1.02rem; font-weight: 600; margin-bottom: 14px; color: var(--text-highlight-color, #34495e); }
+.related-posts__list { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px; }
+.related-post {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 14px 16px;
+  border-radius: 10px;
+  background: var(--card-bg, #fff);
+  border: 1px solid rgba(128, 128, 128, .12);
+  transition: transform .3s, box-shadow .3s, border-color .3s;
+}
+.related-post:hover {
+  transform: translateY(-3px);
+  border-color: rgba(73, 177, 245, .5);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, .10);
+}
+.related-post__title {
+  font-weight: 600;
+  font-size: .95rem;
+  color: var(--text-highlight-color, #34495e);
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.related-post:hover .related-post__title { color: #49b1f5; }
+.related-post__meta { font-size: .8rem; color: #999; }
+
+/* ---------- TOC 滚动高亮 ---------- */
+#card-toc .toc-item a.active {
+  color: #49b1f5;
+  background: rgba(73, 177, 245, .10);
+  border-left-color: #49b1f5;
+  font-weight: 600;
+}
+
+/* ---------- 右侧随机一读按钮 ---------- */
+#go-random:hover { background: #6f7ef2; color: #fff; }
+
+/* ---------- 友链页面 ---------- */
+.friends-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 14px;
+  margin-top: 18px;
+}
+.friend-card {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 16px 18px;
+  border-radius: 12px;
+  background: var(--card-bg, #fff);
+  border: 1px solid rgba(128, 128, 128, .12);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, .05);
+  transition: transform .3s, box-shadow .3s, border-color .3s;
+}
+.friend-card:hover {
+  transform: translateY(-3px);
+  border-color: rgba(73, 177, 245, .5);
+  box-shadow: 0 8px 22px rgba(0, 0, 0, .10);
+}
+.friend-card__avatar {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  object-fit: cover;
+  flex: none;
+}
+.friend-card__info { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+.friend-card__name { font-size: .98rem; color: var(--text-highlight-color, #34495e); }
+.friend-card:hover .friend-card__name { color: #49b1f5; }
+.friend-card__desc {
+  font-size: .82rem;
+  color: #999;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}

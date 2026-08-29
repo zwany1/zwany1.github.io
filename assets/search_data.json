@@ -54,6 +54,14 @@
   
   
     {
+      "title"    : "友链",
+      "url"      : "/links/",
+      "keywords" : ""
+    } ,
+  
+  
+  
+    {
       "title"    : "新年快乐",
       "url"      : "/new-year/",
       "keywords" : "新年, 祝福, 新年快乐"
