@@ -477,3 +477,625 @@ body.home #recent-posts {
 }
 body.home #recent-posts .recent-post-item { margin-bottom: 24px; }
 body.home #pagination { max-width: 1100px; margin: 0 auto; }
+
+/* ---------- iOS 桌面音乐组件（免费 Meting API · 网易云歌单） ---------- */
+.ios-widget--music {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex: 1.4;
+}
+.music-cover {
+  width: 56px;
+  height: 56px;
+  border-radius: 12px;
+  object-fit: cover;
+  flex: none;
+  box-shadow: 0 3px 10px rgba(31, 45, 61, .18);
+}
+.music-info { flex: 1; min-width: 0; }
+.music-name {
+  font-size: .92rem;
+  font-weight: 600;
+  color: #1f2d3d;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.music-artist {
+  font-size: .78rem;
+  color: rgba(31, 45, 61, .65);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin: 2px 0 6px;
+}
+.music-progress {
+  height: 3px;
+  border-radius: 2px;
+  background: rgba(31, 45, 61, .15);
+  overflow: hidden;
+}
+.music-progress span {
+  display: block;
+  height: 100%;
+  width: 0;
+  border-radius: 2px;
+  background: linear-gradient(90deg, #49b1f5, #6f7ef2);
+  transition: width .3s linear;
+}
+.music-ctrl { display: flex; flex-direction: column; gap: 6px; }
+.music-btn {
+  width: 30px;
+  height: 30px;
+  border: none;
+  border-radius: 50%;
+  background: rgba(31, 45, 61, .12);
+  color: #1f2d3d;
+  font-size: .78rem;
+  cursor: pointer;
+  transition: background .25s, transform .2s;
+}
+.music-btn:hover { background: #49b1f5; color: #fff; transform: scale(1.08); }
+.music-btn:active { transform: scale(.94); }
+[data-theme=dark] .ios-widget--music .music-name { color: #d8e2ec; }
+[data-theme=dark] .ios-widget--music .music-artist { color: rgba(216, 226, 236, .6); }
+[data-theme=dark] .music-btn { background: rgba(216, 226, 236, .15); color: #d8e2ec; }
+
+/* ---------- 音乐 App 弹窗（仿 macOS Music） ---------- */
+.ios-app__icon--music { background: linear-gradient(135deg, #fc5c7d, #e6194b) !important; }
+.music-app { position: fixed; inset: 0; z-index: 1200; display: flex; align-items: center; justify-content: center; }
+.music-app[hidden] { display: none; }
+.music-app__mask {
+  position: absolute; inset: 0;
+  background: rgba(15, 23, 42, .45);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+.music-app__window {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  width: min(920px, 94vw);
+  height: min(640px, 88vh);
+  border-radius: 14px;
+  overflow: hidden;
+  background: rgba(24, 32, 44, .96);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  color: #e6edf3;
+  box-shadow: 0 30px 80px rgba(0, 0, 0, .45);
+}
+.music-app__lights { display: flex; gap: 8px; padding: 12px 14px 0; }
+.music-app__lights span { width: 12px; height: 12px; border-radius: 50%; cursor: pointer; }
+.music-app__lights .l-red { background: #ff5f57; }
+.music-app__lights .l-yellow { background: #febc2e; }
+.music-app__lights .l-green { background: #28c840; }
+.music-app__body { flex: 1; display: flex; overflow: hidden; }
+.music-side {
+  width: 180px;
+  flex: none;
+  padding: 12px 10px;
+  background: rgba(255, 255, 255, .05);
+  overflow: auto;
+}
+.music-side__title { font-size: .8rem; color: #8b98a5; margin: 4px 8px 8px; }
+.music-playlists { list-style: none; margin: 0; padding: 0; }
+.music-playlists li {
+  padding: 8px 12px;
+  border-radius: 8px;
+  font-size: .92rem;
+  cursor: pointer;
+  transition: background .2s;
+}
+.music-playlists li:hover { background: rgba(255, 255, 255, .08); }
+.music-playlists li.active { background: #49b1f5; color: #fff; font-weight: 600; }
+.music-side__foot { margin-top: 18px; padding: 0 8px; font-size: .68rem; color: #5c6b7a; }
+.music-main { flex: 1; display: flex; flex-direction: column; overflow: hidden; padding: 8px 8px 0 4px; }
+.music-main__title { font-size: 1.15rem; font-weight: 700; padding: 6px 14px 10px; }
+.music-songs { flex: 1; overflow-y: auto; list-style: none; margin: 0; padding: 0 6px 12px; }
+.music-loading { padding: 20px 14px; color: #8b98a5; font-size: .9rem; }
+.song-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 9px 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: .92rem;
+  transition: background .2s;
+}
+.song-row:hover { background: rgba(255, 255, 255, .07); }
+.song-row.playing { color: #49b1f5; }
+.song-row.playing .song-row__name::after { content: ' ♪'; }
+.song-row__idx { width: 26px; flex: none; color: #6b7a89; font-size: .82rem; }
+.song-row__name { flex: 1; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.song-row__artist { width: 32%; flex: none; color: #8b98a5; font-size: .82rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+.music-player {
+  height: 76px;
+  flex: none;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 0 18px;
+  background: rgba(12, 18, 26, .95);
+  border-top: 1px solid rgba(255, 255, 255, .06);
+}
+.music-player__cover { width: 50px; height: 50px; border-radius: 8px; object-fit: cover; flex: none; }
+.music-player__info { flex: 1; min-width: 0; }
+.music-player__info b { display: block; font-size: .95rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.music-player__info span { display: block; font-size: .78rem; color: #8b98a5; margin: 2px 0 6px; }
+.music-progress--dark { background: rgba(255, 255, 255, .12); }
+.music-progress--dark span { background: #49b1f5; }
+.music-player__ctrl { display: flex; align-items: center; gap: 10px; flex: none; }
+.music-player__ctrl button {
+  width: 38px; height: 38px;
+  border: none; border-radius: 50%;
+  background: transparent; color: #e6edf3;
+  font-size: .95rem; cursor: pointer;
+  transition: background .2s, transform .2s;
+}
+.music-player__ctrl button:hover { background: rgba(255, 255, 255, .1); }
+.music-player__ctrl .is-play { background: #49b1f5; width: 44px; height: 44px; font-size: 1.05rem; }
+.music-player__ctrl .is-play:hover { background: #6cc0f7; }
+
+@media (max-width: 720px) {
+  .music-side { display: none; }
+  .music-app__window { height: 92vh; }
+}
+
+/* ---------- 音乐 App 发现页 ---------- */
+.music-side__brand {
+  font-size: 1rem;
+  font-weight: 700;
+  padding: 4px 10px 14px;
+  color: #e6edf3;
+}
+.music-side__brand i { color: #fc5c7d; margin-right: 4px; }
+.music-nav { list-style: none; margin: 0; padding: 0; }
+.music-nav li {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 9px 12px;
+  border-radius: 8px;
+  font-size: .92rem;
+  cursor: pointer;
+  color: #c6d2de;
+  transition: background .2s;
+}
+.music-nav li:hover { background: rgba(255, 255, 255, .08); }
+.music-nav li.active { background: #49b1f5; color: #fff; font-weight: 600; }
+.music-view { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+.music-view[hidden] { display: none; }
+.music-banner {
+  position: relative;
+  margin: 10px 12px 6px;
+  border-radius: 12px;
+  min-height: 110px;
+  background-size: cover;
+  background-position: center;
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+}
+.music-banner::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(100deg, rgba(73, 177, 245, .92), rgba(111, 126, 242, .78));
+}
+.music-banner__text {
+  position: relative;
+  padding: 18px 22px;
+  color: #fff;
+}
+.music-banner__text b { display: block; font-size: 1.25rem; margin-bottom: 6px; }
+.music-banner__text span { font-size: .82rem; opacity: .9; }
+.music-banner__play {
+  position: absolute;
+  right: 22px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 46px;
+  height: 46px;
+  border: none;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, .25);
+  backdrop-filter: blur(6px);
+  color: #fff;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: transform .25s, background .25s;
+}
+.music-banner__play:hover { transform: translateY(-50%) scale(1.1); background: rgba(255, 255, 255, .4); }
+.music-sec-title { font-size: 1.02rem; font-weight: 700; padding: 12px 16px 8px; }
+.playlist-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 14px;
+  padding: 0 14px 16px;
+  overflow-y: auto;
+}
+.playlist-card { display: flex; flex-direction: column; gap: 6px; cursor: pointer; }
+.playlist-card__cover {
+  position: relative;
+  display: block;
+  padding-top: 100%;
+  border-radius: 10px;
+  background-size: cover;
+  background-position: center;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, .25);
+  transition: transform .3s, box-shadow .3s;
+}
+.playlist-card:hover .playlist-card__cover { transform: translateY(-3px); box-shadow: 0 12px 24px rgba(0, 0, 0, .35); }
+.playlist-card__play {
+  position: absolute;
+  right: 8px;
+  bottom: 8px;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, .45);
+  color: #fff;
+  font-size: .8rem;
+  opacity: 0;
+  transition: opacity .25s;
+}
+.playlist-card:hover .playlist-card__play { opacity: 1; }
+.playlist-card__count {
+  position: absolute;
+  top: 6px;
+  right: 8px;
+  font-size: .68rem;
+  color: #fff;
+  background: rgba(0, 0, 0, .4);
+  padding: 2px 8px;
+  border-radius: 999px;
+}
+.playlist-card__name { font-size: .92rem; font-weight: 600; color: #e6edf3; }
+.playlist-card:hover .playlist-card__name { color: #49b1f5; }
+.playlist-card__desc { font-size: .74rem; color: #8b98a5; }
+.music-back {
+  padding: 8px 14px 0;
+  font-size: .82rem;
+  color: #8b98a5;
+  cursor: pointer;
+  transition: color .2s;
+}
+.music-back:hover { color: #49b1f5; }
+.music-heart {
+  width: 36px;
+  height: 36px;
+  flex: none;
+  border: none;
+  border-radius: 50%;
+  background: transparent;
+  color: #8b98a5;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: color .25s, transform .2s;
+}
+.music-heart:hover { color: #fc5c7d; transform: scale(1.12); }
+.music-heart.liked { color: #fc5c7d; }
+.music-player__time {
+  flex: none;
+  font-size: .78rem;
+  color: #8b98a5;
+  font-variant-numeric: tabular-nums;
+}
+@media (max-width: 720px) {
+  .music-player__time { display: none; }
+}
+
+/* ---------- 游戏组件与游戏机弹窗 ---------- */
+.ios-widget--games {
+  flex-direction: column;
+  justify-content: center;
+  gap: 10px;
+  cursor: pointer;
+  flex: 0.9;
+}
+.games-preview { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+.games-preview__app {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 34px;
+  border-radius: 8px;
+  color: #fff;
+  font-size: .72rem;
+  font-weight: 700;
+  box-shadow: 0 2px 6px rgba(31, 45, 61, .18);
+  transition: transform .25s;
+}
+.ios-widget--games:hover .games-preview__app { transform: translateY(-2px); }
+.games-preview__label { font-size: .78rem; color: rgba(31, 45, 61, .7); }
+[data-theme=dark] .games-preview__label { color: rgba(216, 226, 236, .7); }
+
+.games-app__window { height: min(640px, 88vh); }
+.games-home { padding: 24px 28px; overflow-y: auto; }
+.games-home__title { font-size: 1.25rem; font-weight: 700; margin-bottom: 18px; color: #e6edf3; }
+.games-home__title i { color: #fc5c7d; margin-right: 6px; }
+.games-cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); gap: 14px; }
+.game-card {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  padding: 18px 16px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, .06);
+  border: 1px solid rgba(255, 255, 255, .08);
+  cursor: pointer;
+  transition: transform .25s, background .25s;
+}
+.game-card:hover { transform: translateY(-4px); background: rgba(255, 255, 255, .12); }
+.game-card__icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 52px;
+  height: 52px;
+  border-radius: 13px;
+  color: #fff;
+  font-size: 1.1rem;
+  font-weight: 700;
+  margin-bottom: 6px;
+}
+.game-card b { font-size: .98rem; color: #e6edf3; }
+.game-card span { font-size: .76rem; color: #8b98a5; }
+.games-hint { margin-top: 18px; font-size: .78rem; color: #5c6b7a; }
+
+.games-stage {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 16px 16px;
+  overflow: auto;
+}
+.games-stage__head {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  width: 100%;
+  color: #e6edf3;
+}
+.games-stage__head b { flex: 1; text-align: center; font-size: 1.05rem; }
+.games-stage__score { font-size: .85rem; color: #8b98a5; font-variant-numeric: tabular-nums; }
+.games-stage__btn {
+  border: none;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, .1);
+  color: #e6edf3;
+  font-size: .85rem;
+  padding: 8px 14px;
+  cursor: pointer;
+  transition: background .2s;
+}
+.games-stage__btn:hover { background: rgba(255, 255, 255, .2); }
+#games-canvas {
+  border-radius: 12px;
+  max-width: 100%;
+  height: auto;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, .35);
+}
+.games-pad {
+  display: none;
+  grid-template-areas: '. u .' 'l d r';
+  gap: 8px;
+}
+.games-pad button {
+  width: 52px;
+  height: 52px;
+  border: none;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, .12);
+  color: #e6edf3;
+  font-size: 1.05rem;
+  cursor: pointer;
+}
+.games-pad button:active { background: #49b1f5; }
+@media (pointer: coarse) { .games-pad { display: grid; } }
+
+/* ---------- 游戏中心：4399 H5 游戏架 ---------- */
+.games-tabs {
+  display: flex;
+  gap: 8px;
+  padding: 4px 16px 0;
+}
+.games-tabs button {
+  border: none;
+  border-radius: 999px;
+  padding: 8px 18px;
+  font-size: .88rem;
+  background: rgba(255, 255, 255, .08);
+  color: #c6d2de;
+  cursor: pointer;
+  transition: background .2s, color .2s;
+}
+.games-tabs button.active { background: #49b1f5; color: #fff; font-weight: 600; }
+.games-content { position: relative; flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+.games-h5 { flex: 1; overflow-y: auto; padding: 12px 16px 16px; }
+.h5-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(96px, 1fr));
+  gap: 16px 10px;
+}
+.h5-card { display: flex; flex-direction: column; align-items: center; gap: 6px; cursor: pointer; }
+.h5-card__icon {
+  width: 76px;
+  height: 76px;
+  border-radius: 18px;
+  object-fit: cover;
+  background: rgba(255, 255, 255, .1);
+  box-shadow: 0 6px 14px rgba(0, 0, 0, .28);
+  transition: transform .25s, box-shadow .25s;
+}
+.h5-card:hover .h5-card__icon { transform: scale(1.08); box-shadow: 0 10px 22px rgba(0, 0, 0, .38); }
+.h5-card__name {
+  font-size: .78rem;
+  color: #c6d2de;
+  max-width: 96px;
+  text-align: center;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.h5-card:hover .h5-card__name { color: #49b1f5; }
+.h5-card__src { font-size: .66rem; color: #5c6b7a; }
+.games-iframe { position: absolute; inset: 0; z-index: 5; display: flex; flex-direction: column; background: #0d141d; }
+.games-iframe[hidden] { display: none; }
+.games-iframe__bar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 14px;
+  background: rgba(255, 255, 255, .06);
+}
+.games-iframe__bar b { flex: 1; text-align: center; font-size: .92rem; color: #e6edf3; }
+.games-iframe__bar button {
+  border: none;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, .1);
+  color: #e6edf3;
+  font-size: .8rem;
+  padding: 6px 12px;
+  cursor: pointer;
+  transition: background .2s;
+}
+.games-iframe__bar button:hover { background: rgba(255, 255, 255, .22); }
+#games-iframe-frame { flex: 1; width: 100%; border: none; background: #000; }
+
+/* ---------- 游戏弹窗（毛玻璃图标页 + 游戏页） ---------- */
+.games-pop {
+  position: fixed;
+  inset: 0;
+  z-index: 1200;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.games-pop[hidden] { display: none; }
+.games-pop__window {
+  position: relative;
+  width: min(760px, 92vw);
+  height: min(560px, 80vh);
+  border-radius: 20px;
+  background: rgba(255, 255, 255, .45);
+  backdrop-filter: blur(30px);
+  -webkit-backdrop-filter: blur(30px);
+  border: 1px solid rgba(255, 255, 255, .55);
+  box-shadow: 0 30px 80px rgba(31, 45, 61, .25);
+  overflow: hidden;
+}
+[data-theme=dark] .games-pop__window {
+  background: rgba(24, 34, 46, .78);
+  border-color: rgba(255, 255, 255, .1);
+}
+.games-pop__close {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  z-index: 3;
+  width: 26px;
+  height: 26px;
+  border: none;
+  border-radius: 50%;
+  background: rgba(31, 45, 61, .18);
+  color: rgba(31, 45, 61, .7);
+  font-size: .8rem;
+  cursor: pointer;
+  transition: background .2s;
+}
+.games-pop__close:hover { background: #ff5f57; color: #fff; }
+[data-theme=dark] .games-pop__close { background: rgba(255, 255, 255, .15); color: rgba(255, 255, 255, .7); }
+.games-pop__title {
+  text-align: center;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #1f2d3d;
+  padding: 16px 0 4px;
+}
+[data-theme=dark] .games-pop__title { color: #e6edf3; }
+.games-pop__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(96px, 1fr));
+  gap: 20px 8px;
+  padding: 16px 22px 22px;
+  overflow-y: auto;
+  max-height: calc(100% - 60px);
+}
+.games-pop__app {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 7px;
+  cursor: pointer;
+}
+.games-pop__app img {
+  width: 66px;
+  height: 66px;
+  border-radius: 16px;
+  object-fit: cover;
+  box-shadow: 0 6px 14px rgba(31, 45, 61, .22);
+  transition: transform .25s, box-shadow .25s;
+}
+.games-pop__app:hover img { transform: scale(1.1); box-shadow: 0 10px 22px rgba(31, 45, 61, .32); }
+.games-pop__app:active img { transform: scale(.95); }
+.games-pop__app span {
+  font-size: .74rem;
+  color: #fff;
+  text-shadow: 0 1px 3px rgba(31, 45, 61, .55), 0 0 8px rgba(31, 45, 61, .3);
+  max-width: 96px;
+  text-align: center;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.games-pop__stage { position: absolute; inset: 0; background: #0d141d; }
+.games-pop__stage[hidden] { display: none; }
+#games-frame { width: 100%; height: 100%; border: none; background: #000; }
+.games-pop__back {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  z-index: 3;
+  width: 34px;
+  height: 34px;
+  border: none;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, .45);
+  color: #fff;
+  cursor: pointer;
+  transition: background .2s;
+}
+.games-pop__back:hover { background: rgba(0, 0, 0, .7); }
+
+/* Dock 上的游戏图标（打开过的游戏） */
+.ios-app__icon--img { padding: 0; overflow: hidden; }
+.ios-app__icon--img img { width: 100%; height: 100%; object-fit: cover; border-radius: 17px; }
+
+/* hidden 属性优先于组件的 display 样式 */
+.ios-app[hidden] { display: none !important; }
+
+/* 游戏文字图标（无图时的兜底） */
+.games-pop__letter,
+.ios-app__letter {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 66px;
+  height: 66px;
+  border-radius: 16px;
+  color: #fff;
+  font-size: 1.6rem;
+  font-weight: 700;
+  box-shadow: 0 6px 14px rgba(31, 45, 61, .22);
+}
+.ios-app__letter { width: 100%; height: 100%; border-radius: 17px; font-size: 1.4rem; }

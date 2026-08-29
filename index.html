@@ -24,10 +24,10 @@
     <link rel="preconnect" href="//busuanzi.ibruce.info">
     <link rel="stylesheet" href="/assets/vendor/fontawesome/css/all.min.css">
     <link rel="stylesheet" href="/assets/css/butterfly.css">
-    <link rel="stylesheet" href="/css/header-glow.css?v=1788008827">
-    <link rel="stylesheet" href="/css/time-greeting.css?v=1788008827">
-    <link rel="stylesheet" href="/css/gh-projects.css?v=1788008827">
-    <link rel="stylesheet" href="/css/custom.css?v=1788008827">
+    <link rel="stylesheet" href="/css/header-glow.css?v=1788017723">
+    <link rel="stylesheet" href="/css/time-greeting.css?v=1788017723">
+    <link rel="stylesheet" href="/css/gh-projects.css?v=1788017723">
+    <link rel="stylesheet" href="/css/custom.css?v=1788017723">
     <link rel="manifest" href="/manifest.webmanifest">
     <link rel="stylesheet" href="/assets/vendor/fancybox/fancybox.min.css" media="print" onload="this.media='all'">
     
@@ -61,7 +61,7 @@
     window.GLOBAL_CONFIG = {
       root: '/',
       algolia: undefined,
-      localSearch: { "path": "/search.xml?v=1788008827", "preload": false, "top_n_per_article": 1, "unescape": false, "pagination": { "enable": false, "hitsPerPage": 8 }, "languages": { "hits_empty": "未找到包含 ${query} 的文章", "hits_stats": "找到 ${hits} 篇文章" } },
+      localSearch: { "path": "/search.xml?v=1788017723", "preload": false, "top_n_per_article": 1, "unescape": false, "pagination": { "enable": false, "hitsPerPage": 8 }, "languages": { "hits_empty": "未找到包含 ${query} 的文章", "hits_stats": "找到 ${hits} 篇文章" } },
       translate: undefined,
       highlight: { "plugin": "highlight.js", "highlightCopy": true, "highlightLang": true, "highlightHeightLimit": false, "highlightFullpage": false, "highlightMacStyle": false },
       copy: { success: '复制成功', error: '复制失败', noSupport: '浏览器不支持' },
@@ -168,6 +168,40 @@
             <div class="ios-widget__hi" id="ios-greet"></div>
             <div class="ios-widget__sub">朱的小屋 · 记录技术与生活</div>
         </div>
+        <div class="ios-widget ios-widget--music">
+            <img class="music-cover" id="music-cover" src="/assets/images/avatar.jpg" alt="封面" loading="lazy">
+            <div class="music-info">
+                <div class="music-name" id="music-name">随机好歌</div>
+                <div class="music-artist" id="music-artist">点击播放键试试</div>
+                <div class="music-progress"><span id="music-bar"></span></div>
+            </div>
+            <div class="music-ctrl">
+                <button class="music-btn" id="music-toggle" title="播放/暂停"><i class="fas fa-play"></i></button>
+                <button class="music-btn" id="music-next" title="下一首"><i class="fas fa-forward-step"></i></button>
+            </div>
+        </div>
+        <div class="ios-widget ios-widget--games" id="games-widget" title="游戏中心">
+            <div class="games-preview">
+                
+                
+                <span class="games-preview__app" style="background:#e6194b">龙</span>
+                
+                
+                
+                <span class="games-preview__app games-preview__app--img" style="background-image:url(https://www.wesane.com/Public/miniapp/icons/2003.png)"></span>
+                
+                
+                
+                <span class="games-preview__app games-preview__app--img" style="background-image:url(https://www.wesane.com/Public/miniapp/icons/2010.png)"></span>
+                
+                
+                
+                <span class="games-preview__app games-preview__app--img" style="background-image:url(https://www.wesane.com/Public/miniapp/icons/2008.png)"></span>
+                
+                
+            </div>
+            <div class="games-preview__label">游戏</div>
+        </div>
     </div>
 
     <div class="ios-grid">
@@ -234,11 +268,18 @@
         <a class="ios-app" href="javascript:void(0)" data-action="search">
             <span class="ios-app__icon"><i class="fas fa-magnifying-glass"></i></span>
         </a>
+        <a class="ios-app" href="javascript:void(0)" data-action="music">
+            <span class="ios-app__icon ios-app__icon--music"><i class="fas fa-music"></i></span>
+        </a>
         <a class="ios-app" href="javascript:void(0)" data-action="random">
             <span class="ios-app__icon"><i class="fas fa-shuffle"></i></span>
         </a>
         <a class="ios-app" href="javascript:void(0)" data-action="qrcode">
             <span class="ios-app__icon"><i class="fa-brands fa-weixin"></i></span>
+        </a>
+        <a class="ios-app" href="javascript:void(0)" id="dock-game" hidden>
+            <span class="ios-app__icon ios-app__icon--img"><img id="dock-game-icon" src="" alt=""><span class="ios-app__letter" id="dock-game-letter" hidden></span></span>
+            <span class="ios-app__label" id="dock-game-name">游戏</span>
         </a>
         <a class="ios-app" href="#recent-posts">
             <span class="ios-app__icon"><i class="fa-solid fa-list"></i></span>
@@ -248,9 +289,182 @@
     <a class="ios-scroll-hint" href="#recent-posts" aria-label="向下滚动"><i class="fas fa-chevron-down"></i></a>
 </section>
 
+
+<div class="music-app" id="music-app" hidden>
+    <div class="music-app__mask" id="music-app-mask"></div>
+    <div class="music-app__window">
+        <div class="music-app__lights"><span class="l-red" id="music-app-close"></span><span class="l-yellow"></span><span class="l-green"></span></div>
+        <div class="music-app__body">
+            <aside class="music-side">
+                <div class="music-side__brand"><i class="fas fa-compact-disc"></i> 音乐</div>
+                <ul class="music-nav" id="music-nav">
+                    <li data-view="discover" class="active"><i class="fas fa-compass fa-fw"></i> 发现</li>
+                    <li data-view="recent"><i class="far fa-clock fa-fw"></i> 最近播放</li>
+                    <li data-view="favs"><i class="far fa-heart fa-fw"></i> 我喜欢的音乐</li>
+                </ul>
+                <div class="music-side__foot">Powered by Meting API<br>网易云榜单 · 每天更新</div>
+            </aside>
+            <main class="music-main">
+                <div class="music-view" id="mview-discover">
+                    <div class="music-banner" id="music-banner">
+                        <div class="music-banner__text">
+                            <b>云音乐热歌榜</b>
+                            <span>每天更新 · 随机好歌陪你逛博客</span>
+                        </div>
+                        <button class="music-banner__play" id="music-banner-play" title="随机播放"><i class="fas fa-play"></i></button>
+                    </div>
+                    <div class="music-sec-title">推荐歌单</div>
+                    <div class="playlist-grid" id="music-chart-grid"></div>
+                </div>
+                <div class="music-view" id="mview-chart" hidden>
+                    <div class="music-back" id="music-back"><i class="fas fa-chevron-left"></i> 发现</div>
+                    <div class="music-main__title" id="music-list-title">榜单</div>
+                    <ul class="music-songs" id="music-songs"></ul>
+                </div>
+                <div class="music-view" id="mview-recent" hidden>
+                    <div class="music-main__title">最近播放</div>
+                    <ul class="music-songs" id="music-recent-songs"></ul>
+                </div>
+                <div class="music-view" id="mview-favs" hidden>
+                    <div class="music-main__title">我喜欢的音乐</div>
+                    <ul class="music-songs" id="music-fav-songs"></ul>
+                </div>
+            </main>
+        </div>
+        <div class="music-player">
+            <button class="music-heart" id="mp-fav" title="喜欢"><i class="far fa-heart"></i></button>
+            <img class="music-player__cover" id="mp-cover" src="/assets/images/avatar.jpg" alt="封面">
+            <div class="music-player__info">
+                <b id="mp-name">未在播放</b>
+                <span id="mp-artist">从发现页选一首歌开始欣赏</span>
+                <div class="music-progress music-progress--dark" id="mp-progress"><span id="mp-bar"></span></div>
+            </div>
+            <span class="music-player__time" id="mp-time">00:00 / 00:00</span>
+            <div class="music-player__ctrl">
+                <button id="mp-prev" title="上一首"><i class="fas fa-backward-step"></i></button>
+                <button id="mp-play" class="is-play" title="播放/暂停"><i class="fas fa-play"></i></button>
+                <button id="mp-next" title="下一首"><i class="fas fa-forward-step"></i></button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="games-pop" id="games-app" hidden>
+    <div class="music-app__mask" id="games-app-mask"></div>
+    <div class="games-pop__window">
+        <button class="games-pop__close" id="games-app-close" title="关闭"><i class="fas fa-xmark"></i></button>
+        <div class="games-pop__title" id="games-pop-title">游戏</div>
+        <div class="games-pop__grid" id="games-grid">
+            
+            <a class="games-pop__app" data-url="https://www.wesane.com/game/910/" data-name="召唤神龙" data-icon="" data-letter="龙" data-bg="#e6194b">
+                
+                <span class="games-pop__letter" style="background:#e6194b">龙</span>
+                
+                <span>召唤神龙</span>
+            </a>
+            
+            <a class="games-pop__app" data-url="https://www.wesane.com/game/2003/" data-name="水果对对消" data-icon="https://www.wesane.com/Public/miniapp/icons/2003.png" data-letter="水" data-bg="#49b1f5">
+                
+                <img src="https://www.wesane.com/Public/miniapp/icons/2003.png" alt="水果对对消" loading="lazy" onerror="this.outerHTML='<span class=&quot;games-pop__letter&quot; style=&quot;background:#49b1f5&quot;>水</span>'">
+                
+                <span>水果对对消</span>
+            </a>
+            
+            <a class="games-pop__app" data-url="https://www.wesane.com/game/2010/" data-name="穿搭有难度" data-icon="https://www.wesane.com/Public/miniapp/icons/2010.png" data-letter="穿" data-bg="#49b1f5">
+                
+                <img src="https://www.wesane.com/Public/miniapp/icons/2010.png" alt="穿搭有难度" loading="lazy" onerror="this.outerHTML='<span class=&quot;games-pop__letter&quot; style=&quot;background:#49b1f5&quot;>穿</span>'">
+                
+                <span>穿搭有难度</span>
+            </a>
+            
+            <a class="games-pop__app" data-url="https://www.wesane.com/game/2008/" data-name="吃大席" data-icon="https://www.wesane.com/Public/miniapp/icons/2008.png" data-letter="吃" data-bg="#49b1f5">
+                
+                <img src="https://www.wesane.com/Public/miniapp/icons/2008.png" alt="吃大席" loading="lazy" onerror="this.outerHTML='<span class=&quot;games-pop__letter&quot; style=&quot;background:#49b1f5&quot;>吃</span>'">
+                
+                <span>吃大席</span>
+            </a>
+            
+            <a class="games-pop__app" data-url="https://www.wesane.com/game/2006/" data-name="调味大厨" data-icon="https://www.wesane.com/Public/miniapp/icons/2006.png" data-letter="调" data-bg="#49b1f5">
+                
+                <img src="https://www.wesane.com/Public/miniapp/icons/2006.png" alt="调味大厨" loading="lazy" onerror="this.outerHTML='<span class=&quot;games-pop__letter&quot; style=&quot;background:#49b1f5&quot;>调</span>'">
+                
+                <span>调味大厨</span>
+            </a>
+            
+            <a class="games-pop__app" data-url="https://www.wesane.com/game/2007/" data-name="阿姨手别抖" data-icon="https://www.wesane.com/Public/miniapp/icons/2007.png" data-letter="阿" data-bg="#49b1f5">
+                
+                <img src="https://www.wesane.com/Public/miniapp/icons/2007.png" alt="阿姨手别抖" loading="lazy" onerror="this.outerHTML='<span class=&quot;games-pop__letter&quot; style=&quot;background:#49b1f5&quot;>阿</span>'">
+                
+                <span>阿姨手别抖</span>
+            </a>
+            
+            <a class="games-pop__app" data-url="https://www.wesane.com/game/2005/" data-name="黑手大厨" data-icon="https://www.wesane.com/Public/miniapp/icons/2005.png" data-letter="黑" data-bg="#49b1f5">
+                
+                <img src="https://www.wesane.com/Public/miniapp/icons/2005.png" alt="黑手大厨" loading="lazy" onerror="this.outerHTML='<span class=&quot;games-pop__letter&quot; style=&quot;background:#49b1f5&quot;>黑</span>'">
+                
+                <span>黑手大厨</span>
+            </a>
+            
+            <a class="games-pop__app" data-url="https://www.wesane.com/game/2009/" data-name="赶大集" data-icon="https://www.wesane.com/Public/miniapp/icons/2009.png" data-letter="赶" data-bg="#49b1f5">
+                
+                <img src="https://www.wesane.com/Public/miniapp/icons/2009.png" alt="赶大集" loading="lazy" onerror="this.outerHTML='<span class=&quot;games-pop__letter&quot; style=&quot;background:#49b1f5&quot;>赶</span>'">
+                
+                <span>赶大集</span>
+            </a>
+            
+            <a class="games-pop__app" data-url="https://www.wesane.com/game/1055/" data-name="旅行列车" data-icon="https://www.wesane.com/Public/miniapp/icons/1055.png" data-letter="旅" data-bg="#49b1f5">
+                
+                <img src="https://www.wesane.com/Public/miniapp/icons/1055.png" alt="旅行列车" loading="lazy" onerror="this.outerHTML='<span class=&quot;games-pop__letter&quot; style=&quot;background:#49b1f5&quot;>旅</span>'">
+                
+                <span>旅行列车</span>
+            </a>
+            
+            <a class="games-pop__app" data-url="https://www.wesane.com/game/2002/" data-name="老街烤串" data-icon="https://www.wesane.com/Public/miniapp/icons/2002.png" data-letter="老" data-bg="#49b1f5">
+                
+                <img src="https://www.wesane.com/Public/miniapp/icons/2002.png" alt="老街烤串" loading="lazy" onerror="this.outerHTML='<span class=&quot;games-pop__letter&quot; style=&quot;background:#49b1f5&quot;>老</span>'">
+                
+                <span>老街烤串</span>
+            </a>
+            
+            <a class="games-pop__app" data-url="https://www.wesane.com/game/2004/" data-name="找到我的姓" data-icon="https://www.wesane.com/Public/miniapp/icons/2004.png" data-letter="找" data-bg="#49b1f5">
+                
+                <img src="https://www.wesane.com/Public/miniapp/icons/2004.png" alt="找到我的姓" loading="lazy" onerror="this.outerHTML='<span class=&quot;games-pop__letter&quot; style=&quot;background:#49b1f5&quot;>找</span>'">
+                
+                <span>找到我的姓</span>
+            </a>
+            
+            <a class="games-pop__app" data-url="https://www.wesane.com/game/1058/" data-name="精神牛马" data-icon="https://www.wesane.com/Public/miniapp/icons/1058.png" data-letter="精" data-bg="#49b1f5">
+                
+                <img src="https://www.wesane.com/Public/miniapp/icons/1058.png" alt="精神牛马" loading="lazy" onerror="this.outerHTML='<span class=&quot;games-pop__letter&quot; style=&quot;background:#49b1f5&quot;>精</span>'">
+                
+                <span>精神牛马</span>
+            </a>
+            
+            <a class="games-pop__app" data-url="https://play2048.co/" data-name="2048" data-icon="" data-letter="2" data-bg="#edc22e">
+                
+                <span class="games-pop__letter" style="background:#edc22e">2</span>
+                
+                <span>2048</span>
+            </a>
+            
+            <a class="games-pop__app" data-url="https://topograph.io/" data-name="无尽驾驶" data-icon="" data-letter="驾" data-bg="#22a6b3">
+                
+                <span class="games-pop__letter" style="background:#22a6b3">驾</span>
+                
+                <span>无尽驾驶</span>
+            </a>
+            
+        </div>
+        <div class="games-pop__stage" id="games-stage" hidden>
+            <button class="games-pop__back" id="games-back" title="返回游戏列表"><i class="fas fa-chevron-left"></i></button>
+            <iframe id="games-frame" allow="autoplay; fullscreen; gamepad" referrerpolicy="no-referrer"></iframe>
+        </div>
+    </div>
+</div>
+
 <div id="recent-posts" class="recent-posts nc">
     <div class="recent-post-items">
-        
         
         
         <div class="recent-post-item has-cover cover-left">
@@ -272,7 +486,6 @@
         </div>
         
         
-        
         <div class="recent-post-item has-cover cover-right">
             <a class="post-cover" href="/2025/12/26/IO%E5%9F%BA%E7%A1%80%E4%B8%8E%E6%B5%81%E6%93%8D%E4%BD%9C/" title="IO基础与流操作" aria-hidden="true">
                 
@@ -290,7 +503,6 @@
                 <div class="content"></div>
             </div>
         </div>
-        
         
         
         <div class="recent-post-item has-cover cover-left">
@@ -328,54 +540,400 @@
 
 </div>
 <script>
-// iOS 桌面交互：时钟 / 问候 / 搜索 / 随机 / 二维码
-(function () {
-    var pad = function (n) { return n < 10 ? '0' + n : n };
-    var clockEl = document.getElementById('ios-clock');
-    var timeEl = document.getElementById('ios-widget-time');
-    var dateEl = document.getElementById('ios-widget-date');
-    var tick = function () {
-        var now = new Date();
-        var hm = pad(now.getHours()) + ':' + pad(now.getMinutes());
-        if (clockEl) clockEl.textContent = hm;
-        if (timeEl) timeEl.textContent = hm;
-        if (dateEl) {
-            var weeks = ['日', '一', '二', '三', '四', '五', '六'];
-            dateEl.textContent = (now.getMonth() + 1) + '月' + now.getDate() + '日 星期' + weeks[now.getDay()];
-        }
-    };
-    tick();
-    setInterval(tick, 15000);
-
-    var h = new Date().getHours();
-    var greet = h < 6 ? '夜深了，注意休息 🌙'
-        : h < 11 ? '早上好呀，今天也要元气满满 ☀️'
-        : h < 14 ? '中午好，休息一下吧 🌤️'
-        : h < 18 ? '下午好，来杯下午茶 🍵'
-        : '晚上好，慢慢逛 🌆';
-    var greetEl = document.getElementById('ios-greet');
-    if (greetEl) greetEl.textContent = greet;
-
-    var postUrls = ["/2026/08/28/redis/","/2025/12/26/IO%E5%9F%BA%E7%A1%80%E4%B8%8E%E6%B5%81%E6%93%8D%E4%BD%9C/","/2025/12/08/best-buddy/"];
-
-    document.querySelectorAll('.ios-app[data-action], .ios-dock .ios-app[data-action]').forEach(function (el) {
-        el.addEventListener('click', function (e) {
-            e.preventDefault();
-            var action = el.getAttribute('data-action');
-            if (action === 'search') {
-                var btn = document.querySelector('#search-button .search');
-                if (btn) btn.click();
-            } else if (action === 'random') {
-                if (!postUrls.length) return;
-                var pick;
-                do { pick = postUrls[Math.floor(Math.random() * postUrls.length)]; } while (postUrls.length > 1 && pick === location.pathname);
-                location.href = pick;
-            } else if (action === 'qrcode') {
-                if (window.showImage) window.showImage('/assets/images/qrcode.jpg');
+    // 时钟 / 问候 / 桌面动作
+    (function () {
+        var pad = function (n) { return n < 10 ? '0' + n : n };
+        var clockEl = document.getElementById('ios-clock');
+        var timeEl = document.getElementById('ios-widget-time');
+        var dateEl = document.getElementById('ios-widget-date');
+        var tick = function () {
+            var now = new Date();
+            var hm = pad(now.getHours()) + ':' + pad(now.getMinutes());
+            if (clockEl) clockEl.textContent = hm;
+            if (timeEl) timeEl.textContent = hm;
+            if (dateEl) {
+                var weeks = ['日', '一', '二', '三', '四', '五', '六'];
+                dateEl.textContent = (now.getMonth() + 1) + '月' + now.getDate() + '日 星期' + weeks[now.getDay()];
             }
+        };
+        tick();
+        setInterval(tick, 15000);
+
+        var h = new Date().getHours();
+        var greet = h < 6 ? '夜深了，注意休息 🌙'
+            : h < 11 ? '早上好呀，今天也要元气满满 ☀️'
+            : h < 14 ? '中午好，休息一下吧 🌤️'
+            : h < 18 ? '下午好，来杯下午茶 🍵'
+            : '晚上好，慢慢逛 🌆';
+        var greetEl = document.getElementById('ios-greet');
+        if (greetEl) greetEl.textContent = greet;
+
+        var postUrls = ["/2026/08/28/redis/","/2025/12/26/IO%E5%9F%BA%E7%A1%80%E4%B8%8E%E6%B5%81%E6%93%8D%E4%BD%9C/","/2025/12/08/best-buddy/"];
+
+        document.querySelectorAll('.ios-app[data-action]').forEach(function (el) {
+            el.addEventListener('click', function (e) {
+                var action = el.getAttribute('data-action');
+                if (action === 'music') return; // 音乐图标由音乐脚本处理
+                e.preventDefault();
+                if (action === 'search') {
+                    var btn = document.querySelector('#search-button .search');
+                    if (btn) btn.click();
+                } else if (action === 'random') {
+                    if (!postUrls.length) return;
+                    var pick;
+                    do { pick = postUrls[Math.floor(Math.random() * postUrls.length)]; } while (postUrls.length > 1 && pick === location.pathname);
+                    location.href = pick;
+                } else if (action === 'qrcode') {
+                    if (window.showImage) window.showImage('/assets/images/qrcode.jpg');
+                }
+            });
         });
-    });
-})();
+    })();
+</script>
+<script>
+    // 音乐 App：发现页（榜单卡片）/ 榜单歌曲 / 最近播放 / 我喜欢的音乐
+    // 歌单数据来自免费 Meting API（网易云），播放失败自动切下一首
+    (function () {
+        var $ = function (id) { return document.getElementById(id) };
+        var CHARTS = [
+            { id: '3778678', name: '热歌榜', desc: '每天更新' },
+            { id: '3779629', name: '新歌榜', desc: '抢先听' },
+            { id: '19723756', name: '飙升榜', desc: '热度飙升' },
+            { id: '2884035', name: '原创榜', desc: '华语原创' }
+        ];
+        var API = 'https://api.injahow.cn/meting/?server=netease&type=playlist&id=';
+
+        var widget = {
+            name: $('music-name'), artist: $('music-artist'), cover: $('music-cover'),
+            bar: $('music-bar'), toggle: $('music-toggle'), next: $('music-next'),
+            card: document.querySelector('.ios-widget--music')
+        };
+        var app = {
+            root: $('music-app'), mask: $('music-app-mask'), close: $('music-app-close'),
+            nav: $('music-nav'),
+            views: { discover: $('mview-discover'), chart: $('mview-chart'), recent: $('mview-recent'), favs: $('mview-favs') },
+            grid: $('music-chart-grid'), banner: $('music-banner'), bannerPlay: $('music-banner-play'),
+            back: $('music-back'), songs: $('music-songs'), listTitle: $('music-list-title'),
+            recentSongs: $('music-recent-songs'), favSongs: $('music-fav-songs'),
+            cover: $('mp-cover'), name: $('mp-name'), artist: $('mp-artist'),
+            bar: $('mp-bar'), progress: $('mp-progress'), time: $('mp-time'), fav: $('mp-fav'),
+            play: $('mp-play'), prev: $('mp-prev'), next: $('mp-next')
+        };
+
+        var charts = {};
+        var queue = [], cur = 0, playing = false, currentSource = '';
+
+        var audio = new Audio();
+        audio.preload = 'none';
+
+        function esc(s) { return String(s == null ? '' : s).replace(/</g, '&lt;') }
+        function trackId(t) { var m = (t.url || '').match(/id=(\d+)/); return m ? m[1] : t.name }
+        function readLS(k, d) { try { return JSON.parse(localStorage.getItem(k)) || d } catch (e) { return d } }
+        function writeLS(k, v) { try { localStorage.setItem(k, JSON.stringify(v)) } catch (e) {} }
+        function fmt(s) { s = Math.floor(s || 0); return Math.floor(s / 60) + ':' + ((s % 60) < 10 ? '0' : '') + (s % 60) }
+        function pad2(s) { s = Math.floor(s || 0); return (s < 10 ? '0' : '') + s + '' }
+
+        // ---------- 播放核心 ----------
+        function setIcons() {
+            var i = playing ? 'fas fa-pause' : 'fas fa-play';
+            widget.toggle.innerHTML = '<i class="' + i + '"></i>';
+            app.play.innerHTML = '<i class="' + i + '"></i>';
+        }
+        function highlight() {
+            var tid = queue[cur] ? trackId(queue[cur]) : null;
+            [app.songs, app.recentSongs, app.favSongs].forEach(function (ul) {
+                ul.querySelectorAll('.song-row').forEach(function (row) {
+                    row.classList.toggle('playing', row.getAttribute('data-tid') === tid);
+                });
+            });
+        }
+        function updateTrackUI(t) {
+            widget.name.textContent = t.name;
+            widget.artist.textContent = t.artist;
+            app.name.textContent = t.name;
+            app.artist.textContent = t.artist;
+            if (t.pic) { widget.cover.src = t.pic; app.cover.src = t.pic; }
+            widget.bar.style.width = '0%';
+            app.bar.style.width = '0%';
+            app.time.textContent = '00:00 / 00:00';
+            updateFavIcon(t);
+            highlight();
+        }
+        function saveRecent(t) {
+            var rec = getRecent().filter(function (x) { return trackId(x) !== trackId(t) });
+            rec.unshift(t);
+            writeLS('music_recent', rec.slice(0, 30));
+        }
+        function playFrom(tracks, i) {
+            if (!tracks || !tracks.length) return;
+            queue = tracks;
+            cur = (i + queue.length) % queue.length;
+            var t = queue[cur];
+            audio.src = t.url;
+            updateTrackUI(t);
+            saveRecent(t);
+            playing = true;
+            setIcons();
+            audio.play().catch(function () { next(); });
+        }
+        function togglePlay() {
+            if (!queue.length) return;
+            if (playing) { audio.pause(); playing = false; } else { playing = true; audio.play().catch(function () {}); }
+            setIcons();
+        }
+        function next() { playFrom(queue, cur + 1); }
+        function prev() { playFrom(queue, cur - 1); }
+
+        // ---------- 数据 ----------
+        function loadChart(id, done) {
+            if (charts[id]) { done(charts[id]); return; }
+            fetch(API + id).then(function (r) { return r.json(); }).then(function (list) {
+                charts[id] = (list || []).filter(function (t) { return t.url; });
+                done(charts[id]);
+            }).catch(function () { done([]); });
+        }
+        function getRecent() { return readLS('music_recent', []) }
+        function getFavMap() { return readLS('music_favs', {}) }
+        function favList() { var m = getFavMap(); return Object.keys(m).map(function (k) { return m[k] }) }
+
+        // ---------- 视图 ----------
+        function showView(name) {
+            Object.keys(app.views).forEach(function (k) { app.views[k].hidden = (k !== name) });
+            app.nav.querySelectorAll('li').forEach(function (li) {
+                li.classList.toggle('active', li.getAttribute('data-view') === name ||
+                    (name === 'chart' && li.getAttribute('data-view') === 'discover'));
+            });
+        }
+        function renderDiscover() {
+            if (app.grid.children.length) { showView('discover'); return; }
+            CHARTS.forEach(function (c) {
+                loadChart(c.id, function (tracks) {
+                    if (!tracks.length) return;
+                    var card = document.createElement('a');
+                    card.className = 'playlist-card';
+                    card.innerHTML = '<span class="playlist-card__cover" style="background-image:url(&quot;' + tracks[0].pic + '&quot;)">'
+                        + '<i class="fas fa-play playlist-card__play"></i><span class="playlist-card__count"><i class="far fa-clock fa-fw"></i> ' + c.desc + '</span></span>'
+                        + '<b class="playlist-card__name">' + c.name + '</b>'
+                        + '<span class="playlist-card__desc">' + tracks.length + '首 · ' + c.desc + '</span>';
+                    card.addEventListener('click', function () { openChart(c.id, c.name); });
+                    app.grid.appendChild(card);
+                });
+            });
+            loadChart('3778678', function (tracks) {
+                if (tracks.length) app.banner.style.backgroundImage = 'url(&quot;' + tracks[0].pic + '&quot;)'.replace(/&quot;/g, '"');
+            });
+        }
+        function songRow(t, i) {
+            var tid = trackId(t);
+            var isCur = queue[cur] && tid === trackId(queue[cur]);
+            return '<li class="song-row' + (isCur ? ' playing' : '') + '" data-i="' + i + '" data-tid="' + tid + '">'
+                + '<span class="song-row__idx">' + (i + 1) + '</span>'
+                + '<span class="song-row__name">' + esc(t.name) + '</span>'
+                + '<span class="song-row__artist">' + esc(t.artist) + '</span></li>';
+        }
+        function openChart(id, name) {
+            showView('chart');
+            app.listTitle.textContent = name;
+            app.songs.innerHTML = '<li class="music-loading">加载中…</li>';
+            loadChart(id, function (tracks) {
+                var html = '';
+                tracks.forEach(function (t, i) { html += songRow(t, i); });
+                app.songs.innerHTML = html || '<li class="music-loading">暂无歌曲</li>';
+                highlight();
+            });
+        }
+        function renderRecent() {
+            var rec = getRecent();
+            if (!rec.length) { app.recentSongs.innerHTML = '<li class="music-loading">还没有播放记录，去发现页听听吧</li>'; return; }
+            var html = '';
+            rec.forEach(function (t, i) { html += songRow(t, i); });
+            app.recentSongs.innerHTML = html;
+            highlight();
+        }
+        function renderFavs() {
+            var fl = favList();
+            if (!fl.length) { app.favSongs.innerHTML = '<li class="music-loading">点播放条上的 ♥ 收藏喜欢的歌</li>'; return; }
+            var html = '';
+            fl.forEach(function (t, i) { html += songRow(t, i); });
+            app.favSongs.innerHTML = html;
+            highlight();
+        }
+
+        // 列表点击：歌单列表按下标取对应榜单队列；最近/喜欢按 trackId 匹配
+        app.songs.addEventListener('click', function (e) {
+            var row = e.target.closest('.song-row');
+            if (!row) return;
+            var i = Number(row.getAttribute('data-i'));
+            loadChart(currentChartId(), function (tracks) {
+                if (queue[cur] && trackId(queue[cur]) === trackId(tracks[i])) togglePlay();
+                else playFrom(tracks, i);
+            });
+        });
+        function currentChartId() {
+            var c = CHARTS.filter(function (c) { return c.name === app.listTitle.textContent });
+            return c.length ? c[0].id : CHARTS[0].id;
+        }
+        app.recentSongs.addEventListener('click', function (e) {
+            var row = e.target.closest('.song-row');
+            if (!row) return;
+            var rec = getRecent();
+            playFrom(rec, Number(row.getAttribute('data-i')));
+        });
+        app.favSongs.addEventListener('click', function (e) {
+            var row = e.target.closest('.song-row');
+            if (!row) return;
+            playFrom(favList(), Number(row.getAttribute('data-i')));
+        });
+
+        // ---------- 收藏 ----------
+        function updateFavIcon(t) {
+            var liked = !!getFavMap()[trackId(t)];
+            app.fav.innerHTML = liked ? '<i class="fas fa-heart"></i>' : '<i class="far fa-heart"></i>';
+            app.fav.classList.toggle('liked', liked);
+        }
+        app.fav.addEventListener('click', function () {
+            var t = queue[cur];
+            if (!t) return;
+            var m = getFavMap();
+            if (m[trackId(t)]) delete m[trackId(t)]; else m[trackId(t)] = t;
+            writeLS('music_favs', m);
+            updateFavIcon(t);
+        });
+
+        // ---------- 弹窗与导航 ----------
+        function openApp() {
+            app.root.hidden = false;
+            renderDiscover();
+            showView('discover');
+        }
+        function closeApp() { app.root.hidden = true; }
+        app.mask.addEventListener('click', closeApp);
+        app.close.addEventListener('click', closeApp);
+        app.back.addEventListener('click', function () { showView('discover'); });
+        app.nav.addEventListener('click', function (e) {
+            var li = e.target.closest('li[data-view]');
+            if (!li) return;
+            var v = li.getAttribute('data-view');
+            if (v === 'discover') { renderDiscover(); showView('discover'); }
+            if (v === 'recent') { renderRecent(); showView('recent'); }
+            if (v === 'favs') { renderFavs(); showView('favs'); }
+        });
+
+        // 组件：点卡片打开 App；按钮直接控制
+        widget.card.addEventListener('click', function (e) {
+            if (e.target.closest('.music-btn')) return;
+            openApp();
+        });
+        widget.toggle.addEventListener('click', function (e) {
+            e.stopPropagation();
+            if (!queue.length) { openApp(); return; }
+            togglePlay();
+        });
+        widget.next.addEventListener('click', function (e) {
+            e.stopPropagation();
+            if (!queue.length) { openApp(); return; }
+            next();
+        });
+        var dockMusic = document.querySelector('.ios-app[data-action="music"]');
+        if (dockMusic) dockMusic.addEventListener('click', function (e) { e.preventDefault(); openApp(); });
+
+        app.bannerPlay.addEventListener('click', function () {
+            loadChart('3778678', function (tracks) {
+                playFrom(tracks, Math.floor(Math.random() * tracks.length));
+                app.name.textContent = '随机播放 · 热歌榜';
+            });
+        });
+        app.play.addEventListener('click', togglePlay);
+        app.next.addEventListener('click', next);
+        app.prev.addEventListener('click', prev);
+
+        // 进度：更新 + 点击跳转
+        audio.addEventListener('timeupdate', function () {
+            if (!audio.duration) return;
+            var p = (audio.currentTime / audio.duration) * 100 + '%';
+            widget.bar.style.width = p;
+            app.bar.style.width = p;
+            app.time.textContent = pad2(audio.currentTime / 60) + ':' + pad2(audio.currentTime % 60) + ' / ' + pad2(audio.duration / 60) + ':' + pad2(audio.duration % 60);
+        });
+        app.progress.addEventListener('click', function (e) {
+            if (!audio.duration) return;
+            var rect = app.progress.getBoundingClientRect();
+            audio.currentTime = ((e.clientX - rect.left) / rect.width) * audio.duration;
+        });
+        audio.addEventListener('ended', function () { next(); });
+        audio.addEventListener('error', function () { if (queue.length) next(); });
+        setIcons();
+    })();
+</script>
+<script>
+    // 游戏：4399 热门 H5 游戏，点击图标在弹窗内直接游玩；打开后出现在任务栏
+    (function () {
+        var $ = function (id) { return document.getElementById(id) };
+        var pop = $('games-app'), mask = $('games-app-mask'), closeBtn = $('games-app-close');
+        var title = $('games-pop-title'), grid = $('games-grid'), stage = $('games-stage');
+        var frame = $('games-frame'), back = $('games-back');
+        var dock = $('dock-game'), dockIcon = $('dock-game-icon'), dockName = $('dock-game-name');
+        var dockLetter = $('dock-game-letter');
+        var current = null, lastLetter = '', lastBg = '#49b1f5';
+
+        function setDockIcon(icon, letter, bg) {
+            if (icon) { dockIcon.src = icon; dockIcon.style.display = ''; dockLetter.hidden = true; return }
+            dockIcon.style.display = 'none';
+            dockLetter.hidden = false;
+            dockLetter.textContent = letter;
+            dockLetter.style.background = bg;
+        }
+        function rememberMeta(el) {
+            lastLetter = el.getAttribute('data-letter') || (el.getAttribute('data-name') || '游').slice(0, 1);
+            lastBg = el.getAttribute('data-bg') || '#49b1f5';
+        }
+
+        function openPop() { pop.hidden = false }
+        function closePop() { pop.hidden = true }
+        function showGrid() {
+            title.textContent = '游戏';
+            grid.hidden = false;
+            stage.hidden = true;
+            frame.src = 'about:blank';
+            current = null;
+            dock.hidden = true;
+        }
+        function openGame(el) {
+            current = { url: el.getAttribute('data-url'), name: el.getAttribute('data-name'), icon: el.getAttribute('data-icon') };
+            title.textContent = current.name;
+            grid.hidden = true;
+            stage.hidden = false;
+            frame.src = current.url;
+            dock.hidden = false;
+            setDockIcon(current.icon, lastLetter, lastBg);
+            dockName.textContent = current.name.length > 5 ? current.name.slice(0, 5) : current.name;
+        }
+        grid.addEventListener('click', function (e) {
+            var a = e.target.closest('.games-pop__app');
+            if (a) { rememberMeta(a); openGame(a); }
+        });
+        mask.addEventListener('click', closePop);
+        closeBtn.addEventListener('click', closePop);
+        back.addEventListener('click', showGrid);
+        dock.addEventListener('click', function (e) {
+            e.preventDefault();
+            if (pop.hidden && current) { openPop(); showGame(); }
+            else if (pop.hidden) openPop();
+            else if (stage.hidden && current) showGame();
+            else showGrid();
+        });
+        function showGame() {
+            title.textContent = current.name;
+            grid.hidden = true;
+            stage.hidden = false;
+            frame.src = current.url;
+        }
+        document.addEventListener('keydown', function (e) {
+            if (e.key === 'Escape' && !pop.hidden) closePop();
+        });
+        var widget = document.getElementById('games-widget');
+        if (widget) widget.addEventListener('click', openPop);
+    })();
 </script>
 
 <div class="aside-content" id="aside-content">
@@ -554,7 +1112,7 @@
         <div class="webinfo-item"><div class="item-name">运行时间 :</div><div class="item-count" id="site-uptime">—</div></div>
         <div class="webinfo-item"><div class="item-name">Unique Visitors :</div><div class="item-count" id="busuanzi_value_site_uv"><i class="fa-solid fa-spinner fa-spin"></i></div></div>
         <div class="webinfo-item"><div class="item-name">Page Views :</div><div class="item-count" id="busuanzi_value_site_pv"><i class="fa-solid fa-spinner fa-spin"></i></div></div>
-        <div class="webinfo-item"><div class="item-name">Last Update :</div><div class="item-count" id="last-push-date" data-lastPushDate="2026-08-29T21:07:07+08:00"><i class="fa-solid fa-spinner fa-spin"></i></div></div>
+        <div class="webinfo-item"><div class="item-name">Last Update :</div><div class="item-count" id="last-push-date" data-lastPushDate="2026-08-29T23:35:23+08:00"><i class="fa-solid fa-spinner fa-spin"></i></div></div>
     </div>
 </div>
 
@@ -604,8 +1162,8 @@
 <div id="imageModal" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;z-index:1000;background-color:rgba(0,0,0,.8);cursor:pointer;">
     <img id="modalImage" style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);max-width:90vw;max-height:90vh;"/>
 </div>
-<script src="/js/utils.js?v=1788008827"></script>
-<script src="/js/main.js?v=1788008827"></script>
+<script src="/js/utils.js?v=1788017723"></script>
+<script src="/js/main.js?v=1788017723"></script>
 <script src="/assets/vendor/fancybox/fancybox.umd.min.js"></script>
 <script src="/assets/vendor/lazyload/lazyload.iife.min.js"></script>
 <div class="js-pjax"><script>
@@ -634,8 +1192,8 @@ btf.addGlobalFn('pjaxSendOnce', () => { typed && typed.destroy(); }, 'typedDestr
 function subtitleType () { typedJSFn.processSubtitle(["打码改变世界","公众号：朱猪写作","保持热爱，奔赴山海"]); }
 typedJSFn.run(subtitleType);
 </script></div>
-<script src="/js/time-greeting.js?v=1788008827"></script>
-<script src="/js/header-glow.js?v=1788008827"></script>
+<script src="/js/time-greeting.js?v=1788017723"></script>
+<script src="/js/header-glow.js?v=1788017723"></script>
 <script async src="/assets/vendor/busuanzi/2.3/busuanzi.pure.mini.js"></script>
 <script>
 // Post Views（文章浏览次数）：
@@ -734,7 +1292,7 @@ typedJSFn.run(subtitleType);
     }, 500);
 })();
 </script>
-<script src="/js/search/local-search.js?v=1788008827"></script>
+<script src="/js/search/local-search.js?v=1788017723"></script>
 <script>
 // 站点增强：阅读进度条 / Ctrl+K 搜索 / 随机一读 / 建站天数 / Service Worker
 (function () {
