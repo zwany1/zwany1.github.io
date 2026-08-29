@@ -58,6 +58,63 @@ html { scroll-behavior: smooth; }
 .pagination .page-number:hover,
 .pagination .extend:hover { color: #fff; background: #49b1f5; }
 
+/* ---------- 搜索结果日期/分类 ---------- */
+#local-search-results .search-result-meta {
+  display: inline-block;
+  margin-left: 8px;
+  font-size: .78rem;
+  color: #999;
+}
+#local-search-results .search-result-sep { margin: 0 6px; opacity: .6; }
+
+/* ---------- 文章目录（TOC）卡片 ---------- */
+#card-toc .card-toc-body { padding: 8px 18px 14px; font-size: .88rem; }
+#card-toc .toc-list, #card-toc .toc-list ul { list-style: none; margin: 0; padding-left: 0; }
+#card-toc .toc-sub { padding-left: 14px; }
+#card-toc .toc-item { margin: 2px 0; line-height: 1.6; }
+#card-toc .toc-item a {
+  display: block;
+  color: var(--font-color);
+  padding: 3px 8px;
+  border-radius: 6px;
+  border-left: 2px solid transparent;
+  transition: all .2s;
+}
+#card-toc .toc-item a:hover { color: #49b1f5; background: rgba(73, 177, 245, .08); }
+#card-toc .toc-level-2 > a { border-left-color: #49b1f5; }
+#card-toc .toc-level-3 > a { opacity: .8; }
+
+/* ---------- 代码块工具条（语言标签 + 复制/折叠/全屏按钮） ----------
+   主题 CSS 没有为 main.js 注入的 .highlight-tools 提供样式，这里补齐；
+   同时适配 kramdown/rouge 的 div.highlighter-rouge 结构。 */
+#article-container .highlight-tools {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: #eff1f3;
+  color: #6a737d;
+  font-size: .8rem;
+  line-height: 1;
+  padding: 8px 14px;
+  border-radius: 8px 8px 0 0;
+}
+#article-container .highlight-tools .code-lang { text-transform: uppercase; user-select: none; }
+#article-container .highlight-tools i { cursor: pointer; transition: color .3s; }
+#article-container .highlight-tools i:hover { color: #49b1f5; }
+#article-container .highlight-tools .expand { transition: transform .3s; }
+#article-container .highlight-tools.closed .expand { transform: rotate(-90deg); }
+#article-container .highlight-tools.closed ~ * { display: none; }
+#article-container div.highlighter-rouge { margin: 14px 0; }
+#article-container div.highlighter-rouge:has(.highlight-tools) pre {
+  border-radius: 0 0 8px 8px;
+  margin-top: 0;
+}
+[data-theme=dark] #article-container .highlight-tools { background: #2b3a4e; color: #a3b2c2; }
+[data-theme=dark] #article-container div.highlighter-rouge:has(.highlight-tools) pre {
+  border-radius: 0 0 8px 8px;
+}
+
 /* ---------- 右侧悬浮按钮 ---------- */
 #rightside button:hover,
 #rightside a:hover { background: #49b1f5; color: #fff; }

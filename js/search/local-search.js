@@ -4,6 +4,14 @@
  * Modified by hexo-theme-butterfly
  */
 
+// 搜索数据渲染进 innerHTML 前必须转义，防止标题/摘要中的 HTML 被当作标记执行（XSS）
+const escapeHtml = str => String(str ?? '')
+  .replace(/&/g, '&amp;')
+  .replace(/</g, '&lt;')
+  .replace(/>/g, '&gt;')
+  .replace(/"/g, '&quot;')
+  .replace(/'/g, '&#39;')
+
 class LocalSearch {
   constructor ({
     path = '',
@@ -114,7 +122,7 @@ class LocalSearch {
     this._processedKeywords = null
     // Compute highlight param once instead of per-article
     const highlightParam = keywords.join(' ')
-    this.datas.forEach(({ title, content, url }) => {
+    this.datas.forEach(({ title, content, url, date, category }) => {
       // The number of different keywords included in the article.
       const [indexOfTitle, keysOfTitle] = this.getIndexByWord(keywords, title)
       const [indexOfContent, keysOfContent] = this.getIndexByWord(keywords, content)
@@ -166,6 +174,12 @@ class LocalSearch {
         resultItem += `<li class="local-search-hit-item"><a href="${url.href}"><span class="search-result-title">${title}</span>`
       }
 
+      // 附带日期与分类（均为站点自有数据，date 已是安全格式，category 已转义）
+      const metaParts = []
+      if (date) metaParts.push(`<span class="search-result-date">${date}</span>`)
+      if (category) metaParts.push(`<span class="search-result-category">${category}</span>`)
+      if (metaParts.length) resultItem += `<span class="search-result-meta">${metaParts.join('<span class="search-result-sep">|</span>')}</span>`
+
       slicesOfContent.forEach(slice => {
         resultItem += `<p class="search-result">${this.highlightKeyword(content, slice)}...</p>`
       })
@@ -191,11 +205,14 @@ class LocalSearch {
       .then(res => {
         // Get the contents from search data
         this.isfetched = true
+        // 标题/正文先转义再参与切片与高亮，杜绝搜索结果 innerHTML 注入
         this.datas = isXml
           ? [...new DOMParser().parseFromString(res, 'text/xml').querySelectorAll('entry')].map(element => ({
-              title: element.querySelector('title').textContent,
-              content: element.querySelector('content').textContent,
-              url: element.querySelector('url').textContent
+              title: escapeHtml(element.querySelector('title').textContent),
+              content: escapeHtml(element.querySelector('content').textContent),
+              url: element.querySelector('url').textContent,
+              date: element.querySelector('date') ? element.querySelector('date').textContent : '',
+              category: element.querySelector('category') ? element.querySelector('category').textContent : ''
             }))
           : JSON.parse(res)
         // Only match articles with non-empty titles

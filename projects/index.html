@@ -22,13 +22,13 @@
     <link rel="alternate" type="application/atom+xml" title="朱的小屋" href="https://zwany1.github.io/feed.xml">
     <link rel="preconnect" href="//cdn.jsdelivr.net">
     <link rel="preconnect" href="//busuanzi.ibruce.info">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.3.1/css/all.min.css">
+    <link rel="stylesheet" href="/assets/vendor/fontawesome/css/all.min.css">
     <link rel="stylesheet" href="/assets/css/butterfly.css">
-    <link rel="stylesheet" href="/css/header-glow.css?v=1787987073">
-    <link rel="stylesheet" href="/css/time-greeting.css?v=1787987073">
-    <link rel="stylesheet" href="/css/gh-projects.css?v=1787987073">
-    <link rel="stylesheet" href="/css/custom.css?v=1787987073">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui@6.1.14/dist/fancybox/fancybox.min.css" media="print" onload="this.media='all'">
+    <link rel="stylesheet" href="/css/header-glow.css?v=1787998433">
+    <link rel="stylesheet" href="/css/time-greeting.css?v=1787998433">
+    <link rel="stylesheet" href="/css/gh-projects.css?v=1787998433">
+    <link rel="stylesheet" href="/css/custom.css?v=1787998433">
+    <link rel="stylesheet" href="/assets/vendor/fancybox/fancybox.min.css" media="print" onload="this.media='all'">
     
     <link rel="stylesheet" href="https://fastly.jsdelivr.net/gh/mzlogin/rouge-themes@master/dist/github.css">
     <script>
@@ -60,9 +60,9 @@
     window.GLOBAL_CONFIG = {
       root: '/',
       algolia: undefined,
-      localSearch: { "path": "/search.xml?v=1787987073", "preload": false, "top_n_per_article": 1, "unescape": false, "pagination": { "enable": false, "hitsPerPage": 8 }, "languages": { "hits_empty": "未找到包含 ${query} 的文章", "hits_stats": "找到 ${hits} 篇文章" } },
+      localSearch: { "path": "/search.xml?v=1787998433", "preload": false, "top_n_per_article": 1, "unescape": false, "pagination": { "enable": false, "hitsPerPage": 8 }, "languages": { "hits_empty": "未找到包含 ${query} 的文章", "hits_stats": "找到 ${hits} 篇文章" } },
       translate: undefined,
-      highlight: { "plugin": "prismjs", "highlightCopy": true, "highlightLang": true, "highlightHeightLimit": false, "highlightFullpage": false, "highlightMacStyle": false },
+      highlight: { "plugin": "highlight.js", "highlightCopy": true, "highlightLang": true, "highlightHeightLimit": false, "highlightFullpage": false, "highlightMacStyle": false },
       copy: { success: '复制成功', error: '复制失败', noSupport: '浏览器不支持' },
       relativeDate: { homepage: false, post: false },
       runtime: '',
@@ -75,7 +75,7 @@
       islazyloadPlugin: true,
       isAnchor: false,
       percent: { toc: true, rightside: false },
-      autoDarkmode: false
+      autoDarkmode: true
     };
     window.GLOBAL_CONFIG_SITE = {
       title: '项目',
@@ -210,17 +210,17 @@
 <div id="imageModal" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;z-index:1000;background-color:rgba(0,0,0,.8);cursor:pointer;">
     <img id="modalImage" style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);max-width:90vw;max-height:90vh;"/>
 </div>
-<script src="/js/utils.js?v=1787987073"></script>
-<script src="/js/main.js?v=1787987073"></script>
-<script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui@6.1.14/dist/fancybox/fancybox.umd.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/vanilla-lazyload@19.1.3/dist/lazyload.iife.min.js"></script>
+<script src="/js/utils.js?v=1787998433"></script>
+<script src="/js/main.js?v=1787998433"></script>
+<script src="/assets/vendor/fancybox/fancybox.umd.min.js"></script>
+<script src="/assets/vendor/lazyload/lazyload.iife.min.js"></script>
 <div class="js-pjax"><script>
 window.typedJSFn = {
   init: str => { window.typed = new Typed('#subtitle', Object.assign({ strings: str, startDelay: 300, typeSpeed: 150, loop: true, backSpeed: 50 }, null)); },
   run: subtitleType => {
     if (true) {
       if (typeof Typed === 'function') { subtitleType(); }
-      else { btf.getScript('https://cdn.jsdelivr.net/npm/typed.js@3.0.0/dist/typed.umd.min.js').then(subtitleType); }
+      else { btf.getScript('/assets/vendor/typed.js/typed.umd.min.js').then(subtitleType); }
     } else { subtitleType(); }
   },
   processSubtitle: (content, extraContents = []) => {
@@ -240,8 +240,8 @@ btf.addGlobalFn('pjaxSendOnce', () => { typed && typed.destroy(); }, 'typedDestr
 function subtitleType () { typedJSFn.processSubtitle(["打码改变世界","公众号：朱猪写作","保持热爱，奔赴山海"]); }
 typedJSFn.run(subtitleType);
 </script></div>
-<script src="/js/time-greeting.js?v=1787987073"></script>
-<script src="/js/header-glow.js?v=1787987073"></script>
+<script src="/js/time-greeting.js?v=1787998433"></script>
+<script src="/js/header-glow.js?v=1787998433"></script>
 <script async src="/assets/vendor/busuanzi/2.3/busuanzi.pure.mini.js"></script>
 <script>
 // Post Views（文章浏览次数）：
@@ -340,7 +340,7 @@ typedJSFn.run(subtitleType);
     }, 500);
 })();
 </script>
-<script src="/js/search/local-search.js?v=1787987073"></script>
+<script src="/js/search/local-search.js?v=1787998433"></script>
 <script>
 window.showImage = function(imageURL, event){ if(event) event.preventDefault(); var m=document.getElementById('imageModal'),i=document.getElementById('modalImage'); if(m&&i){ i.src=imageURL; m.style.display='block'; } };
 document.addEventListener('DOMContentLoaded', function(){

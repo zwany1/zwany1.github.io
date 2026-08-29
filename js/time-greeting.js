@@ -43,12 +43,11 @@
     greetingEl.className = 'time-greeting'
     greetingEl.textContent = greeting
 
-    // 找到合适的插入位置
+    // 找到合适的插入位置（问候语只出现在首页和归档/标签/分类/关于页，文章页不打扰阅读）
     var siteInfo = document.getElementById('site-info')        // 首页
     var pageSiteInfo = document.getElementById('page-site-info') // 归档/标签/分类/关于
-    var postInfo = document.getElementById('post-info')        // 文章页
 
-    var container = siteInfo || pageSiteInfo || postInfo
+    var container = siteInfo || pageSiteInfo
     if (container) {
       container.appendChild(greetingEl)
       // 延迟触发淡入动画

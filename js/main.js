@@ -70,9 +70,10 @@ document.addEventListener('DOMContentLoaded', () => {
     const isShowTool = highlightCopy || highlightLang || isHighlightShrink !== undefined || highlightFullpage || highlightMacStyle
     const isNotHighlightJs = plugin !== 'highlight.js'
     const isPrismjs = plugin === 'prismjs'
+    // 兼容 kramdown/rouge 输出：figure.highlight（Hexo 风格）与 div.highlighter-rouge（Jekyll）
     const $figureHighlight = isNotHighlightJs
       ? Array.from($article.querySelectorAll('code[class*="language-"]')).map(code => code.parentElement)
-      : $article.querySelectorAll('figure.highlight')
+      : $article.querySelectorAll('figure.highlight, div.highlighter-rouge')
 
     if (!((isShowTool || highlightHeightLimit) && $figureHighlight.length)) return
 
@@ -143,7 +144,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const highlightCopyFn = (ele, clickEle) => {
       const $buttonParent = ele.parentNode
       $buttonParent.classList.add('copy-true')
-      const preCodeSelector = isNotHighlightJs ? 'pre code' : 'table .code pre'
+      // 兼容 Hexo 表格结构与 rouge 的 pre>code 结构
+      const preCodeSelector = 'table .code pre, pre code'
       const codeElement = $buttonParent.querySelector(preCodeSelector)
       if (!codeElement) return
       copy(codeElement.innerText, clickEle)
@@ -231,8 +233,15 @@ document.addEventListener('DOMContentLoaded', () => {
       if (isNotHighlightJs) {
         langName = isPrismjs ? item.getAttribute('data-language') || 'Code' : item.querySelector('code').getAttribute('class').replace('language-', '')
       } else {
-        langName = item.getAttribute('class').split(' ')[1]
-        if (langName === 'plain' || langName === undefined) langName = 'Code'
+        // rouge 的外层容器是 language-xxx highlighter-rouge；Hexo 的 figure 是 highlight xxx
+        const m = (item.getAttribute('class') || '').match(/language-([^\s]+)/)
+        if (m) {
+          langName = m[1]
+        } else {
+          const second = (item.getAttribute('class') || '').split(' ')[1]
+          langName = second && second !== 'highlighter-rouge' ? second : 'Code'
+        }
+        if (langName === 'plain' || langName === undefined || langName === 'Code') langName = 'Code'
       }
       createEle(`<div class="code-lang">${langName}</div>`, item)
     })
