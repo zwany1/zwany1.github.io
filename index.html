@@ -24,10 +24,10 @@
     <link rel="preconnect" href="//busuanzi.ibruce.info">
     <link rel="stylesheet" href="/assets/vendor/fontawesome/css/all.min.css">
     <link rel="stylesheet" href="/assets/css/butterfly.css">
-    <link rel="stylesheet" href="/css/header-glow.css?v=1788021374">
-    <link rel="stylesheet" href="/css/time-greeting.css?v=1788021374">
-    <link rel="stylesheet" href="/css/gh-projects.css?v=1788021374">
-    <link rel="stylesheet" href="/css/custom.css?v=1788021374">
+    <link rel="stylesheet" href="/css/header-glow.css?v=1788022958">
+    <link rel="stylesheet" href="/css/time-greeting.css?v=1788022958">
+    <link rel="stylesheet" href="/css/gh-projects.css?v=1788022958">
+    <link rel="stylesheet" href="/css/custom.css?v=1788022958">
     <link rel="manifest" href="/manifest.webmanifest">
     <link rel="stylesheet" href="/assets/vendor/fancybox/fancybox.min.css" media="print" onload="this.media='all'">
     
@@ -61,7 +61,7 @@
     window.GLOBAL_CONFIG = {
       root: '/',
       algolia: undefined,
-      localSearch: { "path": "/search.xml?v=1788021374", "preload": false, "top_n_per_article": 1, "unescape": false, "pagination": { "enable": false, "hitsPerPage": 8 }, "languages": { "hits_empty": "未找到包含 ${query} 的文章", "hits_stats": "找到 ${hits} 篇文章" } },
+      localSearch: { "path": "/search.xml?v=1788022958", "preload": false, "top_n_per_article": 1, "unescape": false, "pagination": { "enable": false, "hitsPerPage": 8 }, "languages": { "hits_empty": "未找到包含 ${query} 的文章", "hits_stats": "找到 ${hits} 篇文章" } },
       translate: undefined,
       highlight: { "plugin": "highlight.js", "highlightCopy": true, "highlightLang": true, "highlightHeightLimit": false, "highlightFullpage": false, "highlightMacStyle": false },
       copy: { success: '复制成功', error: '复制失败', noSupport: '浏览器不支持' },
@@ -184,19 +184,19 @@
             <div class="games-preview">
                 
                 
-                <span class="games-preview__app" style="background:#e6194b">龙</span>
+                <span class="games-preview__app games-preview__app--img" style="background-image:url(/assets/games/zhsl.png)"></span>
                 
                 
                 
-                <span class="games-preview__app" style="background:#edc22e">2</span>
+                <span class="games-preview__app games-preview__app--img" style="background-image:url(/assets/games/2048.png)"></span>
                 
                 
                 
-                <span class="games-preview__app" style="background:#6c5ce7">俄</span>
+                <span class="games-preview__app games-preview__app--img" style="background-image:url(/assets/games/tetris.png)"></span>
                 
                 
                 
-                <span class="games-preview__app" style="background:#22a6b3">驾</span>
+                <span class="games-preview__app games-preview__app--img" style="background-image:url(/assets/games/topograph.png)"></span>
                 
                 
             </div>
@@ -357,79 +357,79 @@
         <div class="games-pop__title" id="games-pop-title">游戏</div>
         <div class="games-pop__grid" id="games-grid">
             
-            <a class="games-pop__app" data-url="https://arcxingye.github.io/zhsl/" data-name="召唤神龙" data-icon="" data-letter="龙" data-bg="#e6194b">
+            <a class="games-pop__app" data-url="https://arcxingye.github.io/zhsl/" data-name="召唤神龙" data-icon="/assets/games/zhsl.png" data-letter="龙" data-bg="#e6194b">
                 
-                <span class="games-pop__letter" style="background:#e6194b">龙</span>
+                <img src="/assets/games/zhsl.png" alt="召唤神龙" loading="lazy" onerror="this.outerHTML='<span class=&quot;games-pop__letter&quot; style=&quot;background:#e6194b&quot;>龙</span>'">
                 
                 <span>召唤神龙</span>
             </a>
             
-            <a class="games-pop__app" data-url="https://play2048.co/" data-name="2048" data-icon="" data-letter="2" data-bg="#edc22e">
+            <a class="games-pop__app" data-url="https://play2048.co/" data-name="2048" data-icon="/assets/games/2048.png" data-letter="2" data-bg="#edc22e">
                 
-                <span class="games-pop__letter" style="background:#edc22e">2</span>
+                <img src="/assets/games/2048.png" alt="2048" loading="lazy" onerror="this.outerHTML='<span class=&quot;games-pop__letter&quot; style=&quot;background:#edc22e&quot;>2</span>'">
                 
                 <span>2048</span>
             </a>
             
-            <a class="games-pop__app" data-url="https://chvin.github.io/react-tetris/" data-name="俄罗斯方块" data-icon="" data-letter="俄" data-bg="#6c5ce7">
+            <a class="games-pop__app" data-url="https://chvin.github.io/react-tetris/" data-name="俄罗斯方块" data-icon="/assets/games/tetris.png" data-letter="俄" data-bg="#6c5ce7">
                 
-                <span class="games-pop__letter" style="background:#6c5ce7">俄</span>
+                <img src="/assets/games/tetris.png" alt="俄罗斯方块" loading="lazy" onerror="this.outerHTML='<span class=&quot;games-pop__letter&quot; style=&quot;background:#6c5ce7&quot;>俄</span>'">
                 
                 <span>俄罗斯方块</span>
             </a>
             
-            <a class="games-pop__app" data-url="https://topograph.io/" data-name="无尽驾驶" data-icon="" data-letter="驾" data-bg="#22a6b3">
+            <a class="games-pop__app" data-url="https://topograph.io/" data-name="无尽驾驶" data-icon="/assets/games/topograph.png" data-letter="驾" data-bg="#22a6b3">
                 
-                <span class="games-pop__letter" style="background:#22a6b3">驾</span>
+                <img src="/assets/games/topograph.png" alt="无尽驾驶" loading="lazy" onerror="this.outerHTML='<span class=&quot;games-pop__letter&quot; style=&quot;background:#22a6b3&quot;>驾</span>'">
                 
                 <span>无尽驾驶</span>
             </a>
             
-            <a class="games-pop__app" data-url="https://ellisonleao.github.io/clumsy-bird/" data-name="Flappy 小鸟" data-icon="" data-letter="鸟" data-bg="#f0932b">
+            <a class="games-pop__app" data-url="https://ellisonleao.github.io/clumsy-bird/" data-name="Flappy 小鸟" data-icon="/assets/games/bird.png" data-letter="鸟" data-bg="#f0932b">
                 
-                <span class="games-pop__letter" style="background:#f0932b">鸟</span>
+                <img src="/assets/games/bird.png" alt="Flappy 小鸟" loading="lazy" onerror="this.outerHTML='<span class=&quot;games-pop__letter&quot; style=&quot;background:#f0932b&quot;>鸟</span>'">
                 
                 <span>Flappy 小鸟</span>
             </a>
             
-            <a class="games-pop__app" data-url="https://passer-by.com/pacman/" data-name="吃豆人" data-icon="" data-letter="吃" data-bg="#f7b731">
+            <a class="games-pop__app" data-url="https://passer-by.com/pacman/" data-name="吃豆人" data-icon="/assets/games/pacman.png" data-letter="吃" data-bg="#f7b731">
                 
-                <span class="games-pop__letter" style="background:#f7b731">吃</span>
+                <img src="/assets/games/pacman.png" alt="吃豆人" loading="lazy" onerror="this.outerHTML='<span class=&quot;games-pop__letter&quot; style=&quot;background:#f7b731&quot;>吃</span>'">
                 
                 <span>吃豆人</span>
             </a>
             
-            <a class="games-pop__app" data-url="https://iamkun.github.io/tower_game/" data-name="盖楼" data-icon="" data-letter="楼" data-bg="#f0932b">
+            <a class="games-pop__app" data-url="https://iamkun.github.io/tower_game/" data-name="盖楼" data-icon="/assets/games/tower.png" data-letter="楼" data-bg="#f0932b">
                 
-                <span class="games-pop__letter" style="background:#f0932b">楼</span>
+                <img src="/assets/games/tower.png" alt="盖楼" loading="lazy" onerror="this.outerHTML='<span class=&quot;games-pop__letter&quot; style=&quot;background:#f0932b&quot;>楼</span>'">
                 
                 <span>盖楼</span>
             </a>
             
-            <a class="games-pop__app" data-url="https://chromedino.com/" data-name="恐龙跳跳" data-icon="" data-letter="龙" data-bg="#607d8b">
+            <a class="games-pop__app" data-url="https://chromedino.com/" data-name="恐龙跳跳" data-icon="/assets/games/dino.png" data-letter="龙" data-bg="#607d8b">
                 
-                <span class="games-pop__letter" style="background:#607d8b">龙</span>
+                <img src="/assets/games/dino.png" alt="恐龙跳跳" loading="lazy" onerror="this.outerHTML='<span class=&quot;games-pop__letter&quot; style=&quot;background:#607d8b&quot;>龙</span>'">
                 
                 <span>恐龙跳跳</span>
             </a>
             
-            <a class="games-pop__app" data-url="https://hexgl.bkcore.com/play/" data-name="HexGL 赛车" data-icon="" data-letter="赛" data-bg="#e6194b">
+            <a class="games-pop__app" data-url="https://hexgl.bkcore.com/play/" data-name="HexGL 赛车" data-icon="/assets/games/hexgl.png" data-letter="赛" data-bg="#e6194b">
                 
-                <span class="games-pop__letter" style="background:#e6194b">赛</span>
+                <img src="/assets/games/hexgl.png" alt="HexGL 赛车" loading="lazy" onerror="this.outerHTML='<span class=&quot;games-pop__letter&quot; style=&quot;background:#e6194b&quot;>赛</span>'">
                 
                 <span>HexGL 赛车</span>
             </a>
             
-            <a class="games-pop__app" data-url="https://slither.io/" data-name="贪吃蛇大作战" data-icon="" data-letter="蛇" data-bg="#4cd964">
+            <a class="games-pop__app" data-url="https://slither.io/" data-name="贪吃蛇大作战" data-icon="/assets/games/slither.png" data-letter="蛇" data-bg="#4cd964">
                 
-                <span class="games-pop__letter" style="background:#4cd964">蛇</span>
+                <img src="/assets/games/slither.png" alt="贪吃蛇大作战" loading="lazy" onerror="this.outerHTML='<span class=&quot;games-pop__letter&quot; style=&quot;background:#4cd964&quot;>蛇</span>'">
                 
                 <span>贪吃蛇大作战</span>
             </a>
             
-            <a class="games-pop__app" data-url="https://wwwtyro.github.io/Astray/" data-name="3D 迷宫" data-icon="" data-letter="宫" data-bg="#6c5ce7">
+            <a class="games-pop__app" data-url="https://wwwtyro.github.io/Astray/" data-name="3D 迷宫" data-icon="/assets/games/astray.png" data-letter="宫" data-bg="#6c5ce7">
                 
-                <span class="games-pop__letter" style="background:#6c5ce7">宫</span>
+                <img src="/assets/games/astray.png" alt="3D 迷宫" loading="lazy" onerror="this.outerHTML='<span class=&quot;games-pop__letter&quot; style=&quot;background:#6c5ce7&quot;>宫</span>'">
                 
                 <span>3D 迷宫</span>
             </a>
@@ -1091,7 +1091,7 @@
         <div class="webinfo-item"><div class="item-name">运行时间 :</div><div class="item-count" id="site-uptime">—</div></div>
         <div class="webinfo-item"><div class="item-name">Unique Visitors :</div><div class="item-count" id="busuanzi_value_site_uv"><i class="fa-solid fa-spinner fa-spin"></i></div></div>
         <div class="webinfo-item"><div class="item-name">Page Views :</div><div class="item-count" id="busuanzi_value_site_pv"><i class="fa-solid fa-spinner fa-spin"></i></div></div>
-        <div class="webinfo-item"><div class="item-name">Last Update :</div><div class="item-count" id="last-push-date" data-lastPushDate="2026-08-30T00:36:14+08:00"><i class="fa-solid fa-spinner fa-spin"></i></div></div>
+        <div class="webinfo-item"><div class="item-name">Last Update :</div><div class="item-count" id="last-push-date" data-lastPushDate="2026-08-30T01:02:38+08:00"><i class="fa-solid fa-spinner fa-spin"></i></div></div>
     </div>
 </div>
 
@@ -1141,8 +1141,8 @@
 <div id="imageModal" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;z-index:1000;background-color:rgba(0,0,0,.8);cursor:pointer;">
     <img id="modalImage" style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);max-width:90vw;max-height:90vh;"/>
 </div>
-<script src="/js/utils.js?v=1788021374"></script>
-<script src="/js/main.js?v=1788021374"></script>
+<script src="/js/utils.js?v=1788022958"></script>
+<script src="/js/main.js?v=1788022958"></script>
 <script src="/assets/vendor/fancybox/fancybox.umd.min.js"></script>
 <script src="/assets/vendor/lazyload/lazyload.iife.min.js"></script>
 <div class="js-pjax"><script>
@@ -1171,8 +1171,8 @@ btf.addGlobalFn('pjaxSendOnce', () => { typed && typed.destroy(); }, 'typedDestr
 function subtitleType () { typedJSFn.processSubtitle(["打码改变世界","公众号：朱猪写作","保持热爱，奔赴山海"]); }
 typedJSFn.run(subtitleType);
 </script></div>
-<script src="/js/time-greeting.js?v=1788021374"></script>
-<script src="/js/header-glow.js?v=1788021374"></script>
+<script src="/js/time-greeting.js?v=1788022958"></script>
+<script src="/js/header-glow.js?v=1788022958"></script>
 <script async src="/assets/vendor/busuanzi/2.3/busuanzi.pure.mini.js"></script>
 <script>
 // Post Views（文章浏览次数）：
@@ -1271,7 +1271,7 @@ typedJSFn.run(subtitleType);
     }, 500);
 })();
 </script>
-<script src="/js/search/local-search.js?v=1788021374"></script>
+<script src="/js/search/local-search.js?v=1788022958"></script>
 <script>
 // 站点增强：阅读进度条 / Ctrl+K 搜索 / 随机一读 / 建站天数 / Service Worker
 (function () {
