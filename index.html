@@ -24,10 +24,10 @@
     <link rel="preconnect" href="//busuanzi.ibruce.info">
     <link rel="stylesheet" href="/assets/vendor/fontawesome/css/all.min.css">
     <link rel="stylesheet" href="/assets/css/butterfly.css">
-    <link rel="stylesheet" href="/css/header-glow.css?v=1788080237">
-    <link rel="stylesheet" href="/css/time-greeting.css?v=1788080237">
-    <link rel="stylesheet" href="/css/gh-projects.css?v=1788080237">
-    <link rel="stylesheet" href="/css/custom.css?v=1788080237">
+    <link rel="stylesheet" href="/css/header-glow.css?v=1788080930">
+    <link rel="stylesheet" href="/css/time-greeting.css?v=1788080930">
+    <link rel="stylesheet" href="/css/gh-projects.css?v=1788080930">
+    <link rel="stylesheet" href="/css/custom.css?v=1788080930">
     <link rel="manifest" href="/manifest.webmanifest">
     <link rel="stylesheet" href="/assets/vendor/fancybox/fancybox.min.css" media="print" onload="this.media='all'">
     
@@ -61,7 +61,7 @@
     window.GLOBAL_CONFIG = {
       root: '/',
       algolia: undefined,
-      localSearch: { "path": "/search.xml?v=1788080237", "preload": false, "top_n_per_article": 1, "unescape": false, "pagination": { "enable": false, "hitsPerPage": 8 }, "languages": { "hits_empty": "未找到包含 ${query} 的文章", "hits_stats": "找到 ${hits} 篇文章" } },
+      localSearch: { "path": "/search.xml?v=1788080930", "preload": false, "top_n_per_article": 1, "unescape": false, "pagination": { "enable": false, "hitsPerPage": 8 }, "languages": { "hits_empty": "未找到包含 ${query} 的文章", "hits_stats": "找到 ${hits} 篇文章" } },
       translate: undefined,
       highlight: { "plugin": "highlight.js", "highlightCopy": true, "highlightLang": true, "highlightHeightLimit": false, "highlightFullpage": false, "highlightMacStyle": false },
       copy: { success: '复制成功', error: '复制失败', noSupport: '浏览器不支持' },
@@ -212,6 +212,20 @@
             <div class="wp-thumb" id="wp-thumb"></div>
             <div class="wp-label" id="wp-name">壁纸</div>
         </div>
+        <div class="ios-widget ios-widget--tools" id="tools-widget" title="工具箱">
+            <div class="tools-preview">
+                
+                <span class="tools-preview__app" style="background:#ff9f0a"><i class="fas fa-calculator"></i></span>
+                
+                <span class="tools-preview__app" style="background:#ffd60a"><i class="fas fa-note-sticky"></i></span>
+                
+                <span class="tools-preview__app" style="background:#5856d6"><i class="fas fa-qrcode"></i></span>
+                
+                <span class="tools-preview__app" style="background:#30d158"><i class="far fa-clock"></i></span>
+                
+            </div>
+            <div class="tools-preview__label">工具</div>
+        </div>
     </div>
 
     <div class="ios-grid">
@@ -290,6 +304,10 @@
         <a class="ios-app" href="javascript:void(0)" id="dock-game" hidden>
             <span class="ios-app__icon ios-app__icon--img"><img id="dock-game-icon" src="" alt=""><span class="ios-app__letter" id="dock-game-letter" hidden></span></span>
             <span class="ios-app__label" id="dock-game-name">游戏</span>
+        </a>
+        <a class="ios-app" href="javascript:void(0)" id="dock-tool" hidden>
+            <span class="ios-app__icon" id="dock-tool-iconwrap"><i id="dock-tool-icon" class="fas fa-toolbox"></i></span>
+            <span class="ios-app__label" id="dock-tool-name">工具</span>
         </a>
         <a class="ios-app" href="#recent-posts">
             <span class="ios-app__icon"><i class="fa-solid fa-list"></i></span>
@@ -538,6 +556,115 @@
                 <button class="wp-rand-btn wp-rand-btn--ghost" data-mode="static" type="button"><i class="fas fa-rotate-left"></i> 恢复默认</button>
             </div>
             <div class="wp-pop__foot">动态壁纸来自免费公开 API · 必应每日自动更新，随机壁纸点击即换</div>
+        </div>
+    </div>
+</div>
+
+
+<div class="games-pop" id="tools-pop" hidden>
+    <div class="music-app__mask" id="tools-pop-mask"></div>
+    <div class="games-pop__window">
+        <button class="games-pop__close" id="tools-pop-close" title="关闭"><i class="fas fa-xmark"></i></button>
+        <div class="games-pop__title" id="tools-pop-title">工具箱</div>
+        <div class="tools-grid" id="tools-grid">
+            
+            <a class="tools-pop__app" data-tool="calc" data-name="计算器" data-icon="fas fa-calculator" data-bg="#ff9f0a">
+                <span class="tools-pop__icon" style="background:#ff9f0a"><i class="fas fa-calculator"></i></span>
+                <span>计算器</span>
+            </a>
+            
+            <a class="tools-pop__app" data-tool="note" data-name="便签" data-icon="fas fa-note-sticky" data-bg="#ffd60a">
+                <span class="tools-pop__icon" style="background:#ffd60a"><i class="fas fa-note-sticky"></i></span>
+                <span>便签</span>
+            </a>
+            
+            <a class="tools-pop__app" data-tool="qr" data-name="二维码" data-icon="fas fa-qrcode" data-bg="#5856d6">
+                <span class="tools-pop__icon" style="background:#5856d6"><i class="fas fa-qrcode"></i></span>
+                <span>二维码</span>
+            </a>
+            
+            <a class="tools-pop__app" data-tool="ts" data-name="时间戳" data-icon="far fa-clock" data-bg="#30d158">
+                <span class="tools-pop__icon" style="background:#30d158"><i class="far fa-clock"></i></span>
+                <span>时间戳</span>
+            </a>
+            
+            <a class="tools-pop__app" data-tool="stats" data-name="文本统计" data-icon="fas fa-file-lines" data-bg="#ff375f">
+                <span class="tools-pop__icon" style="background:#ff375f"><i class="fas fa-file-lines"></i></span>
+                <span>文本统计</span>
+            </a>
+            
+            <a class="tools-pop__app" data-tool="json" data-name="JSON 工具" data-icon="fas fa-code" data-bg="#64d2ff">
+                <span class="tools-pop__icon" style="background:#64d2ff"><i class="fas fa-code"></i></span>
+                <span>JSON 工具</span>
+            </a>
+            
+        </div>
+        <div class="tools-stage" id="tools-stage" hidden>
+            <button class="games-pop__back" id="tools-back" title="返回工具列表"><i class="fas fa-chevron-left"></i></button>
+            <div class="tool-pane" id="tool-calc" hidden>
+                <div class="calc">
+                    <div class="calc-display" id="calc-display">0</div>
+                    <div class="calc-grid" id="calc-grid">
+                        <button class="calc-btn calc-btn--fn" data-k="c" type="button">C</button>
+                        <button class="calc-btn calc-btn--fn" data-k="neg" type="button">±</button>
+                        <button class="calc-btn calc-btn--fn" data-k="pct" type="button">%</button>
+                        <button class="calc-btn calc-btn--op" data-k="op:÷" type="button">÷</button>
+                        <button class="calc-btn" data-k="d:7" type="button">7</button>
+                        <button class="calc-btn" data-k="d:8" type="button">8</button>
+                        <button class="calc-btn" data-k="d:9" type="button">9</button>
+                        <button class="calc-btn calc-btn--op" data-k="op:×" type="button">×</button>
+                        <button class="calc-btn" data-k="d:4" type="button">4</button>
+                        <button class="calc-btn" data-k="d:5" type="button">5</button>
+                        <button class="calc-btn" data-k="d:6" type="button">6</button>
+                        <button class="calc-btn calc-btn--op" data-k="op:−" type="button">−</button>
+                        <button class="calc-btn" data-k="d:1" type="button">1</button>
+                        <button class="calc-btn" data-k="d:2" type="button">2</button>
+                        <button class="calc-btn" data-k="d:3" type="button">3</button>
+                        <button class="calc-btn calc-btn--op" data-k="op:+" type="button">+</button>
+                        <button class="calc-btn calc-btn--zero" data-k="d:0" type="button">0</button>
+                        <button class="calc-btn" data-k="d:." type="button">.</button>
+                        <button class="calc-btn calc-btn--op" data-k="eq" type="button">=</button>
+                    </div>
+                </div>
+            </div>
+            <div class="tool-pane" id="tool-note" hidden>
+                <textarea class="tool-input tool-note" id="tool-note-text" placeholder="随手记点什么…自动保存在这台设备上"></textarea>
+                <div class="tool-row"><span class="tool-hint" id="tool-note-status">—</span></div>
+            </div>
+            <div class="tool-pane" id="tool-qr" hidden>
+                <div class="tool-row">
+                    <input class="tool-input" id="tool-qr-text" style="flex:1" placeholder="输入文字或链接，生成二维码">
+                    <button class="tool-btn" id="tool-qr-btn" type="button">生成</button>
+                </div>
+                <div class="tool-qr-wrap" id="tool-qr-imgwrap"><span class="tool-hint">生成的二维码会显示在这里</span></div>
+            </div>
+            <div class="tool-pane" id="tool-ts" hidden>
+                <div class="tool-row"><button class="tool-btn tool-btn--ghost" id="tool-ts-now" type="button"><i class="far fa-clock"></i> 取当前时间</button></div>
+                <div class="tool-row"><span class="tool-label">时间戳</span><input class="tool-input" id="tool-ts-in" style="flex:1" placeholder="秒或毫秒，如 1693392000"></div>
+                <div class="tool-row"><span class="tool-label">对应日期</span><span class="tool-hint" id="tool-ts-out">—</span></div>
+                <div class="tool-row"><span class="tool-label">日期时间</span><input class="tool-input" id="tool-ts-date" style="flex:1" type="datetime-local"></div>
+                <div class="tool-row"><span class="tool-label">对应戳</span><span class="tool-hint" id="tool-ts-out2">—</span></div>
+            </div>
+            <div class="tool-pane" id="tool-stats" hidden>
+                <textarea class="tool-input tool-note" id="tool-stats-text" style="height:150px" placeholder="粘贴文本，实时统计"></textarea>
+                <div class="tool-stat">
+                    <div class="tool-stat__item"><b id="st-chars">0</b><span>总字符</span></div>
+                    <div class="tool-stat__item"><b id="st-nospace">0</b><span>不含空格</span></div>
+                    <div class="tool-stat__item"><b id="st-words">0</b><span>英文单词</span></div>
+                    <div class="tool-stat__item"><b id="st-cjk">0</b><span>中文汉字</span></div>
+                    <div class="tool-stat__item"><b id="st-lines">1</b><span>行数</span></div>
+                    <div class="tool-stat__item"><b id="st-bytes">0</b><span>UTF-8 字节</span></div>
+                </div>
+            </div>
+            <div class="tool-pane" id="tool-json" hidden>
+                <textarea class="tool-input tool-note" id="tool-json-text" style="height:140px" placeholder='粘贴 JSON，如 {"a":1}'></textarea>
+                <div class="tool-row">
+                    <button class="tool-btn" id="tool-json-fmt" type="button">格式化</button>
+                    <button class="tool-btn tool-btn--ghost" id="tool-json-min" type="button">压缩</button>
+                    <button class="tool-btn tool-btn--ghost" id="tool-json-copy" type="button">复制结果</button>
+                </div>
+                <pre class="tool-out" id="tool-json-out">结果会显示在这里</pre>
+            </div>
         </div>
     </div>
 </div>
@@ -1014,7 +1141,8 @@
         if (widget) widget.addEventListener('click', openPop);
     })();
 </script>
-<script src="/js/ios-wallpaper.js?v=1788080237" defer></script>
+<script src="/js/ios-wallpaper.js?v=1788080930" defer></script>
+<script src="/js/ios-tools.js?v=1788080930" defer></script>
 
 <div class="aside-content" id="aside-content">
     <div class="card-widget card-info text-center">
@@ -1192,7 +1320,7 @@
         <div class="webinfo-item"><div class="item-name">运行时间 :</div><div class="item-count" id="site-uptime">—</div></div>
         <div class="webinfo-item"><div class="item-name">Unique Visitors :</div><div class="item-count" id="busuanzi_value_site_uv"><i class="fa-solid fa-spinner fa-spin"></i></div></div>
         <div class="webinfo-item"><div class="item-name">Page Views :</div><div class="item-count" id="busuanzi_value_site_pv"><i class="fa-solid fa-spinner fa-spin"></i></div></div>
-        <div class="webinfo-item"><div class="item-name">Last Update :</div><div class="item-count" id="last-push-date" data-lastPushDate="2026-08-30T16:57:17+08:00"><i class="fa-solid fa-spinner fa-spin"></i></div></div>
+        <div class="webinfo-item"><div class="item-name">Last Update :</div><div class="item-count" id="last-push-date" data-lastPushDate="2026-08-30T17:08:50+08:00"><i class="fa-solid fa-spinner fa-spin"></i></div></div>
     </div>
 </div>
 
@@ -1242,8 +1370,8 @@
 <div id="imageModal" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;z-index:1000;background-color:rgba(0,0,0,.8);cursor:pointer;">
     <img id="modalImage" style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);max-width:90vw;max-height:90vh;"/>
 </div>
-<script src="/js/utils.js?v=1788080237"></script>
-<script src="/js/main.js?v=1788080237"></script>
+<script src="/js/utils.js?v=1788080930"></script>
+<script src="/js/main.js?v=1788080930"></script>
 <script src="/assets/vendor/fancybox/fancybox.umd.min.js"></script>
 <script src="/assets/vendor/lazyload/lazyload.iife.min.js"></script>
 <div class="js-pjax"><script>
@@ -1272,8 +1400,8 @@ btf.addGlobalFn('pjaxSendOnce', () => { typed && typed.destroy(); }, 'typedDestr
 function subtitleType () { typedJSFn.processSubtitle(["打码改变世界","公众号：朱猪写作","保持热爱，奔赴山海"]); }
 typedJSFn.run(subtitleType);
 </script></div>
-<script src="/js/time-greeting.js?v=1788080237"></script>
-<script src="/js/header-glow.js?v=1788080237"></script>
+<script src="/js/time-greeting.js?v=1788080930"></script>
+<script src="/js/header-glow.js?v=1788080930"></script>
 <script async src="/assets/vendor/busuanzi/2.3/busuanzi.pure.mini.js"></script>
 <script>
 // Post Views（文章浏览次数）：
@@ -1372,7 +1500,7 @@ typedJSFn.run(subtitleType);
     }, 500);
 })();
 </script>
-<script src="/js/search/local-search.js?v=1788080237"></script>
+<script src="/js/search/local-search.js?v=1788080930"></script>
 <script>
 // 站点增强：阅读进度条 / Ctrl+K 搜索 / 随机一读 / 建站天数 / Service Worker
 (function () {
