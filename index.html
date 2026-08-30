@@ -24,10 +24,10 @@
     <link rel="preconnect" href="//busuanzi.ibruce.info">
     <link rel="stylesheet" href="/assets/vendor/fontawesome/css/all.min.css">
     <link rel="stylesheet" href="/assets/css/butterfly.css">
-    <link rel="stylesheet" href="/css/header-glow.css?v=1788080930">
-    <link rel="stylesheet" href="/css/time-greeting.css?v=1788080930">
-    <link rel="stylesheet" href="/css/gh-projects.css?v=1788080930">
-    <link rel="stylesheet" href="/css/custom.css?v=1788080930">
+    <link rel="stylesheet" href="/css/header-glow.css?v=1788082326">
+    <link rel="stylesheet" href="/css/time-greeting.css?v=1788082326">
+    <link rel="stylesheet" href="/css/gh-projects.css?v=1788082326">
+    <link rel="stylesheet" href="/css/custom.css?v=1788082326">
     <link rel="manifest" href="/manifest.webmanifest">
     <link rel="stylesheet" href="/assets/vendor/fancybox/fancybox.min.css" media="print" onload="this.media='all'">
     
@@ -61,7 +61,7 @@
     window.GLOBAL_CONFIG = {
       root: '/',
       algolia: undefined,
-      localSearch: { "path": "/search.xml?v=1788080930", "preload": false, "top_n_per_article": 1, "unescape": false, "pagination": { "enable": false, "hitsPerPage": 8 }, "languages": { "hits_empty": "未找到包含 ${query} 的文章", "hits_stats": "找到 ${hits} 篇文章" } },
+      localSearch: { "path": "/search.xml?v=1788082326", "preload": false, "top_n_per_article": 1, "unescape": false, "pagination": { "enable": false, "hitsPerPage": 8 }, "languages": { "hits_empty": "未找到包含 ${query} 的文章", "hits_stats": "找到 ${hits} 篇文章" } },
       translate: undefined,
       highlight: { "plugin": "highlight.js", "highlightCopy": true, "highlightLang": true, "highlightHeightLimit": false, "highlightFullpage": false, "highlightMacStyle": false },
       copy: { success: '复制成功', error: '复制失败', noSupport: '浏览器不支持' },
@@ -369,10 +369,18 @@
             </div>
             <span class="music-player__time" id="mp-time">00:00 / 00:00</span>
             <div class="music-player__ctrl">
+                <button id="mp-lyric" title="歌词"><i class="fas fa-closed-captioning"></i></button>
                 <button id="mp-prev" title="上一首"><i class="fas fa-backward-step"></i></button>
                 <button id="mp-play" class="is-play" title="播放/暂停"><i class="fas fa-play"></i></button>
                 <button id="mp-next" title="下一首"><i class="fas fa-forward-step"></i></button>
             </div>
+        </div>
+        <div class="music-lyrics" id="music-lyrics" hidden>
+            <div class="music-lyrics__head">
+                <span id="lyric-song">—</span>
+                <button id="lyric-close" title="收起歌词"><i class="fas fa-chevron-down"></i></button>
+            </div>
+            <div class="music-lyrics__list" id="lyric-list"><div class="music-loading">点播放条上的「字幕」按钮看滚动歌词</div></div>
         </div>
     </div>
 </div>
@@ -598,6 +606,36 @@
                 <span>JSON 工具</span>
             </a>
             
+            <a class="tools-pop__app" data-tool="unit" data-name="单位换算" data-icon="fas fa-ruler-combined" data-bg="#00c7be">
+                <span class="tools-pop__icon" style="background:#00c7be"><i class="fas fa-ruler-combined"></i></span>
+                <span>单位换算</span>
+            </a>
+            
+            <a class="tools-pop__app" data-tool="base" data-name="进制转换" data-icon="fas fa-hashtag" data-bg="#bf5af2">
+                <span class="tools-pop__icon" style="background:#bf5af2"><i class="fas fa-hashtag"></i></span>
+                <span>进制转换</span>
+            </a>
+            
+            <a class="tools-pop__app" data-tool="color" data-name="颜色转换" data-icon="fas fa-droplet" data-bg="#0a84ff">
+                <span class="tools-pop__icon" style="background:#0a84ff"><i class="fas fa-droplet"></i></span>
+                <span>颜色转换</span>
+            </a>
+            
+            <a class="tools-pop__app" data-tool="re" data-name="正则测试" data-icon="fas fa-asterisk" data-bg="#ff453a">
+                <span class="tools-pop__icon" style="background:#ff453a"><i class="fas fa-asterisk"></i></span>
+                <span>正则测试</span>
+            </a>
+            
+            <a class="tools-pop__app" data-tool="b64" data-name="Base64" data-icon="fas fa-key" data-bg="#a2845e">
+                <span class="tools-pop__icon" style="background:#a2845e"><i class="fas fa-key"></i></span>
+                <span>Base64</span>
+            </a>
+            
+            <a class="tools-pop__app" data-tool="pomo" data-name="番茄钟" data-icon="fas fa-stopwatch" data-bg="#ff6347">
+                <span class="tools-pop__icon" style="background:#ff6347"><i class="fas fa-stopwatch"></i></span>
+                <span>番茄钟</span>
+            </a>
+            
         </div>
         <div class="tools-stage" id="tools-stage" hidden>
             <button class="games-pop__back" id="tools-back" title="返回工具列表"><i class="fas fa-chevron-left"></i></button>
@@ -664,6 +702,84 @@
                     <button class="tool-btn tool-btn--ghost" id="tool-json-copy" type="button">复制结果</button>
                 </div>
                 <pre class="tool-out" id="tool-json-out">结果会显示在这里</pre>
+            </div>
+            <div class="tool-pane" id="tool-unit" hidden>
+                <div class="tool-row"><select class="tool-input" id="unit-cat" style="flex:1"></select></div>
+                <div class="tool-row">
+                    <input class="tool-input" id="unit-in" style="flex:1" type="number" value="1" step="any">
+                    <select class="tool-input" id="unit-from" style="flex:1"></select>
+                </div>
+                <div class="tool-row">
+                    <span class="tool-label">结果</span>
+                    <input class="tool-input" id="unit-out" style="flex:1" readonly>
+                    <select class="tool-input" id="unit-to" style="flex:1"></select>
+                </div>
+                <div class="tool-row"><span class="tool-hint">支持长度 / 重量 / 温度 / 数据大小</span></div>
+            </div>
+            <div class="tool-pane" id="tool-base" hidden>
+                <div class="tool-row">
+                    <select class="tool-input" id="base-from" style="width:118px">
+                        <option value="2">二进制</option>
+                        <option value="8">八进制</option>
+                        <option value="10" selected>十进制</option>
+                        <option value="16">十六进制</option>
+                    </select>
+                    <input class="tool-input" id="base-in" style="flex:1" placeholder="输入整数，如 255">
+                </div>
+                <div class="tool-stat">
+                    <div class="tool-stat__item"><b id="base-2">—</b><span>二进制</span></div>
+                    <div class="tool-stat__item"><b id="base-8">—</b><span>八进制</span></div>
+                    <div class="tool-stat__item"><b id="base-10">—</b><span>十进制</span></div>
+                    <div class="tool-stat__item"><b id="base-16">—</b><span>十六进制</span></div>
+                </div>
+                <div class="tool-row"><span class="tool-hint">仅支持整数，支持负数（- 前缀）</span></div>
+            </div>
+            <div class="tool-pane" id="tool-color" hidden>
+                <div class="tool-row">
+                    <input class="tool-input" id="color-in" style="flex:1" placeholder="#49b1f5 或 rgb(73,177,245)">
+                    <span class="color-swatch" id="color-swatch"></span>
+                </div>
+                <div class="tool-stat">
+                    <div class="tool-stat__item"><b id="color-hex">—</b><span>HEX</span></div>
+                    <div class="tool-stat__item"><b id="color-rgb">—</b><span>RGB</span></div>
+                    <div class="tool-stat__item"><b id="color-hsl">—</b><span>HSL</span></div>
+                </div>
+                <div class="tool-row"><span class="tool-hint">支持 #abc / #aabbcc / rgb() / rgba()，点击结果复制</span></div>
+            </div>
+            <div class="tool-pane" id="tool-re" hidden>
+                <div class="tool-row">
+                    <input class="tool-input" id="re-pat" style="flex:1" placeholder="正则表达式，如 \d+">
+                    <input class="tool-input" id="re-flags" style="width:76px" value="g" placeholder="标志">
+                </div>
+                <textarea class="tool-input tool-note" id="re-text" style="height:110px" placeholder="粘贴测试文本"></textarea>
+                <div class="tool-row"><span class="tool-hint" id="re-count">—</span></div>
+                <pre class="tool-out" id="re-hl">匹配结果高亮显示在这里</pre>
+            </div>
+            <div class="tool-pane" id="tool-b64" hidden>
+                <textarea class="tool-input tool-note" id="b64-in" style="height:104px" placeholder="输入要编码的文本，或要解码的 Base64"></textarea>
+                <div class="tool-row">
+                    <button class="tool-btn" id="b64-enc" type="button">编码 →</button>
+                    <button class="tool-btn" id="b64-dec" type="button">← 解码</button>
+                    <button class="tool-btn tool-btn--ghost" id="b64-copy" type="button">复制结果</button>
+                </div>
+                <textarea class="tool-input tool-note" id="b64-out" style="height:104px" readonly placeholder="结果"></textarea>
+            </div>
+            <div class="tool-pane" id="tool-pomo" hidden>
+                <div class="pomo">
+                    <div class="pomo-time" id="pomo-time">25:00</div>
+                    <div class="tool-hint" id="pomo-mode">专注 25 分钟，开始后别分心</div>
+                    <div class="tool-row" style="justify-content:center">
+                        <button class="tool-btn tool-btn--ghost" data-min="25" type="button">专注 25</button>
+                        <button class="tool-btn tool-btn--ghost" data-min="5" type="button">休息 5</button>
+                        <button class="tool-btn tool-btn--ghost" data-min="10" type="button">10 分钟</button>
+                        <button class="tool-btn tool-btn--ghost" data-min="1" type="button">1 分钟</button>
+                    </div>
+                    <div class="tool-row" style="justify-content:center">
+                        <button class="tool-btn" id="pomo-start" type="button">开始</button>
+                        <button class="tool-btn tool-btn--ghost" id="pomo-reset" type="button">重置</button>
+                    </div>
+                    <div class="tool-hint" id="pomo-done">今天已完成 0 个番茄 🍅</div>
+                </div>
             </div>
         </div>
     </div>
@@ -832,6 +948,81 @@
         var audio = new Audio();
         audio.preload = 'none';
 
+        // ---------- 滚动歌词（Meting API 每首歌带 lrc 直链） ----------
+        var lyrBtn = $('mp-lyric'), lyrPanel = $('music-lyrics'),
+            lyrList = $('lyric-list'), lyrSong = $('lyric-song'), lyrClose = $('lyric-close');
+        var lrcCache = {}, lrcLines = [], lrcIdx = -1, lrcKey = '';
+        function parseLrc(text) {
+            var out = [];
+            String(text || '').split(/\r?\n/).forEach(function (line) {
+                var stamps = line.match(/\[\d{1,2}:\d{2}(?:[.:]\d{1,3})?\]/g);
+                if (!stamps) return;
+                var txt = line.replace(/\[[^\]]*\]/g, '').trim();
+                if (!txt) return;
+                stamps.forEach(function (s) {
+                    var m = s.match(/\[(\d{1,2}):(\d{2})(?:[.:](\d{1,3}))?\]/);
+                    var t = (+m[1]) * 60 + (+m[2]) + (m[3] ? +('0.' + m[3]) : 0);
+                    out.push({ t: t, x: txt });
+                });
+            });
+            return out.sort(function (a, b) { return a.t - b.t });
+        }
+        function renderLrc(lines) {
+            lrcLines = lines; lrcIdx = -1;
+            lyrList.textContent = '';
+            if (!lines.length) { lyrList.innerHTML = '<div class="music-loading">暂无歌词，纯音乐请欣赏</div>'; return; }
+            var frag = document.createDocumentFragment();
+            lines.forEach(function (L) {
+                var d = document.createElement('div');
+                d.className = 'lrc-line';
+                d.textContent = L.x;
+                d.setAttribute('data-t', L.t);
+                frag.appendChild(d);
+            });
+            lyrList.appendChild(frag);
+            lrcSync();
+        }
+        function loadLyrics(t) {
+            var key = trackId(t);
+            lyrSong.textContent = t.name + ' · ' + t.artist;
+            if (lrcKey === key && lrcLines.length) { lrcSync(); return; }
+            lrcKey = key; lrcLines = []; lrcIdx = -1;
+            if (!t.lrc) { lyrList.innerHTML = '<div class="music-loading">暂无歌词</div>'; return; }
+            lyrList.innerHTML = '<div class="music-loading">歌词加载中…</div>';
+            if (lrcCache[key]) { renderLrc(lrcCache[key]); return; }
+            fetch(t.lrc).then(function (r) { return r.ok ? r.text() : ''; }).then(function (txt) {
+                var lines = parseLrc(txt);
+                lrcCache[key] = lines;
+                if (lrcKey === key) renderLrc(lines);
+            }).catch(function () {
+                if (lrcKey === key) lyrList.innerHTML = '<div class="music-loading">歌词加载失败</div>';
+            });
+        }
+        function lrcSync() {
+            var t = audio.currentTime || 0, i = 0;
+            while (i < lrcLines.length && lrcLines[i].t <= t) i++;
+            i = i - 1;
+            if (i === lrcIdx) return;
+            lrcIdx = i;
+            var rows = lyrList.children;
+            for (var k = 0; k < rows.length; k++) rows[k].classList.toggle('active', k === i);
+            if (i >= 0 && rows[i]) {
+                var target = rows[i].offsetTop - lyrList.clientHeight / 2 + rows[i].clientHeight / 2;
+                lyrList.scrollTop = Math.max(0, target);
+            }
+        }
+        lyrBtn.addEventListener('click', function () {
+            lyrPanel.hidden = !lyrPanel.hidden;
+            if (!lyrPanel.hidden && queue[cur]) loadLyrics(queue[cur]);
+        });
+        lyrClose.addEventListener('click', function () { lyrPanel.hidden = true; });
+        lyrList.addEventListener('click', function (e) {
+            var line = e.target.closest('.lrc-line');
+            if (!line || !audio.duration) return;
+            var t = parseFloat(line.getAttribute('data-t'));
+            if (isFinite(t)) { audio.currentTime = t; if (!playing) togglePlay(); }
+        });
+
         function esc(s) { return String(s == null ? '' : s).replace(/</g, '&lt;') }
         function trackId(t) { var m = (t.url || '').match(/id=(\d+)/); return m ? m[1] : t.name }
         function readLS(k, d) { try { return JSON.parse(localStorage.getItem(k)) || d } catch (e) { return d } }
@@ -863,6 +1054,7 @@
             app.bar.style.width = '0%';
             app.time.textContent = '00:00 / 00:00';
             updateFavIcon(t);
+            if (!lyrPanel.hidden) loadLyrics(t);
             highlight();
         }
         function saveRecent(t) {
@@ -1060,6 +1252,7 @@
             widget.bar.style.width = p;
             app.bar.style.width = p;
             app.time.textContent = pad2(audio.currentTime / 60) + ':' + pad2(audio.currentTime % 60) + ' / ' + pad2(audio.duration / 60) + ':' + pad2(audio.duration % 60);
+            if (!lyrPanel.hidden) lrcSync();
         });
         app.progress.addEventListener('click', function (e) {
             if (!audio.duration) return;
@@ -1141,8 +1334,8 @@
         if (widget) widget.addEventListener('click', openPop);
     })();
 </script>
-<script src="/js/ios-wallpaper.js?v=1788080930" defer></script>
-<script src="/js/ios-tools.js?v=1788080930" defer></script>
+<script src="/js/ios-wallpaper.js?v=1788082326" defer></script>
+<script src="/js/ios-tools.js?v=1788082326" defer></script>
 
 <div class="aside-content" id="aside-content">
     <div class="card-widget card-info text-center">
@@ -1320,7 +1513,7 @@
         <div class="webinfo-item"><div class="item-name">运行时间 :</div><div class="item-count" id="site-uptime">—</div></div>
         <div class="webinfo-item"><div class="item-name">Unique Visitors :</div><div class="item-count" id="busuanzi_value_site_uv"><i class="fa-solid fa-spinner fa-spin"></i></div></div>
         <div class="webinfo-item"><div class="item-name">Page Views :</div><div class="item-count" id="busuanzi_value_site_pv"><i class="fa-solid fa-spinner fa-spin"></i></div></div>
-        <div class="webinfo-item"><div class="item-name">Last Update :</div><div class="item-count" id="last-push-date" data-lastPushDate="2026-08-30T17:08:50+08:00"><i class="fa-solid fa-spinner fa-spin"></i></div></div>
+        <div class="webinfo-item"><div class="item-name">Last Update :</div><div class="item-count" id="last-push-date" data-lastPushDate="2026-08-30T17:32:06+08:00"><i class="fa-solid fa-spinner fa-spin"></i></div></div>
     </div>
 </div>
 
@@ -1370,8 +1563,8 @@
 <div id="imageModal" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;z-index:1000;background-color:rgba(0,0,0,.8);cursor:pointer;">
     <img id="modalImage" style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);max-width:90vw;max-height:90vh;"/>
 </div>
-<script src="/js/utils.js?v=1788080930"></script>
-<script src="/js/main.js?v=1788080930"></script>
+<script src="/js/utils.js?v=1788082326"></script>
+<script src="/js/main.js?v=1788082326"></script>
 <script src="/assets/vendor/fancybox/fancybox.umd.min.js"></script>
 <script src="/assets/vendor/lazyload/lazyload.iife.min.js"></script>
 <div class="js-pjax"><script>
@@ -1400,8 +1593,8 @@ btf.addGlobalFn('pjaxSendOnce', () => { typed && typed.destroy(); }, 'typedDestr
 function subtitleType () { typedJSFn.processSubtitle(["打码改变世界","公众号：朱猪写作","保持热爱，奔赴山海"]); }
 typedJSFn.run(subtitleType);
 </script></div>
-<script src="/js/time-greeting.js?v=1788080930"></script>
-<script src="/js/header-glow.js?v=1788080930"></script>
+<script src="/js/time-greeting.js?v=1788082326"></script>
+<script src="/js/header-glow.js?v=1788082326"></script>
 <script async src="/assets/vendor/busuanzi/2.3/busuanzi.pure.mini.js"></script>
 <script>
 // Post Views（文章浏览次数）：
@@ -1500,7 +1693,7 @@ typedJSFn.run(subtitleType);
     }, 500);
 })();
 </script>
-<script src="/js/search/local-search.js?v=1788080930"></script>
+<script src="/js/search/local-search.js?v=1788082326"></script>
 <script>
 // 站点增强：阅读进度条 / Ctrl+K 搜索 / 随机一读 / 建站天数 / Service Worker
 (function () {

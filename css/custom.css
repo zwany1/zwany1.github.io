@@ -1412,3 +1412,96 @@ body.home #pagination { max-width: 1100px; margin: 0 auto; }
   .tool-stat { grid-template-columns: repeat(2, 1fr); }
   .tools-stage { padding: 52px 14px 16px; }
 }
+
+/* ---------- 音乐 App 滚动歌词 ---------- */
+.music-lyrics {
+  position: absolute;
+  left: 14px;
+  right: 14px;
+  bottom: 86px;
+  max-height: 46%;
+  display: flex;
+  flex-direction: column;
+  background: rgba(18, 26, 38, .82);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, .12);
+  box-shadow: 0 18px 44px rgba(0, 0, 0, .4);
+  overflow: hidden;
+  z-index: 5;
+}
+.music-lyrics[hidden] { display: none; }
+.music-lyrics__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 10px 14px;
+  color: #e6edf3;
+  font-size: .86rem;
+  border-bottom: 1px solid rgba(255, 255, 255, .08);
+}
+.music-lyrics__head span { min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.music-lyrics__head button {
+  flex: none;
+  width: 26px;
+  height: 26px;
+  border: none;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, .1);
+  color: #cfd8e3;
+  font-size: .8rem;
+  cursor: pointer;
+  transition: background .2s;
+}
+.music-lyrics__head button:hover { background: rgba(255, 255, 255, .22); }
+.music-lyrics__list {
+  flex: 1;
+  overflow-y: auto;
+  padding: 14px 18px 24px;
+  text-align: center;
+  scroll-behavior: smooth;
+  -webkit-mask-image: linear-gradient(transparent, #000 12%, #000 88%, transparent);
+  mask-image: linear-gradient(transparent, #000 12%, #000 88%, transparent);
+}
+.lrc-line {
+  padding: 7px 0;
+  color: rgba(230, 237, 243, .45);
+  font-size: .92rem;
+  line-height: 1.5;
+  transition: color .3s, font-size .3s;
+  cursor: pointer;
+}
+.lrc-line:hover { color: rgba(230, 237, 243, .78); }
+.lrc-line.active { color: #fff; font-weight: 700; font-size: 1.06rem; }
+
+/* ---------- 工具箱补充：颜色块 / 番茄钟 ---------- */
+.color-swatch {
+  flex: none;
+  width: 42px;
+  height: 42px;
+  border-radius: 10px;
+  border: 1px solid rgba(31, 45, 61, .2);
+  background: transparent;
+  box-shadow: inset 0 0 0 3px rgba(255, 255, 255, .55);
+}
+[data-theme=dark] .color-swatch { border-color: rgba(255, 255, 255, .25); }
+select.tool-input { appearance: auto; cursor: pointer; }
+.tool-stat__item b { word-break: break-all; }
+.pomo { text-align: center; padding: 6px 0; }
+.pomo-time {
+  font-size: 3.2rem;
+  font-weight: 200;
+  font-variant-numeric: tabular-nums;
+  color: #1f2d3d;
+  line-height: 1.2;
+  letter-spacing: 2px;
+}
+[data-theme=dark] .pomo-time { color: #d8e2ec; }
+.tool-out mark {
+  background: #ffd60a;
+  color: #000;
+  border-radius: 3px;
+  padding: 0 1px;
+}
