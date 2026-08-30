@@ -24,10 +24,10 @@
     <link rel="preconnect" href="//busuanzi.ibruce.info">
     <link rel="stylesheet" href="/assets/vendor/fontawesome/css/all.min.css">
     <link rel="stylesheet" href="/assets/css/butterfly.css">
-    <link rel="stylesheet" href="/css/header-glow.css?v=1788074621">
-    <link rel="stylesheet" href="/css/time-greeting.css?v=1788074621">
-    <link rel="stylesheet" href="/css/gh-projects.css?v=1788074621">
-    <link rel="stylesheet" href="/css/custom.css?v=1788074621">
+    <link rel="stylesheet" href="/css/header-glow.css?v=1788080237">
+    <link rel="stylesheet" href="/css/time-greeting.css?v=1788080237">
+    <link rel="stylesheet" href="/css/gh-projects.css?v=1788080237">
+    <link rel="stylesheet" href="/css/custom.css?v=1788080237">
     <link rel="manifest" href="/manifest.webmanifest">
     <link rel="stylesheet" href="/assets/vendor/fancybox/fancybox.min.css" media="print" onload="this.media='all'">
     
@@ -61,7 +61,7 @@
     window.GLOBAL_CONFIG = {
       root: '/',
       algolia: undefined,
-      localSearch: { "path": "/search.xml?v=1788074621", "preload": false, "top_n_per_article": 1, "unescape": false, "pagination": { "enable": false, "hitsPerPage": 8 }, "languages": { "hits_empty": "未找到包含 ${query} 的文章", "hits_stats": "找到 ${hits} 篇文章" } },
+      localSearch: { "path": "/search.xml?v=1788080237", "preload": false, "top_n_per_article": 1, "unescape": false, "pagination": { "enable": false, "hitsPerPage": 8 }, "languages": { "hits_empty": "未找到包含 ${query} 的文章", "hits_stats": "找到 ${hits} 篇文章" } },
       translate: undefined,
       highlight: { "plugin": "highlight.js", "highlightCopy": true, "highlightLang": true, "highlightHeightLimit": false, "highlightFullpage": false, "highlightMacStyle": false },
       copy: { success: '复制成功', error: '复制失败', noSupport: '浏览器不支持' },
@@ -150,6 +150,8 @@
 
 
 <section class="ios-desktop" id="ios-desktop">
+    
+    <div class="ios-wallpaper" id="ios-wallpaper" aria-hidden="true"></div>
     <div class="ios-statusbar">
         <span id="ios-clock">--:--</span>
         <span class="ios-statusbar__right">
@@ -205,6 +207,10 @@
                 
             </div>
             <div class="games-preview__label">游戏</div>
+        </div>
+        <div class="ios-widget ios-widget--wallpaper" id="wp-widget" title="更换壁纸">
+            <div class="wp-thumb" id="wp-thumb"></div>
+            <div class="wp-label" id="wp-name">壁纸</div>
         </div>
     </div>
 
@@ -512,6 +518,26 @@
         <div class="games-pop__stage" id="games-stage" hidden>
             <button class="games-pop__back" id="games-back" title="返回游戏列表"><i class="fas fa-chevron-left"></i></button>
             <iframe id="games-frame" allow="autoplay; fullscreen; gamepad" referrerpolicy="no-referrer"></iframe>
+        </div>
+    </div>
+</div>
+
+
+<div class="games-pop" id="wp-pop" hidden>
+    <div class="music-app__mask" id="wp-pop-mask"></div>
+    <div class="games-pop__window wp-pop__window">
+        <button class="games-pop__close" id="wp-pop-close" title="关闭"><i class="fas fa-xmark"></i></button>
+        <div class="games-pop__title">更换壁纸</div>
+        <div class="wp-pop__body">
+            <div class="wp-pop__sec"><i class="fas fa-image"></i> 必应每日一图 · 最近 7 天</div>
+            <div class="wp-bing-grid" id="wp-bing-grid"><div class="wp-pop__hint">加载中...</div></div>
+            <div class="wp-pop__sec"><i class="fas fa-wand-magic-sparkles"></i> 随机换一张</div>
+            <div class="wp-rand-row">
+                <button class="wp-rand-btn" data-mode="scenic" type="button"><i class="fas fa-mountain-sun"></i> 随机风景</button>
+                <button class="wp-rand-btn" data-mode="acg" type="button"><i class="fas fa-palette"></i> 随机二次元</button>
+                <button class="wp-rand-btn wp-rand-btn--ghost" data-mode="static" type="button"><i class="fas fa-rotate-left"></i> 恢复默认</button>
+            </div>
+            <div class="wp-pop__foot">动态壁纸来自免费公开 API · 必应每日自动更新，随机壁纸点击即换</div>
         </div>
     </div>
 </div>
@@ -988,6 +1014,7 @@
         if (widget) widget.addEventListener('click', openPop);
     })();
 </script>
+<script src="/js/ios-wallpaper.js?v=1788080237" defer></script>
 
 <div class="aside-content" id="aside-content">
     <div class="card-widget card-info text-center">
@@ -1165,7 +1192,7 @@
         <div class="webinfo-item"><div class="item-name">运行时间 :</div><div class="item-count" id="site-uptime">—</div></div>
         <div class="webinfo-item"><div class="item-name">Unique Visitors :</div><div class="item-count" id="busuanzi_value_site_uv"><i class="fa-solid fa-spinner fa-spin"></i></div></div>
         <div class="webinfo-item"><div class="item-name">Page Views :</div><div class="item-count" id="busuanzi_value_site_pv"><i class="fa-solid fa-spinner fa-spin"></i></div></div>
-        <div class="webinfo-item"><div class="item-name">Last Update :</div><div class="item-count" id="last-push-date" data-lastPushDate="2026-08-30T15:23:41+08:00"><i class="fa-solid fa-spinner fa-spin"></i></div></div>
+        <div class="webinfo-item"><div class="item-name">Last Update :</div><div class="item-count" id="last-push-date" data-lastPushDate="2026-08-30T16:57:17+08:00"><i class="fa-solid fa-spinner fa-spin"></i></div></div>
     </div>
 </div>
 
@@ -1215,8 +1242,8 @@
 <div id="imageModal" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;z-index:1000;background-color:rgba(0,0,0,.8);cursor:pointer;">
     <img id="modalImage" style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);max-width:90vw;max-height:90vh;"/>
 </div>
-<script src="/js/utils.js?v=1788074621"></script>
-<script src="/js/main.js?v=1788074621"></script>
+<script src="/js/utils.js?v=1788080237"></script>
+<script src="/js/main.js?v=1788080237"></script>
 <script src="/assets/vendor/fancybox/fancybox.umd.min.js"></script>
 <script src="/assets/vendor/lazyload/lazyload.iife.min.js"></script>
 <div class="js-pjax"><script>
@@ -1245,8 +1272,8 @@ btf.addGlobalFn('pjaxSendOnce', () => { typed && typed.destroy(); }, 'typedDestr
 function subtitleType () { typedJSFn.processSubtitle(["打码改变世界","公众号：朱猪写作","保持热爱，奔赴山海"]); }
 typedJSFn.run(subtitleType);
 </script></div>
-<script src="/js/time-greeting.js?v=1788074621"></script>
-<script src="/js/header-glow.js?v=1788074621"></script>
+<script src="/js/time-greeting.js?v=1788080237"></script>
+<script src="/js/header-glow.js?v=1788080237"></script>
 <script async src="/assets/vendor/busuanzi/2.3/busuanzi.pure.mini.js"></script>
 <script>
 // Post Views（文章浏览次数）：
@@ -1345,7 +1372,7 @@ typedJSFn.run(subtitleType);
     }, 500);
 })();
 </script>
-<script src="/js/search/local-search.js?v=1788074621"></script>
+<script src="/js/search/local-search.js?v=1788080237"></script>
 <script>
 // 站点增强：阅读进度条 / Ctrl+K 搜索 / 随机一读 / 建站天数 / Service Worker
 (function () {

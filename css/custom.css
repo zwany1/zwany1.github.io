@@ -294,13 +294,28 @@ body.home #page-header { display: none; }
   overflow: hidden;
   background: url(/assets/images/wallpaper.jpg) center / cover no-repeat fixed;
 }
-/* 压暗一层，保证白色图标标签可读 */
+/* 压暗一层，保证白色图标标签可读（层级在动态壁纸之上、桌面内容之下） */
 .ios-desktop::before {
   content: '';
   position: absolute;
   inset: 0;
+  z-index: 1;
   background: linear-gradient(180deg, rgba(20, 25, 50, .10), rgba(20, 25, 50, .28));
   pointer-events: none;
+}
+/* 动态壁纸图层：加载成功后淡入，盖在静态壁纸上、遮罩之下 */
+.ios-wallpaper {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background: center / cover no-repeat;
+  opacity: 0;
+  transition: opacity .9s ease;
+  pointer-events: none;
+}
+.ios-wallpaper.is-ready { opacity: 1; }
+@media (prefers-reduced-motion: reduce) {
+  .ios-wallpaper { transition: none; }
 }
 .ios-statusbar {
   position: relative;
@@ -321,7 +336,7 @@ body.home #page-header { display: none; }
   gap: 18px;
   margin: 26px auto 10px;
   width: 100%;
-  max-width: 720px;
+  max-width: 860px;
 }
 .ios-widget {
   flex: 1;
@@ -787,6 +802,25 @@ body.home #pagination { max-width: 1100px; margin: 0 auto; }
   cursor: pointer;
   flex: 0.9;
 }
+/* 壁纸组件：当前壁纸缩略图 + 标签，点击打开换壁纸弹窗 */
+.ios-widget--wallpaper {
+  flex-direction: column;
+  justify-content: center;
+  gap: 8px;
+  cursor: pointer;
+  flex: 0.9;
+}
+.wp-thumb {
+  height: 64px;
+  border-radius: 12px;
+  background: center / cover no-repeat;
+  box-shadow: 0 2px 6px rgba(31, 45, 61, .18);
+  transition: transform .25s;
+}
+.ios-widget--wallpaper:hover .wp-thumb { transform: translateY(-2px); }
+.wp-label { font-size: .78rem; color: rgba(31, 45, 61, .7); }
+[data-theme=dark] .wp-label { color: rgba(216, 226, 236, .7); }
+[data-theme=dark] .ios-widget--wallpaper .wp-thumb { box-shadow: 0 2px 6px rgba(0, 0, 0, .4); }
 .games-preview { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
 .games-preview__app {
   display: flex;
@@ -1086,3 +1120,98 @@ body.home #pagination { max-width: 1100px; margin: 0 auto; }
   box-shadow: 0 6px 14px rgba(31, 45, 61, .22);
 }
 .ios-app__letter { width: 100%; height: 100%; border-radius: 17px; font-size: 1.4rem; }
+
+/* ---------- 壁纸弹窗（复用 games-pop 窗体样式） ---------- */
+.wp-pop__window {
+  width: min(680px, 92vw);
+  height: auto;
+  max-height: 84vh;
+}
+.wp-pop__body {
+  padding: 4px 22px 20px;
+  overflow-y: auto;
+  max-height: calc(84vh - 60px);
+}
+.wp-pop__sec {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: .84rem;
+  font-weight: 700;
+  color: rgba(31, 45, 61, .65);
+  margin: 14px 2px 9px;
+}
+[data-theme=dark] .wp-pop__sec { color: rgba(216, 226, 236, .65); }
+.wp-bing-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+}
+.wp-bing-item {
+  position: relative;
+  aspect-ratio: 16 / 9;
+  padding: 0;
+  border: none;
+  border-radius: 12px;
+  overflow: hidden;
+  cursor: pointer;
+  box-shadow: 0 3px 10px rgba(31, 45, 61, .18);
+  outline: 2px solid transparent;
+  outline-offset: 1px;
+  transition: transform .25s, outline-color .25s;
+}
+.wp-bing-item:hover { transform: translateY(-3px); }
+.wp-bing-item.is-active { outline-color: #49b1f5; }
+.wp-bing-item__img {
+  position: absolute;
+  inset: 0;
+  background: center / cover no-repeat;
+}
+.wp-bing-item__cap {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  padding: 12px 7px 4px;
+  font-size: .68rem;
+  color: #fff;
+  text-align: left;
+  background: linear-gradient(transparent, rgba(0, 0, 0, .55));
+}
+.wp-pop__hint {
+  grid-column: 1 / -1;
+  font-size: .8rem;
+  color: rgba(31, 45, 61, .55);
+  padding: 8px 2px;
+}
+[data-theme=dark] .wp-pop__hint { color: rgba(216, 226, 236, .5); }
+.wp-rand-row { display: flex; flex-wrap: wrap; gap: 10px; }
+.wp-rand-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 9px 16px;
+  border: 1px solid rgba(255, 255, 255, .6);
+  border-radius: 12px;
+  background: rgba(255, 255, 255, .5);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  color: #1f2d3d;
+  font-size: .85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform .2s, background .2s;
+}
+.wp-rand-btn:hover { transform: translateY(-2px); background: rgba(255, 255, 255, .75); }
+.wp-rand-btn--ghost { background: rgba(255, 255, 255, .28); }
+.wp-pop__foot { margin-top: 14px; font-size: .72rem; color: rgba(31, 45, 61, .45); }
+[data-theme=dark] .wp-rand-btn {
+  background: rgba(255, 255, 255, .1);
+  border-color: rgba(255, 255, 255, .12);
+  color: #d8e2ec;
+}
+[data-theme=dark] .wp-rand-btn:hover { background: rgba(255, 255, 255, .18); }
+[data-theme=dark] .wp-pop__foot { color: rgba(216, 226, 236, .45); }
+@media (max-width: 640px) {
+  .wp-bing-grid { grid-template-columns: repeat(2, 1fr); }
+}
