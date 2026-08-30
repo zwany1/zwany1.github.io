@@ -292,28 +292,15 @@ body.home #page-header { display: none; }
   min-height: 100vh;
   padding: 14px 6vw 18px;
   overflow: hidden;
-  background:
-    radial-gradient(1200px 620px at 88% -12%, rgba(88, 194, 158, .55), transparent 62%),
-    radial-gradient(1000px 560px at -12% 34%, rgba(90, 156, 199, .40), transparent 58%),
-    linear-gradient(158deg, #e3f4ec 0%, #c8e7da 26%, #a3d6c8 52%, #c2e5da 78%, #eaf6f0 100%);
+  background: url(/assets/images/wallpaper.jpg) center / cover no-repeat fixed;
 }
-.ios-desktop::before,
-.ios-desktop::after {
+/* 压暗一层，保证白色图标标签可读 */
+.ios-desktop::before {
   content: '';
   position: absolute;
-  border-radius: 50%;
-  filter: blur(60px);
+  inset: 0;
+  background: linear-gradient(180deg, rgba(20, 25, 50, .10), rgba(20, 25, 50, .28));
   pointer-events: none;
-}
-.ios-desktop::before {
-  width: 480px; height: 480px;
-  left: -140px; bottom: -160px;
-  background: rgba(255, 255, 255, .45);
-}
-.ios-desktop::after {
-  width: 380px; height: 380px;
-  right: -120px; top: 16%;
-  background: rgba(73, 177, 245, .18);
 }
 .ios-statusbar {
   position: relative;
@@ -448,10 +435,10 @@ body.home #page-header { display: none; }
 }
 
 [data-theme=dark] .ios-desktop {
-  background:
-    radial-gradient(1200px 620px at 88% -12%, rgba(46, 110, 92, .5), transparent 62%),
-    radial-gradient(1000px 560px at -12% 34%, rgba(43, 70, 105, .5), transparent 58%),
-    linear-gradient(158deg, #16222e 0%, #1b2f3a 30%, #22384a 60%, #18222e 100%);
+  background-image: url(/assets/images/wallpaper-dark.jpg);
+}
+[data-theme=dark] .ios-desktop::before {
+  background: linear-gradient(180deg, rgba(0, 0, 10, .30), rgba(0, 0, 10, .45));
 }
 [data-theme=dark] .ios-widget,
 [data-theme=dark] .ios-search,
