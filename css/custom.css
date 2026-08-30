@@ -2093,3 +2093,13 @@ select.tool-input { appearance: auto; cursor: pointer; }
 .photos-nav:hover { background: rgba(255, 255, 255, .32); }
 .photos-nav--prev { left: 12px; }
 .photos-nav--next { right: 12px; }
+
+/* ---------- 视频壁纸层 ---------- */
+.ios-wallpaper-video {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  pointer-events: none;
+}

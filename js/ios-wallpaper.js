@@ -33,6 +33,7 @@
   /* 预加载成功才切换，避免闪半张图；失败走 onerror 回退 */
   function apply(url, meta) {
     meta = meta || {};
+    clearVideos();
     var probe = new Image();
     probe.onload = function () {
       layer.style.backgroundImage = 'url("' + url + '")';
@@ -49,6 +50,71 @@
     };
     probe.onerror = function () { if (meta.onerror) meta.onerror(); };
     probe.src = url;
+  }
+
+  /* 视频壁纸层：清空/应用；页面隐藏时自动暂停省电 */
+  function clearVideos() {
+    Array.prototype.forEach.call(layer.querySelectorAll('video'), function (v) { v.remove(); });
+    layer.classList.remove('has-video');
+  }
+  function onVisChange() {
+    var v = layer.querySelector('video');
+    if (!v) { document.removeEventListener('visibilitychange', onVisChange); return; }
+    if (document.hidden) v.pause();
+    else v.play().catch(function () {});
+  }
+  function applyVideo(url, opts) {
+    opts = opts || {};
+    layer.classList.remove('is-ready');
+    clearVideos();
+    var v = document.createElement('video');
+    v.className = 'ios-wallpaper-video';
+    v.src = url;
+    v.muted = true;
+    v.loop = true;
+    v.autoplay = true;
+    v.setAttribute('playsinline', '');
+    v.addEventListener('canplay', function () { layer.classList.add('is-ready'); }, { once: true });
+    v.addEventListener('error', function () {
+      v.remove();
+      layer.classList.remove('has-video');
+      applyStatic();
+    });
+    layer.appendChild(v);
+    layer.classList.add('has-video');
+    if (thumb) thumb.style.backgroundImage = 'url("' + (opts.thumb || url) + '")';
+    if (nameEl) nameEl.textContent = opts.title || '视频壁纸';
+    document.addEventListener('visibilitychange', onVisChange);
+  }
+
+  /* 自定义图片：canvas 压到 1920 宽 JPEG，控制 localStorage 体积 */
+  function customImage(file) {
+    if (!file || !/^image\//.test(file.type)) return;
+    var reader = new FileReader();
+    reader.onload = function () {
+      var img = new Image();
+      img.onload = function () {
+        var scale = Math.min(1, 1920 / img.width);
+        var c = document.createElement('canvas');
+        c.width = Math.max(1, Math.round(img.width * scale));
+        c.height = Math.max(1, Math.round(img.height * scale));
+        var ctx = c.getContext('2d');
+        ctx.fillStyle = '#000';
+        ctx.fillRect(0, 0, c.width, c.height);
+        ctx.drawImage(img, 0, 0, c.width, c.height);
+        var data = c.toDataURL('image/jpeg', 0.85);
+        apply(data, { title: '自定义壁纸', thumb: data });
+        saveMode('custom', data, { title: '自定义壁纸' });
+      };
+      img.src = reader.result;
+    };
+    reader.readAsDataURL(file);
+  }
+  /* 本地视频：体积太大不持久化，仅本次会话有效 */
+  function customVideo(file) {
+    if (!file || !/^video\//.test(file.type)) return;
+    applyVideo(URL.createObjectURL(file), { title: '本地视频（本次会话）' });
+    writeStore({ mode: 'video-custom', ts: Date.now(), title: '本地视频（本次会话）' });
   }
 
   function applyStatic(keepStore) {
@@ -120,9 +186,11 @@
    */
   (function boot() {
     var saved = readStore();
-    if (saved && saved.url && saved.mode !== 'static') apply(saved.url, saved);
+    if (saved && saved.mode === 'video' && saved.url) { applyVideo(saved.url, saved); return; }
+    if (saved && saved.url && saved.mode !== 'static' && saved.mode !== 'video' && saved.mode !== 'video-custom') apply(saved.url, saved);
     if (!saved || saved.mode === 'static') bootBing();
     else if (saved.mode === 'bing' && (saved.auto || !saved.url)) bootBing();
+    else if (saved.mode === 'video-custom') bootBing();
     else if (saved.auto && Date.now() - (saved.ts || 0) > 24 * 3600 * 1000) newRandom(saved.mode, true);
   })();
 
@@ -142,6 +210,12 @@
   window.iosWallpaper = {
     random: newRandom,
     static: function () { applyStatic(); },
+    video: function (url, name) {
+      applyVideo(url, { title: name });
+      saveMode('video', url, { title: name });
+    },
+    customImage: customImage,
+    customVideo: customVideo,
     openPicker: function () { widget.click(); }
   };
 
@@ -200,4 +274,39 @@
       closePop();
     });
   });
+
+  /* ---- 视频壁纸预设 + 本地自定义上传 ---- */
+  var VIDEOS = [
+    { name: '花开', url: 'https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4' },
+    { name: '海洋', url: 'https://vjs.zencdn.net/v/oceans.mp4' },
+    { name: 'Sintel 预告', url: 'https://media.w3.org/2010/05/sintel/trailer.mp4' }
+  ];
+  var vlist = document.getElementById('wp-video-list');
+  if (vlist) {
+    VIDEOS.forEach(function (v) {
+      var b = document.createElement('button');
+      b.type = 'button';
+      b.className = 'wp-rand-btn';
+      b.innerHTML = '<i class="fas fa-film"></i> ' + v.name;
+      b.addEventListener('click', function () {
+        window.iosWallpaper.video(v.url, v.name);
+        closePop();
+      });
+      vlist.appendChild(b);
+    });
+  }
+  function bindUpload(btnId, inputId, fn) {
+    var btn = document.getElementById(btnId), input = document.getElementById(inputId);
+    if (!btn || !input) return;
+    btn.addEventListener('click', function () { input.click(); });
+    input.addEventListener('change', function () {
+      if (input.files && input.files[0]) {
+        fn(input.files[0]);
+        closePop();
+        input.value = '';
+      }
+    });
+  }
+  bindUpload('wp-img-upload-btn', 'wp-file-img', customImage);
+  bindUpload('wp-video-upload-btn', 'wp-file-video', customVideo);
 })();
