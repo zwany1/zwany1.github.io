@@ -4,21 +4,21 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <title>新年快乐 - 朱的小屋</title>
+    <title>书影清单 - 朱的小屋</title>
     <meta name="author" content="朱">
     <meta name="copyright" content="朱">
     <meta name="format-detection" content="telephone=no">
     <meta name="theme-color" content="#ffffff">
-    <meta name="description" content="新年祝福页面">
-    <meta name="keywords" content="新年, 祝福, 新年快乐">
+    <meta name="description" content="在读的书与看过的片">
+    <meta name="keywords" content="朱, zwany1, 朱猪写作">
     <meta property="og:type" content="website">
-    <meta property="og:title" content="新年快乐">
-    <meta property="og:url" content="https://zwany1.github.io/new-year/">
+    <meta property="og:title" content="书影清单">
+    <meta property="og:url" content="https://zwany1.github.io/books/">
     <meta property="og:site_name" content="朱的小屋">
-    <meta property="og:description" content="新年祝福页面">
+    <meta property="og:description" content="在读的书与看过的片">
     <meta property="og:image" content="https://zwany1.github.io/assets/images/avatar.jpg">
     <link rel="shortcut icon" href="/favicon.ico">
-    <link rel="canonical" href="https://zwany1.github.io/new-year/">
+    <link rel="canonical" href="https://zwany1.github.io/books/">
     <link rel="alternate" type="application/atom+xml" title="朱的小屋" href="https://zwany1.github.io/feed.xml">
     <link rel="preconnect" href="//cdn.jsdelivr.net">
     <link rel="preconnect" href="//busuanzi.ibruce.info">
@@ -79,7 +79,7 @@
       autoDarkmode: true
     };
     window.GLOBAL_CONFIG_SITE = {
-      title: '新年快乐',
+      title: '书影清单',
       isHighlightShrink: false,
       isToc: false,
       pageType: 'page'
@@ -136,7 +136,7 @@
         </nav>
         
         <div id="page-site-info">
-            <h1 id="site-title">新年快乐</h1>
+            <h1 id="site-title">书影清单</h1>
         </div>
         
     </header>
@@ -144,74 +144,87 @@
 
 <div id="page">
     <div class="container" id="article-container">
-    <style>
-/* 纯九宫格布局 */
-body {
-    margin: 0;
-    padding: 0;
-    background-color: white;
-}
-
-.photo-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    grid-template-rows: repeat(3, 1fr);
-    gap: 0;
-    width: 100vw;
-    aspect-ratio: 1 / 1;
-    max-width: 100vh;
-    margin: 0 auto;
-}
-
-.grid-item img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    display: block;
-}
-</style>
-
-<div class="photo-grid">
-    <div class="grid-item">
-        <img src="/images/kuanian/36f9e09baeee6147b39475dec1e4f58d.jpg" alt="新年祝福1" />
+    <div id="books-page">
+    <p>记录读过的书、看过的片。清单在 <code>_data/books.yml</code> 里维护，随手更新。</p>
+    
+    
+    
+    
+    
+    <div class="books-sec">
+        <div class="books-sec__title"><i class="fas fa-bookmark fa-fw"></i> 在读 <small>1</small></div>
+        <div class="books-grid">
+            
+            <div class="book-card">
+                <a class="book-card__title" href="https://book.douban.com/subject/1148282/" target="_blank" rel="noopener">计算机程序的构造和解释</a>
+                
+                <span class="book-card__author">Harold Abelson</span>
+                
+                <span class="book-card__stars">★★★★★</span>
+                
+                <span class="book-card__note">SICP，慢慢啃</span>
+            </div>
+            
+        </div>
     </div>
-    <div class="grid-item">
-        <img src="/images/kuanian/09bf3aff6c4829f312d97ba4246d1cb0.jpg" alt="新年祝福2" />
+    
+    
+    
+    
+    
+    <div class="books-sec">
+        <div class="books-sec__title"><i class="fas fa-bookmark fa-fw"></i> 读过 <small>2</small></div>
+        <div class="books-grid">
+            
+            <div class="book-card">
+                <a class="book-card__title" href="https://book.douban.com/subject/1477390/" target="_blank" rel="noopener">代码大全</a>
+                
+                <span class="book-card__author">Steve McConnell</span>
+                
+                <span class="book-card__stars">★★★★★</span>
+                
+                <span class="book-card__note">构建软件的百科全书</span>
+            </div>
+            
+            <div class="book-card">
+                <a class="book-card__title" href="https://book.douban.com/subject/2567698/" target="_blank" rel="noopener">三体</a>
+                
+                <span class="book-card__author">刘慈欣</span>
+                
+                <span class="book-card__stars">★★★★★</span>
+                
+                <span class="book-card__note">给岁月以文明</span>
+            </div>
+            
+        </div>
     </div>
-    <div class="grid-item">
-        <img src="/images/kuanian/6c130f4dea83d5e6354db93c04ed4e25.jpg" alt="新年祝福3" />
+    
+    
+    
+    
+    
+    <div class="books-sec">
+        <div class="books-sec__title"><i class="fas fa-bookmark fa-fw"></i> 想读 <small>1</small></div>
+        <div class="books-grid">
+            
+            <div class="book-card">
+                <a class="book-card__title" href="https://book.douban.com/subject/30329536/" target="_blank" rel="noopener">设计数据密集型应用</a>
+                
+                <span class="book-card__author">Martin Kleppmann</span>
+                
+                <span class="book-card__note">DDIA，传说中的神书</span>
+            </div>
+            
+        </div>
     </div>
-    <div class="grid-item">
-        <img src="/images/kuanian/1a1034079ae5b092aa76e0ca12f7a1c5.jpg" alt="新年祝福4" />
-    </div>
-    <div class="grid-item">
-        <img src="/images/kuanian/6195dbc6da416bdc342784bb42f085eb.jpg" alt="新年祝福5" />
-    </div>
-    <div class="grid-item">
-        <img src="/images/kuanian/16e61fd03ef4a3d217b4452e0f305c50.jpg" alt="新年祝福6" />
-    </div>
-    <div class="grid-item">
-        <img src="/images/kuanian/4f039159e17a8ce3a60932e6dec23795.jpg" alt="新年祝福7" />
-    </div>
-    <div class="grid-item">
-        <img src="/images/kuanian/42482904d828ceea3795d8d12c3d31b9.jpg" alt="新年祝福8" />
-    </div>
-    <div class="grid-item">
-        <img src="/images/kuanian/961d5038f39fe0728888be1920f49eb9.jpg" alt="新年祝福9" />
-    </div>
+    
+    
 </div>
 
     </div>
     <hr class="custom-hr"/>
     <div id="post-comment">
     
-
-  
-
-  
-    
-  
-
 
     </div>
 </div>

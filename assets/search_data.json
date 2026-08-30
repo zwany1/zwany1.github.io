@@ -28,6 +28,14 @@
   
   
     {
+      "title"    : "书影清单",
+      "url"      : "/books/",
+      "keywords" : ""
+    } ,
+  
+  
+  
+    {
       "title"    : "分类",
       "url"      : "/categories/",
       "keywords" : ""
@@ -39,6 +47,14 @@
       "title"    : "Fragments",
       "url"      : "/fragments/",
       "keywords" : "fragments"
+    } ,
+  
+  
+  
+    {
+      "title"    : "友链朋友圈",
+      "url"      : "/friends/",
+      "keywords" : ""
     } ,
   
   

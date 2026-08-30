@@ -24,10 +24,10 @@
     <link rel="preconnect" href="//busuanzi.ibruce.info">
     <link rel="stylesheet" href="/assets/vendor/fontawesome/css/all.min.css">
     <link rel="stylesheet" href="/assets/css/butterfly.css">
-    <link rel="stylesheet" href="/css/header-glow.css?v=1788083046">
-    <link rel="stylesheet" href="/css/time-greeting.css?v=1788083046">
-    <link rel="stylesheet" href="/css/gh-projects.css?v=1788083046">
-    <link rel="stylesheet" href="/css/custom.css?v=1788083046">
+    <link rel="stylesheet" href="/css/header-glow.css?v=1788085549">
+    <link rel="stylesheet" href="/css/time-greeting.css?v=1788085549">
+    <link rel="stylesheet" href="/css/gh-projects.css?v=1788085549">
+    <link rel="stylesheet" href="/css/custom.css?v=1788085549">
     <link rel="manifest" href="/manifest.webmanifest">
     <link rel="stylesheet" href="/assets/vendor/fancybox/fancybox.min.css" media="print" onload="this.media='all'">
     
@@ -61,7 +61,7 @@
     window.GLOBAL_CONFIG = {
       root: '/',
       algolia: undefined,
-      localSearch: { "path": "/search.xml?v=1788083046", "preload": false, "top_n_per_article": 1, "unescape": false, "pagination": { "enable": false, "hitsPerPage": 8 }, "languages": { "hits_empty": "未找到包含 ${query} 的文章", "hits_stats": "找到 ${hits} 篇文章" } },
+      localSearch: { "path": "/search.xml?v=1788085549", "preload": false, "top_n_per_article": 1, "unescape": false, "pagination": { "enable": false, "hitsPerPage": 8 }, "languages": { "hits_empty": "未找到包含 ${query} 的文章", "hits_stats": "找到 ${hits} 篇文章" } },
       translate: undefined,
       highlight: { "plugin": "highlight.js", "highlightCopy": true, "highlightLang": true, "highlightHeightLimit": false, "highlightFullpage": false, "highlightMacStyle": false },
       copy: { success: '复制成功', error: '复制失败', noSupport: '浏览器不支持' },
@@ -149,6 +149,22 @@
 
 
 
+
+<div id="ios-lock">
+    <div class="ios-lock__inner">
+        <div class="ios-lock__brand">朱的小屋</div>
+        <div class="ios-lock__time" id="lock-time">--:--</div>
+        <div class="ios-lock__date" id="lock-date"></div>
+    </div>
+    <div class="ios-lock__hint"><i class="fas fa-chevron-up"></i> 点按或上滑解锁</div>
+</div>
+<script>
+    // 锁屏会话去重：本会话已解锁过就立即隐藏，避免内页/回访闪烁
+    (function () {
+        try { if (sessionStorage.getItem('ios_lock_done') === '1') document.getElementById('ios-lock').setAttribute('hidden', ''); } catch (e) {}
+    })();
+</script>
+
 <section class="ios-desktop" id="ios-desktop">
     
     <div class="ios-wallpaper" id="ios-wallpaper" aria-hidden="true"></div>
@@ -158,6 +174,7 @@
             <i class="fas fa-signal"></i>
             <i class="fas fa-wifi"></i>
             <i class="fas fa-battery-three-quarters"></i>
+            <button class="cc-trigger" id="cc-toggle" title="控制中心" type="button"><i class="fas fa-sliders"></i></button>
         </span>
     </div>
 
@@ -166,9 +183,19 @@
             <div class="ios-widget__time" id="ios-widget-time">--:--</div>
             <div class="ios-widget__date" id="ios-widget-date"></div>
         </div>
+        <div class="ios-widget ios-widget--calendar" title="日历">
+            <div class="cal-head" id="cal-head">—</div>
+            <div class="cal-week"><span>日</span><span>一</span><span>二</span><span>三</span><span>四</span><span>五</span><span>六</span></div>
+            <div class="cal-days" id="cal-days"></div>
+        </div>
         <div class="ios-widget ios-widget--greet">
             <div class="ios-widget__hi" id="ios-greet"></div>
             <div class="ios-widget__sub">朱的小屋 · 记录技术与生活</div>
+        </div>
+        <div class="ios-widget ios-widget--weather" id="wx-widget" title="天气 · 点击尝试定位">
+            <div class="wx-main"><span class="wx-icon" id="wx-icon">🌤️</span><span class="wx-temp" id="wx-temp">--°</span></div>
+            <div class="wx-city" id="wx-city">加载中…</div>
+            <div class="wx-hours" id="wx-hours"></div>
         </div>
         <div class="ios-widget ios-widget--music">
             <img class="music-cover" id="music-cover" src="/assets/images/avatar.jpg" alt="封面" loading="lazy">
@@ -232,12 +259,14 @@
         
         <a class="ios-app" href="/archives/"
            
+           data-badge="posts"
            >
             <span class="ios-app__icon" style="background:linear-gradient(135deg, #49b1f5, #2b7fd4)"><i class="fa-solid fa-book"></i></span>
             <span class="ios-app__label">文章</span>
         </a>
         
         <a class="ios-app" href="/categories/"
+           
            
            >
             <span class="ios-app__icon" style="background:linear-gradient(135deg, #ffb86b, #f0932b)"><i class="fa-solid fa-folder-open"></i></span>
@@ -246,12 +275,14 @@
         
         <a class="ios-app" href="/tags/"
            
+           
            >
             <span class="ios-app__icon" style="background:linear-gradient(135deg, #43d9c0, #22a6b3)"><i class="fa-solid fa-tags"></i></span>
             <span class="ios-app__label">标签</span>
         </a>
         
         <a class="ios-app" href="/links/"
+           
            
            >
             <span class="ios-app__icon" style="background:linear-gradient(135deg, #fd79a8, #e84393)"><i class="fa-solid fa-link"></i></span>
@@ -260,12 +291,14 @@
         
         <a class="ios-app" href="/projects/"
            
+           
            >
             <span class="ios-app__icon" style="background:linear-gradient(135deg, #a29bfe, #6c5ce7)"><i class="fa-solid fa-rocket"></i></span>
             <span class="ios-app__label">项目</span>
         </a>
         
         <a class="ios-app" href="/about/"
+           
            
            >
             <span class="ios-app__icon" style="background:linear-gradient(135deg, #95a5a6, #576574)"><i class="fa-solid fa-user"></i></span>
@@ -274,12 +307,14 @@
         
         <a class="ios-app" href="javascript:void(0)"
            data-action="qrcode"
+           
            >
             <span class="ios-app__icon" style="background:linear-gradient(135deg, #2ed573, #1aa34a)"><i class="fa-brands fa-weixin"></i></span>
             <span class="ios-app__label">公众号</span>
         </a>
         
         <a class="ios-app" href="https://github.com/zwany1"
+           
            
            target="_blank" rel="noopener">
             <span class="ios-app__icon" style="background:linear-gradient(135deg, #4a4a4a, #17181c)"><i class="fa-brands fa-github"></i></span>
@@ -563,9 +598,34 @@
                 <button class="wp-rand-btn" data-mode="acg" type="button"><i class="fas fa-palette"></i> 随机二次元</button>
                 <button class="wp-rand-btn wp-rand-btn--ghost" data-mode="static" type="button"><i class="fas fa-rotate-left"></i> 恢复默认</button>
             </div>
+            <div class="wp-pop__sec"><i class="fas fa-clock-rotate-left"></i> 自动更换</div>
+            <label class="wp-auto"><input type="checkbox" id="wp-auto"> 每天自动换一张壁纸（必应跟随每日更新，随机模式每日自动换新）</label>
             <div class="wp-pop__foot">动态壁纸来自免费公开 API · 必应每日自动更新，随机壁纸点击即换</div>
         </div>
     </div>
+</div>
+
+
+<div class="control-center" id="control-center" hidden>
+    <div class="cc-head"><b><i class="fas fa-sliders"></i> 控制中心</b><button id="cc-close" title="关闭" type="button"><i class="fas fa-xmark"></i></button></div>
+    <div class="cc-tiles">
+        <button class="cc-tile" id="cc-dark" type="button"><i class="fas fa-circle-half-stroke"></i><span>深浅切换</span></button>
+        <button class="cc-tile" id="cc-sound" type="button"><i class="fas fa-volume-high"></i><span>解锁音效</span></button>
+    </div>
+    <div class="cc-sec">壁纸</div>
+    <div class="cc-row">
+        <button class="cc-btn" data-wp="scenic" type="button"><i class="fas fa-mountain-sun"></i> 随机风景</button>
+        <button class="cc-btn" data-wp="acg" type="button"><i class="fas fa-palette"></i> 随机二次元</button>
+        <button class="cc-btn" data-wp="static" type="button"><i class="fas fa-rotate-left"></i> 默认</button>
+    </div>
+    <div class="cc-sec">快捷方式</div>
+    <div class="cc-row">
+        <button class="cc-btn" id="cc-game" type="button"><i class="fas fa-gamepad"></i> 随机游戏</button>
+        <button class="cc-btn" id="cc-post" type="button"><i class="fas fa-shuffle"></i> 随机文章</button>
+        <a class="cc-btn" href="#recent-posts"><i class="fas fa-list"></i> 文章列表</a>
+    </div>
+    <div class="cc-sec">正在运行 · 多任务</div>
+    <div class="cc-running" id="cc-running"><span class="cc-empty">还没有打开的应用</span></div>
 </div>
 
 
@@ -1238,9 +1298,22 @@
 
         // ---------- 弹窗与导航 ----------
         var dockMusic = document.querySelector('.ios-app[data-action="music"]');
+        function exitMusic() {
+            audio.pause();
+            playing = false;
+            setIcons();
+            if (dockMusic) dockMusic.classList.remove('is-running');
+            closeApp();
+            if (window.iosOpenApps) delete window.iosOpenApps.music;
+        }
         function openApp() {
             app.root.hidden = false;
             if (dockMusic) dockMusic.classList.add('is-running');
+            window.iosOpenApps = window.iosOpenApps || {};
+            window.iosOpenApps.music = {
+                name: '音乐', icon: 'fas fa-music', color: 'linear-gradient(135deg,#fc5c7d,#e6194b)',
+                focus: openApp, close: exitMusic
+            };
             renderDiscover();
             showView('discover');
         }
@@ -1275,13 +1348,7 @@
         if (dockMusic) dockMusic.addEventListener('click', function (e) { e.preventDefault(); openApp(); });
         if (dockMusic) dockMusic.addEventListener('contextmenu', function (e) {
             window.dockMenu.show(e, '音乐', [
-                { label: '关闭音乐', danger: true, fn: function () {
-                    audio.pause();
-                    playing = false;
-                    setIcons();
-                    dockMusic.classList.remove('is-running');
-                    closeApp();
-                } }
+                { label: '关闭音乐', danger: true, fn: exitMusic }
             ]);
         });
 
@@ -1346,6 +1413,7 @@
             frame.src = 'about:blank';
             current = null;
             dock.hidden = true;
+            if (window.iosOpenApps) delete window.iosOpenApps.games;
         }
         function openGame(el) {
             current = { url: el.getAttribute('data-url'), name: el.getAttribute('data-name'), icon: el.getAttribute('data-icon') };
@@ -1356,6 +1424,12 @@
             dock.hidden = false;
             setDockIcon(current.icon, lastLetter, lastBg);
             dockName.textContent = current.name.length > 5 ? current.name.slice(0, 5) : current.name;
+            window.iosOpenApps = window.iosOpenApps || {};
+            window.iosOpenApps.games = {
+                name: '游戏 · ' + current.name, icon: 'fas fa-gamepad', color: '#6c5ce7',
+                focus: function () { openPop(); showGame(); },
+                close: function () { closePop(); showGrid(); }
+            };
         }
         grid.addEventListener('click', function (e) {
             var a = e.target.closest('.games-pop__app');
@@ -1389,8 +1463,243 @@
         if (widget) widget.addEventListener('click', openPop);
     })();
 </script>
-<script src="/js/ios-wallpaper.js?v=1788083046" defer></script>
-<script src="/js/ios-tools.js?v=1788083046" defer></script>
+<script>
+    // ---------- iOS 锁屏：会话首次进站显示，点按/上滑解锁 + 开机音效 ----------
+    (function () {
+        var $ = function (id) { return document.getElementById(id) };
+        var lock = $('ios-lock');
+        if (!lock || lock.hasAttribute('hidden')) return;
+        var pad = function (n) { return n < 10 ? '0' + n : n };
+        var t = $('lock-time'), d = $('lock-date');
+        function tick() {
+            var now = new Date();
+            if (t) t.textContent = pad(now.getHours()) + ':' + pad(now.getMinutes());
+            if (d) {
+                var w = ['日', '一', '二', '三', '四', '五', '六'][now.getDay()];
+                d.textContent = (now.getMonth() + 1) + '月' + now.getDate() + '日 星期' + w;
+            }
+        }
+        tick();
+        setInterval(tick, 10000);
+        window.iosChime = function () {
+            try {
+                if (localStorage.getItem('ios_sound') === '0') return;
+                var ac = new (window.AudioContext || window.webkitAudioContext)();
+                [[523.25, 0], [659.25, 0.12], [783.99, 0.24]].forEach(function (n) {
+                    var o = ac.createOscillator(), g = ac.createGain();
+                    o.connect(g); g.connect(ac.destination);
+                    o.type = 'sine'; o.frequency.value = n[0];
+                    g.gain.setValueAtTime(0.0001, ac.currentTime + n[1]);
+                    g.gain.exponentialRampToValueAtTime(0.16, ac.currentTime + n[1] + 0.02);
+                    g.gain.exponentialRampToValueAtTime(0.0001, ac.currentTime + n[1] + 0.5);
+                    o.start(ac.currentTime + n[1]); o.stop(ac.currentTime + n[1] + 0.55);
+                });
+            } catch (e) { /* 忽略 */ }
+        };
+        var done = false;
+        function unlock() {
+            if (done) return;
+            done = true;
+            try { sessionStorage.setItem('ios_lock_done', '1'); } catch (e) {}
+            lock.classList.add('unlocking');
+            window.iosChime();
+            setTimeout(function () { lock.hidden = true; }, 700);
+        }
+        lock.addEventListener('click', unlock);
+        lock.addEventListener('wheel', unlock, { passive: true });
+        lock.addEventListener('touchmove', unlock, { passive: true });
+        document.addEventListener('keydown', unlock, { once: true });
+    })();
+
+    // ---------- 日历小组件 ----------
+    (function () {
+        var head = document.getElementById('cal-head'), days = document.getElementById('cal-days');
+        if (!head || !days) return;
+        var now = new Date(), y = now.getFullYear(), m = now.getMonth();
+        head.innerHTML = '<b>' + (m + 1) + '月</b><span>' + y + '</span>';
+        var first = new Date(y, m, 1).getDay();
+        var total = new Date(y, m + 1, 0).getDate();
+        var html = '';
+        for (var i = 0; i < first; i++) html += '<span></span>';
+        for (var d = 1; d <= total; d++) {
+            html += '<span' + (d === now.getDate() ? ' class="today"' : '') + '>' + d + '</span>';
+        }
+        days.innerHTML = html;
+    })();
+
+    // ---------- 天气小组件（Open-Meteo 免费接口） ----------
+    (function () {
+        var box = document.getElementById('wx-widget');
+        if (!box) return;
+        var ICON = { 0: '☀️', 1: '🌤️', 2: '⛅', 3: '☁️', 45: '🌫️', 48: '🌫️', 51: '🌦️', 53: '🌦️', 55: '🌦️', 56: '🌧️', 57: '🌧️', 61: '🌧️', 63: '🌧️', 65: '🌧️', 66: '🌧️', 67: '🌧️', 71: '🌨️', 73: '🌨️', 75: '❄️', 77: '🌨️', 80: '🌦️', 81: '🌦️', 82: '🌧️', 85: '🌨️', 86: '🌨️', 95: '⛈️', 96: '⛈️', 99: '⛈️' };
+        var DEFAULT_CITY = { name: '杭州', lat: 30.2741, lon: 120.1551 };
+        var KEY = 'wx_cache_v1';
+        var el = {
+            icon: document.getElementById('wx-icon'), temp: document.getElementById('wx-temp'),
+            city: document.getElementById('wx-city'), hours: document.getElementById('wx-hours')
+        };
+        function paint(c) {
+            var cur = c.current;
+            el.icon.textContent = ICON[cur.weather_code] || '🌤️';
+            el.temp.textContent = Math.round(cur.temperature_2m) + '°';
+            el.city.textContent = c.cityName || '天气';
+            var h = '';
+            for (var i = 1; i <= 4 && i < c.hourly.time.length; i++) {
+                var hh = c.hourly.time[i].slice(11, 13);
+                h += '<span><b>' + hh + '时</b><em>' + (ICON[c.hourly.weather_code[i]] || '') + ' ' + Math.round(c.hourly.temperature_2m[i]) + '°</em></span>';
+            }
+            el.hours.innerHTML = h;
+        }
+        function load(loc) {
+            var cache = null;
+            try { cache = JSON.parse(localStorage.getItem(KEY) || 'null'); } catch (e) {}
+            if (cache && cache.q === (loc.lat + ',' + loc.lon) && Date.now() - cache.t < 30 * 60000) { paint(cache); return; }
+            el.city.textContent = '加载中…';
+            var url = 'https://api.open-meteo.com/v1/forecast?latitude=' + loc.lat + '&longitude=' + loc.lon
+                + '&current=temperature_2m,weather_code&hourly=temperature_2m,weather_code&forecast_hours=6&timezone=auto';
+            fetch(url).then(function (r) { return r.ok ? r.json() : Promise.reject(0); }).then(function (d) {
+                var data = { q: loc.lat + ',' + loc.lon, t: Date.now(), cityName: loc.name, current: d.current, hourly: d.hourly };
+                try { localStorage.setItem(KEY, JSON.stringify(data)); } catch (e) {}
+                paint(data);
+            }).catch(function () { el.city.textContent = '天气加载失败'; });
+        }
+        load(DEFAULT_CITY);
+        box.addEventListener('click', function () {
+            if (!navigator.geolocation) return;
+            el.city.textContent = '定位中…';
+            navigator.geolocation.getCurrentPosition(
+                function (pos) { load({ name: '我的位置', lat: pos.coords.latitude.toFixed(3), lon: pos.coords.longitude.toFixed(3) }); },
+                function () { load(DEFAULT_CITY); },
+                { timeout: 6000 }
+            );
+        });
+    })();
+
+    // ---------- 新文章角标（文章图标红点 = 上次来访后的新文章数） ----------
+    (function () {
+        var appEl = document.querySelector('.ios-app[data-badge="posts"]');
+        var postsMeta = [{"u":"/2026/08/28/redis/","t":1787909400},{"u":"/2025/12/26/IO%E5%9F%BA%E7%A1%80%E4%B8%8E%E6%B5%81%E6%93%8D%E4%BD%9C/","t":1766678400},{"u":"/2025/12/08/best-buddy/","t":1765187815}];
+        if (!appEl || !postsMeta.length) return;
+        var KEY = 'ios_posts_seen_v1';
+        var seen = null;
+        try { seen = Number(localStorage.getItem(KEY)); } catch (e) {}
+        var latest = postsMeta[0].t; // site.posts 按时间倒序
+        if (!seen) {
+            try { localStorage.setItem(KEY, latest); } catch (e) {}
+            return; // 首次来访不显示角标
+        }
+        var n = postsMeta.filter(function (p) { return p.t > seen; }).length;
+        if (!n) return;
+        var dot = document.createElement('span');
+        dot.className = 'ios-badge';
+        dot.textContent = n > 99 ? '99+' : n;
+        appEl.querySelector('.ios-app__icon').appendChild(dot);
+        appEl.addEventListener('click', function () {
+            try { localStorage.setItem(KEY, latest); } catch (e) {}
+            dot.remove();
+        }, { once: true });
+    })();
+
+    // ---------- 控制中心（含多任务） ----------
+    (function () {
+        var $ = function (id) { return document.getElementById(id) };
+        var cc = $('control-center'), trigger = $('cc-toggle');
+        if (!cc || !trigger) return;
+        function renderRunning() {
+            var box = $('cc-running'), reg = window.iosOpenApps || {};
+            var ids = Object.keys(reg);
+            if (!ids.length) { box.innerHTML = '<span class="cc-empty">还没有打开的应用</span>'; return; }
+            box.innerHTML = '';
+            ids.forEach(function (id) {
+                var a = reg[id];
+                var row = document.createElement('div');
+                row.className = 'cc-app';
+                row.innerHTML = '<span class="cc-app__icon" style="background:' + (a.color || '#49b1f5') + '"><i class="' + (a.icon || 'fas fa-window-maximize') + '"></i></span>'
+                    + '<b>' + a.name + '</b>';
+                var focus = document.createElement('button');
+                focus.type = 'button'; focus.textContent = '切换';
+                focus.addEventListener('click', function () { cc.hidden = true; a.focus(); });
+                var exit = document.createElement('button');
+                exit.type = 'button'; exit.textContent = '关闭'; exit.className = 'is-danger';
+                exit.addEventListener('click', function () { cc.hidden = true; a.close(); });
+                row.appendChild(focus); row.appendChild(exit);
+                box.appendChild(row);
+            });
+        }
+        function syncTiles() {
+            var dark = document.documentElement.getAttribute('data-theme') === 'dark';
+            $('cc-dark').classList.toggle('on', dark);
+            var sound = localStorage.getItem('ios_sound') !== '0';
+            $('cc-sound').classList.toggle('on', sound);
+            $('cc-sound').querySelector('i').className = sound ? 'fas fa-volume-high' : 'fas fa-volume-xmark';
+        }
+        function open() { syncTiles(); renderRunning(); cc.hidden = false; }
+        trigger.addEventListener('click', function (e) {
+            e.stopPropagation();
+            cc.hidden ? open() : (cc.hidden = true);
+        });
+        $('cc-close').addEventListener('click', function () { cc.hidden = true; });
+        document.addEventListener('click', function (e) {
+            if (!cc.hidden && !e.target.closest('.control-center') && e.target !== trigger) cc.hidden = true;
+        });
+        document.addEventListener('keydown', function (e) { if (e.key === 'Escape') cc.hidden = true; });
+        $('cc-dark').addEventListener('click', function () {
+            var root = document.documentElement;
+            root.setAttribute('data-theme', root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark');
+            syncTiles();
+        });
+        $('cc-sound').addEventListener('click', function () {
+            var on = localStorage.getItem('ios_sound') !== '0';
+            try { localStorage.setItem('ios_sound', on ? '0' : '1'); } catch (e) {}
+            syncTiles();
+        });
+        Array.prototype.forEach.call(cc.querySelectorAll('[data-wp]'), function (b) {
+            b.addEventListener('click', function () {
+                var wp = window.iosWallpaper;
+                if (!wp) return;
+                var m = b.getAttribute('data-wp');
+                if (m === 'static') wp.static();
+                else wp.random(m, false);
+                cc.hidden = true;
+            });
+        });
+        $('cc-game').addEventListener('click', function () {
+            cc.hidden = true;
+            var gw = document.getElementById('games-widget');
+            if (gw) gw.click();
+        });
+        $('cc-post').addEventListener('click', function () {
+            cc.hidden = true;
+            var urls = ["/2026/08/28/redis/","/2025/12/26/IO%E5%9F%BA%E7%A1%80%E4%B8%8E%E6%B5%81%E6%93%8D%E4%BD%9C/","/2025/12/08/best-buddy/"];
+            if (!urls.length) return;
+            var pick;
+            do { pick = urls[Math.floor(Math.random() * urls.length)]; } while (urls.length > 1 && pick === location.pathname);
+            location.href = pick;
+        });
+    })();
+
+    // ---------- 桌面空白处右键菜单 ----------
+    (function () {
+        var desk = document.getElementById('ios-desktop');
+        if (!desk) return;
+        desk.addEventListener('contextmenu', function (e) {
+            if (e.target.closest('.ios-widget, .ios-app, .ios-search, a, button, input, iframe')) return;
+            window.dockMenu.show(e, '桌面', [
+                { label: '更换壁纸…', fn: function () { var w = document.getElementById('wp-widget'); if (w) w.click(); } },
+                { label: '随机风景壁纸', fn: function () { if (window.iosWallpaper) window.iosWallpaper.random('scenic', false); } },
+                { label: '随机二次元壁纸', fn: function () { if (window.iosWallpaper) window.iosWallpaper.random('acg', false); } },
+                { label: '恢复默认壁纸', fn: function () { if (window.iosWallpaper) window.iosWallpaper.static(); } },
+                { label: '深浅色切换', fn: function () {
+                    var root = document.documentElement;
+                    root.setAttribute('data-theme', root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark');
+                } },
+                { label: '前往文章列表', fn: function () { location.hash = '#recent-posts'; } }
+            ]);
+        });
+    })();
+</script>
+<script src="/js/ios-wallpaper.js?v=1788085549" defer></script>
+<script src="/js/ios-tools.js?v=1788085549" defer></script>
 
 <div class="aside-content" id="aside-content">
     <div class="card-widget card-info text-center">
@@ -1568,7 +1877,7 @@
         <div class="webinfo-item"><div class="item-name">运行时间 :</div><div class="item-count" id="site-uptime">—</div></div>
         <div class="webinfo-item"><div class="item-name">Unique Visitors :</div><div class="item-count" id="busuanzi_value_site_uv"><i class="fa-solid fa-spinner fa-spin"></i></div></div>
         <div class="webinfo-item"><div class="item-name">Page Views :</div><div class="item-count" id="busuanzi_value_site_pv"><i class="fa-solid fa-spinner fa-spin"></i></div></div>
-        <div class="webinfo-item"><div class="item-name">Last Update :</div><div class="item-count" id="last-push-date" data-lastPushDate="2026-08-30T17:44:06+08:00"><i class="fa-solid fa-spinner fa-spin"></i></div></div>
+        <div class="webinfo-item"><div class="item-name">Last Update :</div><div class="item-count" id="last-push-date" data-lastPushDate="2026-08-30T18:25:49+08:00"><i class="fa-solid fa-spinner fa-spin"></i></div></div>
     </div>
 </div>
 
@@ -1618,8 +1927,8 @@
 <div id="imageModal" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;z-index:1000;background-color:rgba(0,0,0,.8);cursor:pointer;">
     <img id="modalImage" style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);max-width:90vw;max-height:90vh;"/>
 </div>
-<script src="/js/utils.js?v=1788083046"></script>
-<script src="/js/main.js?v=1788083046"></script>
+<script src="/js/utils.js?v=1788085549"></script>
+<script src="/js/main.js?v=1788085549"></script>
 <script src="/assets/vendor/fancybox/fancybox.umd.min.js"></script>
 <script src="/assets/vendor/lazyload/lazyload.iife.min.js"></script>
 <div class="js-pjax"><script>
@@ -1648,8 +1957,8 @@ btf.addGlobalFn('pjaxSendOnce', () => { typed && typed.destroy(); }, 'typedDestr
 function subtitleType () { typedJSFn.processSubtitle(["打码改变世界","公众号：朱猪写作","保持热爱，奔赴山海"]); }
 typedJSFn.run(subtitleType);
 </script></div>
-<script src="/js/time-greeting.js?v=1788083046"></script>
-<script src="/js/header-glow.js?v=1788083046"></script>
+<script src="/js/time-greeting.js?v=1788085549"></script>
+<script src="/js/header-glow.js?v=1788085549"></script>
 <script async src="/assets/vendor/busuanzi/2.3/busuanzi.pure.mini.js"></script>
 <script>
 // Post Views（文章浏览次数）：
@@ -1748,7 +2057,8 @@ typedJSFn.run(subtitleType);
     }, 500);
 })();
 </script>
-<script src="/js/search/local-search.js?v=1788083046"></script>
+<script src="/js/search/local-search.js?v=1788085549"></script>
+<script src="/js/fun-extras.js?v=1788085549" defer></script>
 <script>
 // 站点增强：阅读进度条 / Ctrl+K 搜索 / 随机一读 / 建站天数 / Service Worker
 (function () {

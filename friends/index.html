@@ -4,21 +4,21 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <title>新年快乐 - 朱的小屋</title>
+    <title>友链朋友圈 - 朱的小屋</title>
     <meta name="author" content="朱">
     <meta name="copyright" content="朱">
     <meta name="format-detection" content="telephone=no">
     <meta name="theme-color" content="#ffffff">
-    <meta name="description" content="新年祝福页面">
-    <meta name="keywords" content="新年, 祝福, 新年快乐">
+    <meta name="description" content="朋友们博客的最新文章">
+    <meta name="keywords" content="朱, zwany1, 朱猪写作">
     <meta property="og:type" content="website">
-    <meta property="og:title" content="新年快乐">
-    <meta property="og:url" content="https://zwany1.github.io/new-year/">
+    <meta property="og:title" content="友链朋友圈">
+    <meta property="og:url" content="https://zwany1.github.io/friends/">
     <meta property="og:site_name" content="朱的小屋">
-    <meta property="og:description" content="新年祝福页面">
+    <meta property="og:description" content="朋友们博客的最新文章">
     <meta property="og:image" content="https://zwany1.github.io/assets/images/avatar.jpg">
     <link rel="shortcut icon" href="/favicon.ico">
-    <link rel="canonical" href="https://zwany1.github.io/new-year/">
+    <link rel="canonical" href="https://zwany1.github.io/friends/">
     <link rel="alternate" type="application/atom+xml" title="朱的小屋" href="https://zwany1.github.io/feed.xml">
     <link rel="preconnect" href="//cdn.jsdelivr.net">
     <link rel="preconnect" href="//busuanzi.ibruce.info">
@@ -79,7 +79,7 @@
       autoDarkmode: true
     };
     window.GLOBAL_CONFIG_SITE = {
-      title: '新年快乐',
+      title: '友链朋友圈',
       isHighlightShrink: false,
       isToc: false,
       pageType: 'page'
@@ -136,7 +136,7 @@
         </nav>
         
         <div id="page-site-info">
-            <h1 id="site-title">新年快乐</h1>
+            <h1 id="site-title">友链朋友圈</h1>
         </div>
         
     </header>
@@ -144,74 +144,47 @@
 
 <div id="page">
     <div class="container" id="article-container">
-    <style>
-/* 纯九宫格布局 */
-body {
-    margin: 0;
-    padding: 0;
-    background-color: white;
-}
-
-.photo-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    grid-template-rows: repeat(3, 1fr);
-    gap: 0;
-    width: 100vw;
-    aspect-ratio: 1 / 1;
-    max-width: 100vh;
-    margin: 0 auto;
-}
-
-.grid-item img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    display: block;
-}
-</style>
-
-<div class="photo-grid">
-    <div class="grid-item">
-        <img src="/images/kuanian/36f9e09baeee6147b39475dec1e4f58d.jpg" alt="新年祝福1" />
-    </div>
-    <div class="grid-item">
-        <img src="/images/kuanian/09bf3aff6c4829f312d97ba4246d1cb0.jpg" alt="新年祝福2" />
-    </div>
-    <div class="grid-item">
-        <img src="/images/kuanian/6c130f4dea83d5e6354db93c04ed4e25.jpg" alt="新年祝福3" />
-    </div>
-    <div class="grid-item">
-        <img src="/images/kuanian/1a1034079ae5b092aa76e0ca12f7a1c5.jpg" alt="新年祝福4" />
-    </div>
-    <div class="grid-item">
-        <img src="/images/kuanian/6195dbc6da416bdc342784bb42f085eb.jpg" alt="新年祝福5" />
-    </div>
-    <div class="grid-item">
-        <img src="/images/kuanian/16e61fd03ef4a3d217b4452e0f305c50.jpg" alt="新年祝福6" />
-    </div>
-    <div class="grid-item">
-        <img src="/images/kuanian/4f039159e17a8ce3a60932e6dec23795.jpg" alt="新年祝福7" />
-    </div>
-    <div class="grid-item">
-        <img src="/images/kuanian/42482904d828ceea3795d8d12c3d31b9.jpg" alt="新年祝福8" />
-    </div>
-    <div class="grid-item">
-        <img src="/images/kuanian/961d5038f39fe0728888be1920f49eb9.jpg" alt="新年祝福9" />
-    </div>
+    <div id="friends-circle">
+    <p>订阅朋友们的博客，聚合他们最新的文章。数据由 GitHub Actions 每天从各位的 RSS 抓取一次。</p>
+    <div class="fc-list" id="fc-list"><div class="fc-loading">加载中…</div></div>
+    <p class="fc-foot">想出现在这里？先在<a href="/links/">友链页</a>交换链接，然后确保你的站点有 RSS/Atom 输出即可。</p>
 </div>
+
+<script>
+(function () {
+    var list = document.getElementById('fc-list');
+    if (!list) return;
+    function esc(s) { return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
+    fetch('/assets/friends-posts.json', { cache: 'no-cache' })
+        .then(function (r) { return r.ok ? r.json() : []; })
+        .then(function (posts) {
+            if (!posts.length) {
+                list.innerHTML = '<div class="fc-empty">朋友们还没有可聚合的 RSS 源，先去<a href="/links/">友链页</a>串个门吧～</div>';
+                return;
+            }
+            var html = '';
+            posts.forEach(function (p) {
+                var d = p.date ? new Date(p.date) : null;
+                var ds = d ? d.getFullYear() + '-' + ('0' + (d.getMonth() + 1)).slice(-2) + '-' + ('0' + d.getDate()).slice(-2) : '';
+                html += '<a class="fc-item" href="' + esc(p.link) + '" target="_blank" rel="noopener">'
+                    + '<span class="fc-item__friend">' + esc(p.friend) + '</span>'
+                    + '<b class="fc-item__title">' + esc(p.title) + '</b>'
+                    + '<span class="fc-item__meta">' + (ds ? '<i class="far fa-calendar fa-fw"></i> ' + ds : '')
+                    + ' · ' + esc((p.friendSite || '').replace(/^https?:\/\//, '').replace(/\/$/, '')) + '</span></a>';
+            });
+            list.innerHTML = html;
+        })
+        .catch(function () {
+            list.innerHTML = '<div class="fc-empty">加载失败，稍后再来看看～</div>';
+        });
+})();
+</script>
+
 
     </div>
     <hr class="custom-hr"/>
     <div id="post-comment">
     
-
-  
-
-  
-    
-  
-
 
     </div>
 </div>

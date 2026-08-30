@@ -37,6 +37,8 @@
     probe.onload = function () {
       layer.style.backgroundImage = 'url("' + url + '")';
       layer.classList.add('is-ready');
+      var lk = document.getElementById('ios-lock');
+      if (lk) lk.style.backgroundImage = 'url("' + url + '")';
       if (thumb) thumb.style.backgroundImage = 'url("' + (meta.thumb || url) + '")';
       if (nameEl) {
         var t = meta.title || '今日壁纸';
@@ -58,7 +60,8 @@
   }
 
   function saveMode(mode, url, meta) {
-    var v = { mode: mode, url: url, ts: Date.now() };
+    var prev = readStore() || {};
+    var v = { mode: mode, url: url, ts: Date.now(), auto: !!prev.auto };
     for (var k in (meta || {})) v[k] = meta[k];
     writeStore(v);
   }
@@ -111,13 +114,36 @@
     }
   }
 
-  /* ---- 启动 ---- */
+  /* ---- 启动 ----
+   * 默认：必应每日一图；开了「每天自动换」时，必应每次刷新当日图，
+   * 随机模式超过 24 小时自动换新；未开自动则保持用户上次选择。
+   */
   (function boot() {
     var saved = readStore();
     if (saved && saved.url && saved.mode !== 'static') apply(saved.url, saved);
-    if (!saved || saved.mode === 'static' || saved.mode === 'bing') bootBing();
-    else if (Date.now() - (saved.ts || 0) > RANDOM_TTL) newRandom(saved.mode, true);
+    if (!saved || saved.mode === 'static') bootBing();
+    else if (saved.mode === 'bing' && (saved.auto || !saved.url)) bootBing();
+    else if (saved.auto && Date.now() - (saved.ts || 0) > 24 * 3600 * 1000) newRandom(saved.mode, true);
   })();
+
+  /* ---- 自动更换开关 ---- */
+  var autoCb = document.getElementById('wp-auto');
+  if (autoCb) {
+    autoCb.checked = !!(readStore() || {}).auto;
+    autoCb.addEventListener('change', function () {
+      var v = readStore() || { mode: 'static' };
+      v.auto = autoCb.checked;
+      v.ts = Date.now();
+      writeStore(v);
+    });
+  }
+
+  /* ---- 供控制中心 / 桌面右键菜单调用 ---- */
+  window.iosWallpaper = {
+    random: newRandom,
+    static: function () { applyStatic(); },
+    openPicker: function () { widget.click(); }
+  };
 
   /* ---- 弹窗 ---- */
   function closePop() { pop.hidden = true; }

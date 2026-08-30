@@ -22,6 +22,7 @@
     stage.hidden = true;
     dock.hidden = true;
     current = null;
+    if (window.iosOpenApps) delete window.iosOpenApps.tools;
   }
   function openTool(el) {
     current = el.getAttribute('data-tool');
@@ -36,6 +37,16 @@
     dockIcon.className = el.getAttribute('data-icon') || 'fas fa-toolbox';
     dockIconWrap.style.background = el.getAttribute('data-bg') || '#49b1f5';
     dockName.textContent = name.length > 4 ? name.slice(0, 4) : name;
+    window.iosOpenApps = window.iosOpenApps || {};
+    window.iosOpenApps.tools = {
+      name: '工具箱 · ' + name, icon: el.getAttribute('data-icon') || 'fas fa-toolbox', color: el.getAttribute('data-bg') || '#49b1f5',
+      focus: function () {
+        openPop();
+        var again = grid.querySelector('[data-tool="' + current + '"]');
+        if (again) openTool(again);
+      },
+      close: function () { closePop(); showGrid(); }
+    };
   }
   widget.addEventListener('click', openPop);
   grid.addEventListener('click', function (e) {
