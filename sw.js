@@ -1,5 +1,5 @@
 /* 朱的小屋 Service Worker：HTML 走网络优先（保证内容新鲜），静态资源走缓存优先 */
-const CACHE = 'zhu-blog-v2'
+const CACHE = 'zhu-blog-v3'
 
 self.addEventListener('install', () => self.skipWaiting())
 
