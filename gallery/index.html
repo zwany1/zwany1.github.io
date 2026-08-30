@@ -24,10 +24,10 @@
     <link rel="preconnect" href="//busuanzi.ibruce.info">
     <link rel="stylesheet" href="/assets/vendor/fontawesome/css/all.min.css">
     <link rel="stylesheet" href="/assets/css/butterfly.css">
-    <link rel="stylesheet" href="/css/header-glow.css?v=1788091201">
-    <link rel="stylesheet" href="/css/time-greeting.css?v=1788091201">
-    <link rel="stylesheet" href="/css/gh-projects.css?v=1788091201">
-    <link rel="stylesheet" href="/css/custom.css?v=1788091201">
+    <link rel="stylesheet" href="/css/header-glow.css?v=1788092303">
+    <link rel="stylesheet" href="/css/time-greeting.css?v=1788092303">
+    <link rel="stylesheet" href="/css/gh-projects.css?v=1788092303">
+    <link rel="stylesheet" href="/css/custom.css?v=1788092303">
     <link rel="manifest" href="/manifest.webmanifest">
     <link rel="stylesheet" href="/assets/vendor/fancybox/fancybox.min.css" media="print" onload="this.media='all'">
     
@@ -61,7 +61,7 @@
     window.GLOBAL_CONFIG = {
       root: '/',
       algolia: undefined,
-      localSearch: { "path": "/search.xml?v=1788091201", "preload": false, "top_n_per_article": 1, "unescape": false, "pagination": { "enable": false, "hitsPerPage": 8 }, "languages": { "hits_empty": "未找到包含 ${query} 的文章", "hits_stats": "找到 ${hits} 篇文章" } },
+      localSearch: { "path": "/search.xml?v=1788092303", "preload": false, "top_n_per_article": 1, "unescape": false, "pagination": { "enable": false, "hitsPerPage": 8 }, "languages": { "hits_empty": "未找到包含 ${query} 的文章", "hits_stats": "找到 ${hits} 篇文章" } },
       translate: undefined,
       highlight: { "plugin": "highlight.js", "highlightCopy": true, "highlightLang": true, "highlightHeightLimit": false, "highlightFullpage": false, "highlightMacStyle": false },
       copy: { success: '复制成功', error: '复制失败', noSupport: '浏览器不支持' },
@@ -144,208 +144,168 @@
 
 <div id="page">
     <div class="container" id="article-container">
-    <h1 id="相册">相册</h1>
+    <div id="page">
+    <p>生活的碎片都收在这里。桌面「相册」组件与本页共用同一份数据（<code>_data/photos.yml</code>），加照片改那一处即可。</p>
+    
+    <h2>📌 置顶</h2>
+    <div class="gallery">
+        
+        <a href="/images/gallery/yhs.jpg" class="gallery-item" data-title="yhs">
+            <img src="/images/gallery/yhs.jpg" alt="yhs" loading="lazy" />
+            
+        </a>
+        
+        <a href="/images/gallery/8be4fe5f439369750f6022b7d9254839.mp4" class="gallery-item" data-title="质检网红球员">
+            <img src="/images/gallery/11.png" alt="质检网红球员" loading="lazy" />
+            
+            <span class="gallery-play"><i class="fas fa-play"></i></span>
+            
+        </a>
+        
+    </div>
+    
+    <h2>🎬 视频</h2>
+    <div class="gallery">
+        
+        <a href="/images/gallery/1d219a323cedb70b129d3317acbcc63d.mp4" class="gallery-item" data-title="kissqiu">
+            <img src="/images/gallery/22.png" alt="kissqiu" loading="lazy" />
+            
+            <span class="gallery-play"><i class="fas fa-play"></i></span>
+            
+        </a>
+        
+        <a href="/images/gallery/大雾.mp4" class="gallery-item" data-title="大雾漫天">
+            <img src="/images/gallery/大雾封面_压缩后.jpg" alt="大雾漫天" loading="lazy" />
+            
+            <span class="gallery-play"><i class="fas fa-play"></i></span>
+            
+        </a>
+        
+        <a href="/images/gallery/hzwz.mp4" class="gallery-item" data-title="好自为之">
+            <img src="/images/gallery/hzwz封面.png" alt="好自为之" loading="lazy" />
+            
+            <span class="gallery-play"><i class="fas fa-play"></i></span>
+            
+        </a>
+        
+    </div>
+    
+    <h2>📷 照片</h2>
+    <div class="gallery">
+        
+        <a href="/images/gallery/05ac7d8484417f2f4301215889fc5988.jpg" class="gallery-item" data-title="躺🐕">
+            <img src="/images/gallery/05ac7d8484417f2f4301215889fc5988.jpg" alt="躺🐕" loading="lazy" />
+            
+        </a>
+        
+        <a href="/images/gallery/363ce57e51d78927fbbb05fc3228bd97.jpg" class="gallery-item" data-title="认祖归宗">
+            <img src="/images/gallery/363ce57e51d78927fbbb05fc3228bd97.jpg" alt="认祖归宗" loading="lazy" />
+            
+        </a>
+        
+        <a href="/images/gallery/3bb276100b2b9c40a2225f124345ba64.jpg" class="gallery-item" data-title="毕业季">
+            <img src="/images/gallery/3bb276100b2b9c40a2225f124345ba64.jpg" alt="毕业季" loading="lazy" />
+            
+        </a>
+        
+        <a href="/images/gallery/53637bb52ad51ba0e928c36671927e37.jpg" class="gallery-item" data-title="甜蜜合照">
+            <img src="/images/gallery/53637bb52ad51ba0e928c36671927e37.jpg" alt="甜蜜合照" loading="lazy" />
+            
+        </a>
+        
+        <a href="/images/gallery/8335bbd5b1ad82bddd33e43d4915910f.jpg" class="gallery-item" data-title="陆川游玩">
+            <img src="/images/gallery/8335bbd5b1ad82bddd33e43d4915910f.jpg" alt="陆川游玩" loading="lazy" />
+            
+        </a>
+        
+        <a href="/images/gallery/aed3c79064681fca2429e02c2b7f3a57.jpg" class="gallery-item" data-title="甜蜜合照2">
+            <img src="/images/gallery/aed3c79064681fca2429e02c2b7f3a57.jpg" alt="甜蜜合照2" loading="lazy" />
+            
+        </a>
+        
+        <a href="/images/gallery/bbc73ac8d8e75ddbbdfbbf92ced1784f.jpg" class="gallery-item" data-title="第一次聚餐">
+            <img src="/images/gallery/bbc73ac8d8e75ddbbdfbbf92ced1784f.jpg" alt="第一次聚餐" loading="lazy" />
+            
+        </a>
+        
+        <a href="/images/gallery/c10125d5c8833567c705a01bb8d73107.jpg" class="gallery-item" data-title="毕业合照">
+            <img src="/images/gallery/c10125d5c8833567c705a01bb8d73107.jpg" alt="毕业合照" loading="lazy" />
+            
+        </a>
+        
+        <a href="/images/gallery/dc490ba6283e64e224aa1313640e49f8.jpg" class="gallery-item" data-title="国宝">
+            <img src="/images/gallery/dc490ba6283e64e224aa1313640e49f8.jpg" alt="国宝" loading="lazy" />
+            
+        </a>
+        
+        <a href="/images/gallery/e90d8f8520a6bd67631c805850fe723f.jpg" class="gallery-item" data-title="南宁游玩">
+            <img src="/images/gallery/e90d8f8520a6bd67631c805850fe723f.jpg" alt="南宁游玩" loading="lazy" />
+            
+        </a>
+        
+        <a href="/images/gallery/学校.jpg" class="gallery-item" data-title="学校">
+            <img src="/images/gallery/学校.jpg" alt="学校" loading="lazy" />
+            
+        </a>
+        
+        <a href="/images/gallery/b学.jpg" class="gallery-item" data-title="b学">
+            <img src="/images/gallery/b学.jpg" alt="b学" loading="lazy" />
+            
+        </a>
+        
+        <a href="/images/gallery/帅比.jpg" class="gallery-item" data-title="帅比">
+            <img src="/images/gallery/帅比.jpg" alt="帅比" loading="lazy" />
+            
+        </a>
+        
+        <a href="/images/gallery/柳州.jpg" class="gallery-item" data-title="柳州">
+            <img src="/images/gallery/柳州.jpg" alt="柳州" loading="lazy" />
+            
+        </a>
+        
+        <a href="/images/gallery/高p.jpg" class="gallery-item" data-title="高p">
+            <img src="/images/gallery/高p.jpg" alt="高p" loading="lazy" />
+            
+        </a>
+        
+        <a href="/images/gallery/进厂日记.jpg" class="gallery-item" data-title="进厂日记">
+            <img src="/images/gallery/进厂日记.jpg" alt="进厂日记" loading="lazy" />
+            
+        </a>
+        
+        <a href="/images/gallery/陆川二中.jpg" class="gallery-item" data-title="陆川二中">
+            <img src="/images/gallery/陆川二中.jpg" alt="陆川二中" loading="lazy" />
+            
+        </a>
+        
+    </div>
+    
+</div>
 
 <style>
-/* 相册样式 */
-.gallery {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-  gap: 16px;
-  margin: 20px 0;
-  padding: 0 10px;
-}
-
-.gallery-item {
-  position: relative;
-  overflow: hidden;
-  border-radius: 12px;
-  aspect-ratio: 1 / 1;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
-  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-  background-color: #f5f5f5;
-}
-
-.gallery-item:hover {
-  transform: translateY(-8px) scale(1.02);
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
-}
-
-.gallery-item img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.gallery-item:hover img {
-  transform: scale(1.1);
-}
-
-/* 图片标题 */
-.gallery-item::after {
-  content: attr(data-title);
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  background: linear-gradient(transparent, rgba(0, 0, 0, 0.7));
-  color: white;
-  padding: 20px 15px 15px;
-  font-size: 14px;
-  opacity: 0;
-  transform: translateY(100%);
-  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-  text-align: center;
-}
-
-.gallery-item:hover::after {
-  opacity: 1;
-  transform: translateY(0);
-}
-
-/* 图片加载占位符 */
-.gallery-item::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
-  background-size: 200% 100%;
-  animation: loading 1.5s infinite;
-}
-
-.gallery-item img.loaded::before {
-  display: none;
-}
-
-@keyframes loading {
-  0% {
-    background-position: 200% 0;
-  }
-  100% {
-    background-position: -200% 0;
-  }
-}
-
-/* 响应式设计 */
-@media (max-width: 1024px) {
-  .gallery {
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 12px;
-  }
-}
-
-@media (max-width: 768px) {
-  .gallery {
-    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-    gap: 10px;
-  }
-  
-  .gallery-item {
-    border-radius: 8px;
-  }
-}
-
-@media (max-width: 480px) {
-  .gallery {
-    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-    gap: 8px;
-  }
+.gallery-play {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 56px;
+    height: 56px;
+    background-color: rgba(255, 255, 255, 0.85);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #ff0000;
+    font-size: 20px;
+    pointer-events: none;
 }
 </style>
 
-<h2 style="margin-top: 40px; margin-bottom: 20px; color: #333; font-size: 28px;">📌 置顶</h2>
-<div class="gallery">
-  <a href="/images/gallery/yhs.jpg" class="gallery-item" data-title="yhs"><img src="/images/gallery/yhs.jpg" alt="照片18" loading="lazy" /></a>
-  <a href="/images/gallery/8be4fe5f439369750f6022b7d9254839.mp4" class="gallery-item" data-title="质检网红球员"> 
-     <img src="/images/gallery/11.png" alt="质检网红球员" loading="lazy" /> 
-     <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 60px; height: 60px; background-color: rgba(255, 255, 255, 0.8); border-radius: 50%; display: flex; align-items: center; justify-content: center;"> 
-       <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#ff0000" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"> 
-         <path d="M5 3l14 9-14 9V3z"></path> 
-       </svg> 
-     </div> 
-   </a>
-</div>
-
-<h2 style="margin-top: 40px; margin-bottom: 20px; color: #333; font-size: 28px;">🎬 视频</h2>
-
-<div class="gallery">
-  <!-- 视频内容 -->
-  <a href="/images/gallery/1d219a323cedb70b129d3317acbcc63d.mp4" class="gallery-item" data-title="kissqiu">
-    <img src="/images/gallery/22.png" alt="kissqiu" loading="lazy" />
-    <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 60px; height: 60px; background-color: rgba(255, 255, 255, 0.8); border-radius: 50%; display: flex; align-items: center; justify-content: center;">
-      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#ff0000" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M5 3l14 9-14 9V3z"></path>
-      </svg>
-    </div>
-  </a>
-  <a href="/images/gallery/大雾.mp4" class="gallery-item" data-title="大雾漫天">
-    <img src="/images/gallery/大雾封面_压缩后.jpg" alt="大雾漫天" loading="lazy" />
-    <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 60px; height: 60px; background-color: rgba(255, 255, 255, 0.8); border-radius: 50%; display: flex; align-items: center; justify-content: center;">
-      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#ff0000" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M5 3l14 9-14 9V3z"></path>
-      </svg>
-    </div>
-  </a>
-    <a href="/images/gallery/hzwz.mp4" class="gallery-item" data-title="好自为之">
-    <img src="/images/gallery/hzwz封面.png" alt="好自为之" loading="lazy" />
-    <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 60px; height: 60px; background-color: rgba(255, 255, 255, 0.8); border-radius: 50%; display: flex; align-items: center; justify-content: center;">
-      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#ff0000" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M5 3l14 9-14 9V3z"></path>
-      </svg>
-    </div>
-  </a>
-</div>
-
-<h2 style="margin-top: 60px; margin-bottom: 20px; color: #333; font-size: 28px;">📷 照片</h2>
-
-<div class="gallery">
-  <!-- 照片内容 -->
-  <a href="/images/gallery/05ac7d8484417f2f4301215889fc5988.jpg" class="gallery-item" data-title="躺🐕"><img src="/images/gallery/05ac7d8484417f2f4301215889fc5988.jpg" alt="照片1" loading="lazy" /></a>
-  <a href="/images/gallery/363ce57e51d78927fbbb05fc3228bd97.jpg" class="gallery-item" data-title="认祖归宗"><img src="/images/gallery/363ce57e51d78927fbbb05fc3228bd97.jpg" alt="照片2" loading="lazy" /></a>
-  <a href="/images/gallery/3bb276100b2b9c40a2225f124345ba64.jpg" class="gallery-item" data-title="毕业季"><img src="/images/gallery/3bb276100b2b9c40a2225f124345ba64.jpg" alt="照片3" loading="lazy" /></a>
-  <a href="/images/gallery/53637bb52ad51ba0e928c36671927e37.jpg" class="gallery-item" data-title="甜蜜合照"><img src="/images/gallery/53637bb52ad51ba0e928c36671927e37.jpg" alt="照片4" loading="lazy" /></a>
-  <a href="/images/gallery/8335bbd5b1ad82bddd33e43d4915910f.jpg" class="gallery-item" data-title="陆川游玩"><img src="/images/gallery/8335bbd5b1ad82bddd33e43d4915910f.jpg" alt="照片5" loading="lazy" /></a>
-  <a href="/images/gallery/aed3c79064681fca2429e02c2b7f3a57.jpg" class="gallery-item" data-title="甜蜜合照"><img src="/images/gallery/aed3c79064681fca2429e02c2b7f3a57.jpg" alt="照片6" loading="lazy" /></a>
-  <a href="/images/gallery/bbc73ac8d8e75ddbbdfbbf92ced1784f.jpg" class="gallery-item" data-title="第一次聚餐"><img src="/images/gallery/bbc73ac8d8e75ddbbdfbbf92ced1784f.jpg" alt="照片7" loading="lazy" /></a>
-  <a href="/images/gallery/c10125d5c8833567c705a01bb8d73107.jpg" class="gallery-item" data-title="毕业合照"><img src="/images/gallery/c10125d5c8833567c705a01bb8d73107.jpg" alt="照片8" loading="lazy" /></a>
-  <a href="/images/gallery/dc490ba6283e64e224aa1313640e49f8.jpg" class="gallery-item" data-title="国宝"><img src="/images/gallery/dc490ba6283e64e224aa1313640e49f8.jpg" alt="照片9" loading="lazy" /></a>
-  <a href="/images/gallery/e90d8f8520a6bd67631c805850fe723f.jpg" class="gallery-item" data-title="南宁游玩"><img src="/images/gallery/e90d8f8520a6bd67631c805850fe723f.jpg" alt="照片10" loading="lazy" /></a>
-  <a href="/images/gallery/学校.jpg" class="gallery-item" data-title="学校"><img src="/images/gallery/学校.jpg" alt="照片11" loading="lazy" /></a>
-  <a href="/images/gallery/b学.jpg" class="gallery-item" data-title="b学"><img src="/images/gallery/b学.jpg" alt="照片12" loading="lazy" /></a>
-  <a href="/images/gallery/帅比.jpg" class="gallery-item" data-title="帅比"><img src="/images/gallery/帅比.jpg" alt="照片13" loading="lazy" /></a>
-  <a href="/images/gallery/柳州.jpg" class="gallery-item" data-title="柳州"><img src="/images/gallery/柳州.jpg" alt="照片14" loading="lazy" /></a>
-    <a href="/images/gallery/高p.jpg" class="gallery-item" data-title="高p"><img src="/images/gallery/高p.jpg" alt="照片15" loading="lazy" /></a>
-    <a href="/images/gallery/进厂日记.jpg" class="gallery-item" data-title="进厂日记"><img src="/images/gallery/进厂日记.jpg" alt="照片16" loading="lazy" /></a>
-    <a href="/images/gallery/陆川二中.jpg" class="gallery-item" data-title="陆川二中"><img src="/images/gallery/陆川二中.jpg" alt="照片17" loading="lazy" /></a>
-
-
-
-
-
-</div>
-
-<!-- 图片优化提示 -->
-<div style="margin-top: 30px; padding: 15px; background-color: #f8f9fa; border-radius: 8px; text-align: center;">
-  <p style="color: #666; font-size: 14px; margin: 0;">
-    💡 提示：为获得更好的加载效果，建议将相册图片压缩至100KB以下，并使用适当尺寸的缩略图
-  </p>
-</div>
 
     </div>
     <hr class="custom-hr"/>
     <div id="post-comment">
     
-
-  
-
-  
-    
-  
-
 
     </div>
 </div>
@@ -526,7 +486,7 @@
         <div class="webinfo-item"><div class="item-name">运行时间 :</div><div class="item-count" id="site-uptime">—</div></div>
         <div class="webinfo-item"><div class="item-name">Unique Visitors :</div><div class="item-count" id="busuanzi_value_site_uv"><i class="fa-solid fa-spinner fa-spin"></i></div></div>
         <div class="webinfo-item"><div class="item-name">Page Views :</div><div class="item-count" id="busuanzi_value_site_pv"><i class="fa-solid fa-spinner fa-spin"></i></div></div>
-        <div class="webinfo-item"><div class="item-name">Last Update :</div><div class="item-count" id="last-push-date" data-lastPushDate="2026-08-30T20:00:01+08:00"><i class="fa-solid fa-spinner fa-spin"></i></div></div>
+        <div class="webinfo-item"><div class="item-name">Last Update :</div><div class="item-count" id="last-push-date" data-lastPushDate="2026-08-30T20:18:23+08:00"><i class="fa-solid fa-spinner fa-spin"></i></div></div>
     </div>
 </div>
 
@@ -576,8 +536,8 @@
 <div id="imageModal" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;z-index:1000;background-color:rgba(0,0,0,.8);cursor:pointer;">
     <img id="modalImage" style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);max-width:90vw;max-height:90vh;"/>
 </div>
-<script src="/js/utils.js?v=1788091201"></script>
-<script src="/js/main.js?v=1788091201"></script>
+<script src="/js/utils.js?v=1788092303"></script>
+<script src="/js/main.js?v=1788092303"></script>
 <script src="/assets/vendor/fancybox/fancybox.umd.min.js"></script>
 <script src="/assets/vendor/lazyload/lazyload.iife.min.js"></script>
 <div class="js-pjax"><script>
@@ -606,8 +566,8 @@ btf.addGlobalFn('pjaxSendOnce', () => { typed && typed.destroy(); }, 'typedDestr
 function subtitleType () { typedJSFn.processSubtitle(["打码改变世界","公众号：朱猪写作","保持热爱，奔赴山海"]); }
 typedJSFn.run(subtitleType);
 </script></div>
-<script src="/js/time-greeting.js?v=1788091201"></script>
-<script src="/js/header-glow.js?v=1788091201"></script>
+<script src="/js/time-greeting.js?v=1788092303"></script>
+<script src="/js/header-glow.js?v=1788092303"></script>
 <script async src="/assets/vendor/busuanzi/2.3/busuanzi.pure.mini.js"></script>
 <script>
 // Post Views（文章浏览次数）：
@@ -706,8 +666,8 @@ typedJSFn.run(subtitleType);
     }, 500);
 })();
 </script>
-<script src="/js/search/local-search.js?v=1788091201"></script>
-<script src="/js/fun-extras.js?v=1788091201" defer></script>
+<script src="/js/search/local-search.js?v=1788092303"></script>
+<script src="/js/fun-extras.js?v=1788092303" defer></script>
 <script>
 // 站点增强：阅读进度条 / Ctrl+K 搜索 / 随机一读 / 建站天数 / Service Worker
 (function () {

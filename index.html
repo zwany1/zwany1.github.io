@@ -24,10 +24,10 @@
     <link rel="preconnect" href="//busuanzi.ibruce.info">
     <link rel="stylesheet" href="/assets/vendor/fontawesome/css/all.min.css">
     <link rel="stylesheet" href="/assets/css/butterfly.css">
-    <link rel="stylesheet" href="/css/header-glow.css?v=1788091201">
-    <link rel="stylesheet" href="/css/time-greeting.css?v=1788091201">
-    <link rel="stylesheet" href="/css/gh-projects.css?v=1788091201">
-    <link rel="stylesheet" href="/css/custom.css?v=1788091201">
+    <link rel="stylesheet" href="/css/header-glow.css?v=1788092303">
+    <link rel="stylesheet" href="/css/time-greeting.css?v=1788092303">
+    <link rel="stylesheet" href="/css/gh-projects.css?v=1788092303">
+    <link rel="stylesheet" href="/css/custom.css?v=1788092303">
     <link rel="manifest" href="/manifest.webmanifest">
     <link rel="stylesheet" href="/assets/vendor/fancybox/fancybox.min.css" media="print" onload="this.media='all'">
     
@@ -61,7 +61,7 @@
     window.GLOBAL_CONFIG = {
       root: '/',
       algolia: undefined,
-      localSearch: { "path": "/search.xml?v=1788091201", "preload": false, "top_n_per_article": 1, "unescape": false, "pagination": { "enable": false, "hitsPerPage": 8 }, "languages": { "hits_empty": "未找到包含 ${query} 的文章", "hits_stats": "找到 ${hits} 篇文章" } },
+      localSearch: { "path": "/search.xml?v=1788092303", "preload": false, "top_n_per_article": 1, "unescape": false, "pagination": { "enable": false, "hitsPerPage": 8 }, "languages": { "hits_empty": "未找到包含 ${query} 的文章", "hits_stats": "找到 ${hits} 篇文章" } },
       translate: undefined,
       highlight: { "plugin": "highlight.js", "highlightCopy": true, "highlightLang": true, "highlightHeightLimit": false, "highlightFullpage": false, "highlightMacStyle": false },
       copy: { success: '复制成功', error: '复制失败', noSupport: '浏览器不支持' },
@@ -347,6 +347,14 @@
             <span class="ios-app__label">项目</span>
         </a>
         
+        <a class="ios-app" href="javascript:void(0)"
+           data-action="photos"
+           
+           >
+            <span class="ios-app__icon" style="background:linear-gradient(135deg, #7f8ff0, #5b6bd6)"><i class="fa-solid fa-images"></i></span>
+            <span class="ios-app__label">相册</span>
+        </a>
+        
         <a class="ios-app" href="/about/"
            
            
@@ -393,6 +401,10 @@
         <a class="ios-app" href="javascript:void(0)" id="dock-tool" hidden>
             <span class="ios-app__icon" id="dock-tool-iconwrap"><i id="dock-tool-icon" class="fas fa-toolbox"></i></span>
             <span class="ios-app__label" id="dock-tool-name">工具</span>
+        </a>
+        <a class="ios-app" href="javascript:void(0)" id="dock-photos" hidden>
+            <span class="ios-app__icon" style="background:linear-gradient(135deg,#a29bfe,#6c5ce7)"><i class="fas fa-images"></i></span>
+            <span class="ios-app__label" id="dock-photos-name">相册</span>
         </a>
         <a class="ios-app" href="javascript:void(0)" data-action="cc" title="控制中心">
             <span class="ios-app__icon"><i class="fas fa-sliders"></i></span>
@@ -912,6 +924,172 @@
     </div>
 </div>
 
+
+<div class="games-pop" id="photos-pop" hidden>
+    <div class="music-app__mask" id="photos-pop-mask"></div>
+    <div class="games-pop__window">
+        <button class="games-pop__close" id="photos-pop-close" title="关闭"><i class="fas fa-xmark"></i></button>
+        <div class="games-pop__title" id="photos-pop-title">相册</div>
+        <div class="photos-home" id="photos-home">
+            
+            <div class="photos-sec">📌 置顶</div>
+            <div class="photos-grid">
+                
+                <a class="photo-card" data-title="yhs" data-src="/images/gallery/yhs.jpg" data-type="photo">
+                    <img src="/images/gallery/yhs.jpg" alt="yhs" loading="lazy">
+                    
+                    <span class="photo-card__name">yhs</span>
+                </a>
+                
+                <a class="photo-card" data-title="质检网红球员" data-src="/images/gallery/8be4fe5f439369750f6022b7d9254839.mp4" data-type="video">
+                    <img src="/images/gallery/11.png" alt="质检网红球员" loading="lazy">
+                    <span class="photo-card__play"><i class="fas fa-play"></i></span>
+                    <span class="photo-card__name">质检网红球员</span>
+                </a>
+                
+            </div>
+            
+            <div class="photos-sec">🎬 视频</div>
+            <div class="photos-grid">
+                
+                <a class="photo-card" data-title="kissqiu" data-src="/images/gallery/1d219a323cedb70b129d3317acbcc63d.mp4" data-type="video">
+                    <img src="/images/gallery/22.png" alt="kissqiu" loading="lazy">
+                    <span class="photo-card__play"><i class="fas fa-play"></i></span>
+                    <span class="photo-card__name">kissqiu</span>
+                </a>
+                
+                <a class="photo-card" data-title="大雾漫天" data-src="/images/gallery/大雾.mp4" data-type="video">
+                    <img src="/images/gallery/大雾封面_压缩后.jpg" alt="大雾漫天" loading="lazy">
+                    <span class="photo-card__play"><i class="fas fa-play"></i></span>
+                    <span class="photo-card__name">大雾漫天</span>
+                </a>
+                
+                <a class="photo-card" data-title="好自为之" data-src="/images/gallery/hzwz.mp4" data-type="video">
+                    <img src="/images/gallery/hzwz封面.png" alt="好自为之" loading="lazy">
+                    <span class="photo-card__play"><i class="fas fa-play"></i></span>
+                    <span class="photo-card__name">好自为之</span>
+                </a>
+                
+            </div>
+            
+            <div class="photos-sec">📷 照片</div>
+            <div class="photos-grid">
+                
+                <a class="photo-card" data-title="躺🐕" data-src="/images/gallery/05ac7d8484417f2f4301215889fc5988.jpg" data-type="photo">
+                    <img src="/images/gallery/05ac7d8484417f2f4301215889fc5988.jpg" alt="躺🐕" loading="lazy">
+                    
+                    <span class="photo-card__name">躺🐕</span>
+                </a>
+                
+                <a class="photo-card" data-title="认祖归宗" data-src="/images/gallery/363ce57e51d78927fbbb05fc3228bd97.jpg" data-type="photo">
+                    <img src="/images/gallery/363ce57e51d78927fbbb05fc3228bd97.jpg" alt="认祖归宗" loading="lazy">
+                    
+                    <span class="photo-card__name">认祖归宗</span>
+                </a>
+                
+                <a class="photo-card" data-title="毕业季" data-src="/images/gallery/3bb276100b2b9c40a2225f124345ba64.jpg" data-type="photo">
+                    <img src="/images/gallery/3bb276100b2b9c40a2225f124345ba64.jpg" alt="毕业季" loading="lazy">
+                    
+                    <span class="photo-card__name">毕业季</span>
+                </a>
+                
+                <a class="photo-card" data-title="甜蜜合照" data-src="/images/gallery/53637bb52ad51ba0e928c36671927e37.jpg" data-type="photo">
+                    <img src="/images/gallery/53637bb52ad51ba0e928c36671927e37.jpg" alt="甜蜜合照" loading="lazy">
+                    
+                    <span class="photo-card__name">甜蜜合照</span>
+                </a>
+                
+                <a class="photo-card" data-title="陆川游玩" data-src="/images/gallery/8335bbd5b1ad82bddd33e43d4915910f.jpg" data-type="photo">
+                    <img src="/images/gallery/8335bbd5b1ad82bddd33e43d4915910f.jpg" alt="陆川游玩" loading="lazy">
+                    
+                    <span class="photo-card__name">陆川游玩</span>
+                </a>
+                
+                <a class="photo-card" data-title="甜蜜合照2" data-src="/images/gallery/aed3c79064681fca2429e02c2b7f3a57.jpg" data-type="photo">
+                    <img src="/images/gallery/aed3c79064681fca2429e02c2b7f3a57.jpg" alt="甜蜜合照2" loading="lazy">
+                    
+                    <span class="photo-card__name">甜蜜合照2</span>
+                </a>
+                
+                <a class="photo-card" data-title="第一次聚餐" data-src="/images/gallery/bbc73ac8d8e75ddbbdfbbf92ced1784f.jpg" data-type="photo">
+                    <img src="/images/gallery/bbc73ac8d8e75ddbbdfbbf92ced1784f.jpg" alt="第一次聚餐" loading="lazy">
+                    
+                    <span class="photo-card__name">第一次聚餐</span>
+                </a>
+                
+                <a class="photo-card" data-title="毕业合照" data-src="/images/gallery/c10125d5c8833567c705a01bb8d73107.jpg" data-type="photo">
+                    <img src="/images/gallery/c10125d5c8833567c705a01bb8d73107.jpg" alt="毕业合照" loading="lazy">
+                    
+                    <span class="photo-card__name">毕业合照</span>
+                </a>
+                
+                <a class="photo-card" data-title="国宝" data-src="/images/gallery/dc490ba6283e64e224aa1313640e49f8.jpg" data-type="photo">
+                    <img src="/images/gallery/dc490ba6283e64e224aa1313640e49f8.jpg" alt="国宝" loading="lazy">
+                    
+                    <span class="photo-card__name">国宝</span>
+                </a>
+                
+                <a class="photo-card" data-title="南宁游玩" data-src="/images/gallery/e90d8f8520a6bd67631c805850fe723f.jpg" data-type="photo">
+                    <img src="/images/gallery/e90d8f8520a6bd67631c805850fe723f.jpg" alt="南宁游玩" loading="lazy">
+                    
+                    <span class="photo-card__name">南宁游玩</span>
+                </a>
+                
+                <a class="photo-card" data-title="学校" data-src="/images/gallery/学校.jpg" data-type="photo">
+                    <img src="/images/gallery/学校.jpg" alt="学校" loading="lazy">
+                    
+                    <span class="photo-card__name">学校</span>
+                </a>
+                
+                <a class="photo-card" data-title="b学" data-src="/images/gallery/b学.jpg" data-type="photo">
+                    <img src="/images/gallery/b学.jpg" alt="b学" loading="lazy">
+                    
+                    <span class="photo-card__name">b学</span>
+                </a>
+                
+                <a class="photo-card" data-title="帅比" data-src="/images/gallery/帅比.jpg" data-type="photo">
+                    <img src="/images/gallery/帅比.jpg" alt="帅比" loading="lazy">
+                    
+                    <span class="photo-card__name">帅比</span>
+                </a>
+                
+                <a class="photo-card" data-title="柳州" data-src="/images/gallery/柳州.jpg" data-type="photo">
+                    <img src="/images/gallery/柳州.jpg" alt="柳州" loading="lazy">
+                    
+                    <span class="photo-card__name">柳州</span>
+                </a>
+                
+                <a class="photo-card" data-title="高p" data-src="/images/gallery/高p.jpg" data-type="photo">
+                    <img src="/images/gallery/高p.jpg" alt="高p" loading="lazy">
+                    
+                    <span class="photo-card__name">高p</span>
+                </a>
+                
+                <a class="photo-card" data-title="进厂日记" data-src="/images/gallery/进厂日记.jpg" data-type="photo">
+                    <img src="/images/gallery/进厂日记.jpg" alt="进厂日记" loading="lazy">
+                    
+                    <span class="photo-card__name">进厂日记</span>
+                </a>
+                
+                <a class="photo-card" data-title="陆川二中" data-src="/images/gallery/陆川二中.jpg" data-type="photo">
+                    <img src="/images/gallery/陆川二中.jpg" alt="陆川二中" loading="lazy">
+                    
+                    <span class="photo-card__name">陆川二中</span>
+                </a>
+                
+            </div>
+            
+        </div>
+        <div class="photos-stage" id="photos-stage" hidden>
+            <button class="games-pop__back" id="photos-back" title="返回相册"><i class="fas fa-chevron-left"></i></button>
+            <button class="photos-nav photos-nav--prev" id="photos-prev" title="上一个" type="button"><i class="fas fa-chevron-left"></i></button>
+            <div class="photos-viewer" id="photos-viewer"></div>
+            <button class="photos-nav photos-nav--next" id="photos-next" title="下一个" type="button"><i class="fas fa-chevron-right"></i></button>
+            <div class="photos-caption" id="photos-caption"></div>
+        </div>
+    </div>
+</div>
+
 <div id="recent-posts" class="recent-posts nc">
     <div class="recent-post-items">
         
@@ -1023,6 +1201,7 @@
             el.addEventListener('click', function (e) {
                 var action = el.getAttribute('data-action');
                 if (action === 'music') return; // 音乐图标由音乐脚本处理
+                if (action === 'photos') return; // 相册图标由相册脚本处理
                 e.preventDefault();
                 if (action === 'search') {
                     var btn = document.querySelector('#search-button .search');
@@ -1728,8 +1907,86 @@
         });
     })();
 </script>
-<script src="/js/ios-wallpaper.js?v=1788091201" defer></script>
-<script src="/js/ios-tools.js?v=1788091201" defer></script>
+<script src="/js/ios-wallpaper.js?v=1788092303" defer></script>
+<script src="/js/ios-tools.js?v=1788092303" defer></script>
+<script>
+    // ---------- 相册组件：网格 + 灯箱（大图/视频）+ 左右切换 + Dock 钉图标 ----------
+    (function () {
+        var $ = function (id) { return document.getElementById(id) };
+        var pop = $('photos-pop'), mask = $('photos-pop-mask'), closeBtn = $('photos-pop-close');
+        var home = $('photos-home'), stage = $('photos-stage'), viewer = $('photos-viewer');
+        var title = $('photos-pop-title'), back = $('photos-back');
+        var prevBtn = $('photos-prev'), nextBtn = $('photos-next'), caption = $('photos-caption');
+        var dock = $('dock-photos'), dockName = $('dock-photos-name');
+        var widget = document.querySelector('.ios-app[data-action="photos"]');
+        if (!pop || !widget) return;
+        var items = Array.prototype.slice.call(document.querySelectorAll('#photos-home .photo-card'));
+        var cur = -1;
+
+        function openPop() { pop.hidden = false }
+        function closePop() { pop.hidden = true }
+        function stopMedia() { viewer.innerHTML = '' }
+        function showHome() {
+            title.textContent = '相册';
+            home.hidden = false;
+            stage.hidden = true;
+            stopMedia();
+            dock.hidden = true;
+            cur = -1;
+            if (window.iosOpenApps) delete window.iosOpenApps.photos;
+        }
+        function show(i) {
+            cur = (i + items.length) % items.length;
+            var el = items[cur];
+            var type = el.getAttribute('data-type');
+            var src = el.getAttribute('data-src');
+            var name = el.getAttribute('data-title') || '相册';
+            stopMedia();
+            viewer.innerHTML = type === 'video'
+                ? '<video src="' + src + '" controls autoplay playsinline></video>'
+                : '<img src="' + src + '" alt="">';
+            caption.textContent = name + '（' + (cur + 1) + '/' + items.length + '）';
+            title.textContent = name;
+            home.hidden = true;
+            stage.hidden = false;
+            dock.hidden = false;
+            dockName.textContent = name.length > 5 ? name.slice(0, 5) : name;
+            window.iosOpenApps = window.iosOpenApps || {};
+            window.iosOpenApps.photos = {
+                name: '相册 · ' + name, icon: 'fas fa-images', color: 'linear-gradient(135deg,#a29bfe,#6c5ce7)',
+                focus: function () { openPop(); show(cur) },
+                close: function () { closePop(); showHome() }
+            };
+        }
+        widget.addEventListener('click', function (e) { e.preventDefault(); openPop() });
+        home.addEventListener('click', function (e) {
+            var card = e.target.closest('.photo-card');
+            if (card) show(items.indexOf(card));
+        });
+        mask.addEventListener('click', closePop);
+        closeBtn.addEventListener('click', closePop);
+        back.addEventListener('click', showHome);
+        prevBtn.addEventListener('click', function () { show(cur - 1) });
+        nextBtn.addEventListener('click', function () { show(cur + 1) });
+        dock.addEventListener('click', function (e) {
+            e.preventDefault();
+            if (pop.hidden) { openPop(); if (cur >= 0) show(cur) }
+            else if (stage.hidden && cur >= 0) show(cur);
+            else showHome();
+        });
+        dock.addEventListener('contextmenu', function (e) {
+            window.dockMenu.show(e, '相册', [
+                { label: '关闭相册', danger: true, fn: function () { closePop(); showHome() } }
+            ]);
+        });
+        document.addEventListener('keydown', function (e) {
+            if (pop.hidden) return;
+            if (e.key === 'Escape') closePop();
+            else if (!stage.hidden && e.key === 'ArrowLeft') show(cur - 1);
+            else if (!stage.hidden && e.key === 'ArrowRight') show(cur + 1);
+        });
+    })();
+</script>
 
 <div class="aside-content" id="aside-content">
     <div class="card-widget card-info text-center">
@@ -1907,7 +2164,7 @@
         <div class="webinfo-item"><div class="item-name">运行时间 :</div><div class="item-count" id="site-uptime">—</div></div>
         <div class="webinfo-item"><div class="item-name">Unique Visitors :</div><div class="item-count" id="busuanzi_value_site_uv"><i class="fa-solid fa-spinner fa-spin"></i></div></div>
         <div class="webinfo-item"><div class="item-name">Page Views :</div><div class="item-count" id="busuanzi_value_site_pv"><i class="fa-solid fa-spinner fa-spin"></i></div></div>
-        <div class="webinfo-item"><div class="item-name">Last Update :</div><div class="item-count" id="last-push-date" data-lastPushDate="2026-08-30T20:00:01+08:00"><i class="fa-solid fa-spinner fa-spin"></i></div></div>
+        <div class="webinfo-item"><div class="item-name">Last Update :</div><div class="item-count" id="last-push-date" data-lastPushDate="2026-08-30T20:18:23+08:00"><i class="fa-solid fa-spinner fa-spin"></i></div></div>
     </div>
 </div>
 
@@ -1957,8 +2214,8 @@
 <div id="imageModal" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;z-index:1000;background-color:rgba(0,0,0,.8);cursor:pointer;">
     <img id="modalImage" style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);max-width:90vw;max-height:90vh;"/>
 </div>
-<script src="/js/utils.js?v=1788091201"></script>
-<script src="/js/main.js?v=1788091201"></script>
+<script src="/js/utils.js?v=1788092303"></script>
+<script src="/js/main.js?v=1788092303"></script>
 <script src="/assets/vendor/fancybox/fancybox.umd.min.js"></script>
 <script src="/assets/vendor/lazyload/lazyload.iife.min.js"></script>
 <div class="js-pjax"><script>
@@ -1987,8 +2244,8 @@ btf.addGlobalFn('pjaxSendOnce', () => { typed && typed.destroy(); }, 'typedDestr
 function subtitleType () { typedJSFn.processSubtitle(["打码改变世界","公众号：朱猪写作","保持热爱，奔赴山海"]); }
 typedJSFn.run(subtitleType);
 </script></div>
-<script src="/js/time-greeting.js?v=1788091201"></script>
-<script src="/js/header-glow.js?v=1788091201"></script>
+<script src="/js/time-greeting.js?v=1788092303"></script>
+<script src="/js/header-glow.js?v=1788092303"></script>
 <script async src="/assets/vendor/busuanzi/2.3/busuanzi.pure.mini.js"></script>
 <script>
 // Post Views（文章浏览次数）：
@@ -2087,8 +2344,8 @@ typedJSFn.run(subtitleType);
     }, 500);
 })();
 </script>
-<script src="/js/search/local-search.js?v=1788091201"></script>
-<script src="/js/fun-extras.js?v=1788091201" defer></script>
+<script src="/js/search/local-search.js?v=1788092303"></script>
+<script src="/js/fun-extras.js?v=1788092303" defer></script>
 <script>
 // 站点增强：阅读进度条 / Ctrl+K 搜索 / 随机一读 / 建站天数 / Service Worker
 (function () {
