@@ -1938,3 +1938,41 @@ select.tool-input { appearance: auto; cursor: pointer; }
   .ios-widgets { grid-template-columns: repeat(2, 1fr); }
   .control-center { right: 10px; left: 10px; width: auto; }
 }
+
+/* ---------- 控制中心入口更醒目 ---------- */
+.cc-trigger {
+  width: auto;
+  height: 24px;
+  padding: 0 11px;
+  border-radius: 13px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: .7rem;
+  font-weight: 600;
+  animation: cc-hint 1.8s ease-in-out 3;
+}
+@keyframes cc-hint {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(73, 177, 249, 0); }
+  50% { box-shadow: 0 0 0 6px rgba(73, 177, 249, .35); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .cc-trigger { animation: none; }
+}
+@media (max-width: 640px) {
+  .cc-trigger span { display: none; }
+  .cc-trigger { width: 26px; padding: 0; justify-content: center; }
+}
+
+/* ---------- 功能指南 ---------- */
+.cc-guide-toggle { cursor: pointer; display: flex; align-items: center; gap: 6px; user-select: none; }
+.cc-guide-toggle:hover { color: #d8e2ec; }
+.cc-guide-arrow { transition: transform .25s; margin-left: auto; }
+.cc-guide { display: flex; flex-direction: column; gap: 9px; }
+.cc-guide[hidden] { display: none; }
+.cc-g { display: flex; gap: 9px; align-items: flex-start; }
+.cc-g > i { flex: none; width: 15px; text-align: center; color: #49b1f5; font-size: .78rem; margin-top: 2px; }
+.cc-g b { display: block; font-size: .8rem; color: #e6edf3; }
+.cc-g span { font-size: .74rem; line-height: 1.5; color: rgba(216, 226, 236, .55); }
+.cc-g a { color: #6cc0f7; text-decoration: none; }
+.cc-g a:hover { text-decoration: underline; }
