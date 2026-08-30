@@ -439,7 +439,9 @@ body.home #page-header { display: none; }
 }
 .dock-menu button:hover { background: rgba(255, 255, 255, .12); }
 .dock-menu button.is-danger:hover { background: #ff453a; color: #fff; }
-.ios-app:hover .ios-app__icon { transform: scale(1.1); box-shadow: 0 10px 24px rgba(31, 45, 61, .30); }
+@media (hover: hover) {
+  .ios-app:hover .ios-app__icon { transform: scale(1.1); box-shadow: 0 10px 24px rgba(31, 45, 61, .30); }
+}
 .ios-app:active .ios-app__icon { transform: scale(.96); }
 .ios-app__label {
   font-size: .8rem;
@@ -467,7 +469,7 @@ body.home #page-header { display: none; }
   box-shadow: 0 4px 16px rgba(31, 45, 61, .08);
   transition: transform .25s;
 }
-.ios-search:hover { transform: scale(1.04); }
+@media (hover: hover) { .ios-search:hover { transform: scale(1.04); } }
 
 .ios-dock {
   position: relative;
@@ -499,11 +501,19 @@ body.home #page-header { display: none; }
 }
 
 @media (max-width: 768px) {
-  .ios-desktop { padding: 12px 7vw 14px; }
+  .ios-desktop { padding: 12px 7vw calc(14px + env(safe-area-inset-bottom)); }
   .ios-widgets { flex-direction: column; gap: 12px; margin-top: 18px; }
   .ios-grid { grid-template-columns: repeat(4, 1fr); gap: 20px 6px; }
   .ios-app__icon { width: 56px; height: 56px; border-radius: 15px; font-size: 1.3rem; }
   .ios-widget__time { font-size: 1.9rem; }
+  /* Dock 一行 8 个图标放不下小屏：缩小间距 + 允许横向滚动 */
+  .ios-dock { gap: 9px; padding: 10px 12px; max-width: 100%; overflow-x: auto; scrollbar-width: none; }
+  .ios-dock::-webkit-scrollbar { display: none; }
+  .ios-dock .ios-app { flex: none; }
+  .ios-dock .ios-app__icon { width: 46px; height: 46px; font-size: 1.15rem; }
+  .ios-dock .ios-app__icon--img img,
+  .ios-dock .ios-app__letter { border-radius: 13px; }
+  .ios-scroll-hint { display: none; }
 }
 
 [data-theme=dark] .ios-desktop {
@@ -1124,7 +1134,7 @@ body.home #pagination { max-width: 1100px; margin: 0 auto; }
   box-shadow: 0 6px 14px rgba(31, 45, 61, .22);
   transition: transform .25s, box-shadow .25s;
 }
-.games-pop__app:hover img { transform: scale(1.1); box-shadow: 0 10px 22px rgba(31, 45, 61, .32); }
+@media (hover: hover) { .games-pop__app:hover img { transform: scale(1.1); box-shadow: 0 10px 22px rgba(31, 45, 61, .32); } }
 .games-pop__app:active img { transform: scale(.95); }
 .games-pop__app span {
   font-size: .74rem;
@@ -1648,7 +1658,7 @@ select.tool-input { appearance: auto; cursor: pointer; }
   cursor: pointer;
   transition: background .2s, transform .2s;
 }
-.cc-trigger:hover { background: rgba(255, 255, 255, .55); transform: scale(1.08); }
+@media (hover: hover) { .cc-trigger:hover { background: rgba(255, 255, 255, .55); transform: scale(1.08); } }
 [data-theme=dark] .cc-trigger { background: rgba(255, 255, 255, .14); }
 .control-center {
   position: fixed;
@@ -2202,3 +2212,25 @@ select.tool-input { appearance: auto; cursor: pointer; }
   transition: background .2s, transform .2s;
 }
 .photos-dl:hover { background: #49b1f5; transform: translateY(-2px); }
+
+/* ---------- 移动端触控 & 无障碍 ---------- */
+/* iOS Safari：fixed 背景在触屏上会抖动/错位，改用随内容滚动 */
+@media (hover: none), (pointer: coarse) {
+  .ios-desktop { background-attachment: scroll; }
+}
+/* 触屏：去掉点按高亮蓝框，避免与交互冲突 */
+.ios-desktop, .ios-dock, .ios-grid,
+.ios-app, .ios-widget, .games-pop__app, .cc-tile, .cc-btn,
+.dock-menu button { -webkit-tap-highlight-color: transparent; }
+/* Dock 长按走自定义菜单，屏蔽原生长按（复制/链接菜单） */
+.ios-dock .ios-app,
+.ios-dock .ios-app__icon { -webkit-touch-callout: none; -webkit-user-select: none; user-select: none; }
+@media (prefers-reduced-motion: reduce) {
+  .ios-scroll-hint { animation: none; }
+  .ios-app__icon, .ios-search, .cc-trigger, .games-pop__app img { transition: none; }
+}
+/* 小屏设备 Dock 图标下方留出触控余量 */
+@media (max-width: 768px) {
+  .ios-dock { margin-bottom: env(safe-area-inset-bottom); }
+  .music-player__ctrl button { width: 44px; height: 44px; }
+}
