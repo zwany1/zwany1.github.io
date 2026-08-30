@@ -1594,7 +1594,10 @@ select.tool-input { appearance: auto; cursor: pointer; }
 #ios-lock.unlocking {
   transform: translateY(-102%);
   opacity: .4;
+  pointer-events: none;
 }
+/* 关键：ID 选择器的 display:flex 会压过 UA 的 [hidden] 规则，必须显式声明 */
+#ios-lock[hidden] { display: none; }
 .ios-lock__inner { position: relative; text-align: center; color: #fff; }
 .ios-lock__brand {
   font-size: 1.1rem;
