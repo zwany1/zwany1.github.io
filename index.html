@@ -24,10 +24,10 @@
     <link rel="preconnect" href="//busuanzi.ibruce.info">
     <link rel="stylesheet" href="/assets/vendor/fontawesome/css/all.min.css">
     <link rel="stylesheet" href="/assets/css/butterfly.css">
-    <link rel="stylesheet" href="/css/header-glow.css?v=1788104560">
-    <link rel="stylesheet" href="/css/time-greeting.css?v=1788104560">
-    <link rel="stylesheet" href="/css/gh-projects.css?v=1788104560">
-    <link rel="stylesheet" href="/css/custom.css?v=1788104560">
+    <link rel="stylesheet" href="/css/header-glow.css?v=1788106257">
+    <link rel="stylesheet" href="/css/time-greeting.css?v=1788106257">
+    <link rel="stylesheet" href="/css/gh-projects.css?v=1788106257">
+    <link rel="stylesheet" href="/css/custom.css?v=1788106257">
     <link rel="manifest" href="/manifest.webmanifest">
     <link rel="stylesheet" href="/assets/vendor/fancybox/fancybox.min.css" media="print" onload="this.media='all'">
     
@@ -61,7 +61,7 @@
     window.GLOBAL_CONFIG = {
       root: '/',
       algolia: undefined,
-      localSearch: { "path": "/search.xml?v=1788104560", "preload": false, "top_n_per_article": 1, "unescape": false, "pagination": { "enable": false, "hitsPerPage": 8 }, "languages": { "hits_empty": "未找到包含 ${query} 的文章", "hits_stats": "找到 ${hits} 篇文章" } },
+      localSearch: { "path": "/search.xml?v=1788106257", "preload": false, "top_n_per_article": 1, "unescape": false, "pagination": { "enable": false, "hitsPerPage": 8 }, "languages": { "hits_empty": "未找到包含 ${query} 的文章", "hits_stats": "找到 ${hits} 篇文章" } },
       translate: undefined,
       highlight: { "plugin": "highlight.js", "highlightCopy": true, "highlightLang": true, "highlightHeightLimit": false, "highlightFullpage": false, "highlightMacStyle": false },
       copy: { success: '复制成功', error: '复制失败', noSupport: '浏览器不支持' },
@@ -245,12 +245,14 @@
         </div>
         <div class="ios-widget ios-widget--calendar" title="日历">
             <div class="cal-head" id="cal-head">—</div>
+            <div class="cal-lunar" id="cal-lunar"></div>
             <div class="cal-week"><span>日</span><span>一</span><span>二</span><span>三</span><span>四</span><span>五</span><span>六</span></div>
             <div class="cal-days" id="cal-days"></div>
         </div>
         <div class="ios-widget ios-widget--greet">
             <div class="ios-widget__hi" id="ios-greet"></div>
             <div class="ios-widget__sub">朱的小屋 · 记录技术与生活</div>
+            <div class="ios-widget__quote" id="ios-quote"></div>
         </div>
         <div class="ios-widget ios-widget--weather" id="wx-widget" title="天气 · 点击尝试定位">
             <div class="wx-main"><span class="wx-icon" id="wx-icon">🌤️</span><span class="wx-temp" id="wx-temp">--°</span></div>
@@ -1237,6 +1239,79 @@
     })();
 </script>
 <script>
+    // ---------- 每日一言组件 ----------
+    (function () {
+        var el = document.getElementById('ios-quote');
+        if (!el) return;
+        var LOCAL = [
+            { t: '保持热爱，奔赴山海。', s: '— 朱的小屋' },
+            { t: '代码改变世界，写作记录人生。', s: '— 朱的小屋' },
+            { t: '生活明朗，万物可爱。', s: '' },
+            { t: '慢慢来，比较快。', s: '' },
+            { t: '愿你走出半生，归来仍是少年。', s: '' },
+            { t: '每一段路，都是一种领悟。', s: '' },
+            { t: '把今天过好，不让遗憾来打扰。', s: '' },
+            { t: '读书使人充实，思考使人深邃。', s: '' }
+        ];
+        function paint(t, s) {
+            el.innerHTML = '<span class="ios-quote__text">' + t + '</span>' + (s ? '<span class="ios-quote__src">' + s + '</span>' : '');
+        }
+        try {
+            var c = JSON.parse(localStorage.getItem('quote_cache_v1') || 'null');
+            if (c && c.d === new Date().toDateString()) { paint(c.t, c.s); return; }
+        } catch (e) {}
+        var done = false;
+        fetch('https://v1.hitokoto.cn/?c=d&c=i&c=k&encode=json')
+            .then(function (r) { return r.ok ? r.json() : Promise.reject(); })
+            .then(function (d) {
+                done = true;
+                if (!d || !d.hitokoto) throw 0;
+                var t = d.hitokoto, s = d.from ? '— ' + d.from + (d.from_who ? ' · ' + d.from_who : '') : '';
+                paint(t, s);
+                try { localStorage.setItem('quote_cache_v1', JSON.stringify({ d: new Date().toDateString(), t: t, s: s })); } catch (e2) {}
+            })
+            .catch(function () {
+                if (done) return;
+                var i = Math.floor(Math.random() * LOCAL.length);
+                paint(LOCAL[i].t, LOCAL[i].s);
+            });
+    })();
+</script>
+<script>
+    // ---------- App 启动动效：弹窗从被点击图标处放大弹出 ----------
+    (function () {
+        var last = null;
+        document.addEventListener('click', function (e) {
+            var t = e.target && e.target.closest ? e.target.closest('.ios-widget, .ios-app') : null;
+            if (t) last = t;
+        }, true);
+        function animate(el) {
+            if (el.classList.contains('is-launching')) return;
+            if (last) {
+                var r = last.getBoundingClientRect();
+                if (r && r.width) {
+                    el.style.transformOrigin = ((r.left + r.width / 2) / window.innerWidth * 100) + '% ' + ((r.top + r.height / 2) / window.innerHeight * 100) + '%';
+                }
+            }
+            el.classList.remove('is-launching');
+            void el.offsetWidth;
+            el.classList.add('is-launching');
+        }
+        if ('MutationObserver' in window) {
+            var mo = new MutationObserver(function (muts) {
+                muts.forEach(function (m) {
+                    if (m.type === 'attributes' && m.attributeName === 'hidden' && !m.target.hidden) {
+                        if (m.target.matches && m.target.matches('.music-app, .games-pop')) animate(m.target);
+                    }
+                });
+            });
+            document.querySelectorAll('.music-app, .games-pop').forEach(function (el) {
+                mo.observe(el, { attributes: true, attributeFilter: ['hidden'] });
+            });
+        }
+    })();
+</script>
+<script>
     // Dock 右键菜单：运行中的应用可右键关闭（音乐/游戏/工具共用）
     (function () {
         var menu = null;
@@ -1394,18 +1469,104 @@
     })();
 </script>
 <script>
-    // ---------- 日历小组件 ----------
+    // ---------- 日历小组件（含农历 + 节日） ----------
     (function () {
         var head = document.getElementById('cal-head'), days = document.getElementById('cal-days');
+        var lunarEl = document.getElementById('cal-lunar');
         if (!head || !days) return;
+
+        // 农历信息表（1900-2100），每项编码当年大小月与闰月
+        var lunarInfo = [
+            0x04bd8,0x04ae0,0x0a570,0x054d5,0x0d260,0x0d950,0x16554,0x056a0,0x09ad0,0x055d2,
+            0x04ae0,0x0a5b6,0x0a4d0,0x0d250,0x1d255,0x0b540,0x0d6a0,0x0ada2,0x095b0,0x14977,
+            0x04970,0x0a4b0,0x0b4b5,0x06a50,0x06d40,0x1ab54,0x02b60,0x09570,0x052f2,0x04970,
+            0x06566,0x0d4a0,0x0ea50,0x06e95,0x05ad0,0x02b60,0x186e3,0x092e0,0x1c8d7,0x0c950,
+            0x0d4a0,0x1d8a6,0x0b550,0x056a0,0x1a5b4,0x025d0,0x092d0,0x0d2b2,0x0a950,0x0b557,
+            0x06ca0,0x0b550,0x15355,0x04da0,0x0a5b0,0x14573,0x052b0,0x0a9a8,0x0e950,0x06aa0,
+            0x0aea6,0x0ab50,0x04b60,0x0aae4,0x0a570,0x05260,0x0f263,0x0d950,0x05b57,0x056a0,
+            0x096d0,0x04dd5,0x04ad0,0x0a4d0,0x0d4d4,0x0d250,0x0d558,0x0b540,0x0b6a0,0x195a6,
+            0x095b0,0x049b0,0x0a974,0x0a4b0,0x0b27a,0x06a50,0x06d40,0x0af46,0x0ab60,0x09570,
+            0x04af5,0x04970,0x064b0,0x074a3,0x0ea50,0x06b58,0x05ac0,0x0ab60,0x096d5,0x092e0,
+            0x0c960,0x0d954,0x0d4a0,0x0da50,0x07552,0x056a0,0x0abb7,0x025d0,0x092d0,0x0cab5,
+            0x0a950,0x0b4a0,0x0baa4,0x0ad50,0x055d9,0x04ba0,0x0a5b0,0x15176,0x052b0,0x0a930,
+            0x07954,0x06aa0,0x0ad50,0x05b52,0x04b60,0x0a6e6,0x0a4e0,0x0d260,0x0ea65,0x0d530,
+            0x05aa0,0x076a3,0x096d0,0x04afb,0x04ad0,0x0a4d0,0x1d0b6,0x0d250,0x0d520,0x0dd45,
+            0x0b5a0,0x056d0,0x055b2,0x049b0,0x0a577,0x0a4b0,0x0aa50,0x1b255,0x06d20,0x0ada0,
+            0x14b63,0x09370,0x049f8,0x04970,0x064b0,0x168a6,0x0ea50,0x06b20,0x1a6c4,0x0aae0,
+            0x0a2e0,0x0d2e3,0x0c960,0x0d557,0x0d4a0,0x0da50,0x05d55,0x056a0,0x0a6d0,0x055d4,
+            0x052d0,0x0a9b8,0x0a950,0x0b4a0,0x0b6a6,0x0ad50,0x055a0,0x0aba4,0x0a5b0,0x052b0,
+            0x0b273,0x06930,0x07337,0x06aa0,0x0ad50,0x14b55,0x04b60,0x0a570,0x054e4,0x0d160,
+            0x0e968,0x0d520,0x0daa0,0x16aa6,0x056d0,0x04ae0,0x0a9d4,0x0a2d0,0x0d150,0x0f252,
+            0x0d520
+        ];
+        var LM = ['正', '二', '三', '四', '五', '六', '七', '八', '九', '十', '冬', '腊'];
+        var LD = ['', '一', '二', '三', '四', '五', '六', '七', '八', '九', '十'];
+        var SOLAR_FEST = { '1-1': '元旦', '2-14': '情人节', '3-8': '妇女节', '3-12': '植树节', '4-1': '愚人节', '5-1': '劳动节', '5-4': '青年节', '6-1': '儿童节', '7-1': '建党节', '8-1': '建军节', '9-10': '教师节', '10-1': '国庆节', '12-24': '平安夜', '12-25': '圣诞节' };
+        var LUNAR_FEST = { '1-1': '春节', '1-15': '元宵节', '2-2': '龙抬头', '5-5': '端午节', '7-7': '七夕', '7-15': '中元节', '8-15': '中秋节', '9-9': '重阳节', '12-8': '腊八节' };
+
+        function leapMonth(y) { return lunarInfo[y - 1900] & 0xf; }
+        function leapDays(y) { return leapMonth(y) ? ((lunarInfo[y - 1900] & 0x10000) ? 30 : 29) : 0; }
+        function monthDays(y, m) { return (lunarInfo[y - 1900] & (0x10000 >> m)) ? 30 : 29; }
+        function lYearDays(y) {
+            var i, sum = 348;
+            for (i = 0x8000; i > 0x8; i >>= 1) sum += (lunarInfo[y - 1900] & i) ? 1 : 0;
+            return sum + leapDays(y);
+        }
+        function solar2lunar(y, m, d) {
+            var offset = Math.floor((new Date(y, m - 1, d) - new Date(1900, 0, 31)) / 86400000);
+            var temp = 0, i;
+            for (i = 1900; i < 2101 && offset > 0; i++) { temp = lYearDays(i); offset -= temp; }
+            if (offset < 0) { offset += temp; i--; }
+            var year = i, leap = leapMonth(i), isLeap = false;
+            for (i = 1; i < 13 && offset > 0; i++) {
+                if (leap > 0 && i === leap + 1 && isLeap === false) { --i; isLeap = true; temp = leapDays(year); }
+                else { temp = monthDays(year, i); }
+                if (isLeap === true && i === leap + 1) isLeap = false;
+                offset -= temp;
+            }
+            if (offset === 0 && leap > 0 && i === leap + 1) {
+                if (isLeap) { isLeap = false; } else { isLeap = true; --i; }
+            }
+            if (offset < 0) { offset += temp; --i; }
+            return { month: i, day: offset + 1, isLeap: isLeap };
+        }
+        function lDayName(d) {
+            if (d < 11) return '初' + LD[d];
+            if (d < 20) return '十' + LD[d - 10];
+            if (d === 20) return '二十';
+            if (d < 30) return '廿' + LD[d - 20];
+            return '三十';
+        }
+        function lMonthName(m, leap) { return (leap ? '闰' : '') + LM[m - 1] + '月'; }
+        function festOf(y, m, d) {
+            var sf = SOLAR_FEST[m + '-' + d];
+            if (sf) return sf;
+            var l = solar2lunar(y, m, d);
+            if (l.isLeap) return '';
+            var lf = LUNAR_FEST[l.month + '-' + l.day];
+            if (lf) return lf;
+            var n = new Date(y, m - 1, d + 1);
+            var ln = solar2lunar(n.getFullYear(), n.getMonth() + 1, n.getDate());
+            return (ln.month === 1 && ln.day === 1) ? '除夕' : '';
+        }
+
         var now = new Date(), y = now.getFullYear(), m = now.getMonth();
         head.innerHTML = '<b>' + (m + 1) + '月</b><span>' + y + '</span>';
+        var todayL = solar2lunar(y, m + 1, now.getDate());
+        var todayF = festOf(y, m + 1, now.getDate());
+        if (lunarEl) {
+            lunarEl.textContent = lMonthName(todayL.month, todayL.isLeap) + lDayName(todayL.day) + (todayF ? ' · ' + todayF : '');
+        }
         var first = new Date(y, m, 1).getDay();
         var total = new Date(y, m + 1, 0).getDate();
         var html = '';
         for (var i = 0; i < first; i++) html += '<span></span>';
         for (var d = 1; d <= total; d++) {
-            html += '<span' + (d === now.getDate() ? ' class="today"' : '') + '>' + d + '</span>';
+            var f = festOf(y, m + 1, d);
+            var cls = [];
+            if (d === now.getDate()) cls.push('today');
+            if (f) cls.push('fest');
+            html += '<span' + (cls.length ? ' class="' + cls.join(' ') + '"' : '') + (f ? ' title="' + f + '"' : '') + '>' + d + '</span>';
         }
         days.innerHTML = html;
     })();
@@ -1611,8 +1772,8 @@
         });
     })();
 </script>
-<script src="/js/ios-wallpaper.js?v=1788104560" defer></script>
-<script src="/js/ios-tools.js?v=1788104560" defer></script>
+<script src="/js/ios-wallpaper.js?v=1788106257" defer></script>
+<script src="/js/ios-tools.js?v=1788106257" defer></script>
 <script>
     // ---------- 相册组件：网格 + 灯箱（大图/视频）+ 左右切换 + Dock 钉图标 ----------
     (function () {
@@ -1873,7 +2034,7 @@
         <div class="webinfo-item"><div class="item-name">运行时间 :</div><div class="item-count" id="site-uptime">—</div></div>
         <div class="webinfo-item"><div class="item-name">Unique Visitors :</div><div class="item-count" id="busuanzi_value_site_uv"><i class="fa-solid fa-spinner fa-spin"></i></div></div>
         <div class="webinfo-item"><div class="item-name">Page Views :</div><div class="item-count" id="busuanzi_value_site_pv"><i class="fa-solid fa-spinner fa-spin"></i></div></div>
-        <div class="webinfo-item"><div class="item-name">Last Update :</div><div class="item-count" id="last-push-date" data-lastPushDate="2026-08-30T23:42:40+08:00"><i class="fa-solid fa-spinner fa-spin"></i></div></div>
+        <div class="webinfo-item"><div class="item-name">Last Update :</div><div class="item-count" id="last-push-date" data-lastPushDate="2026-08-31T00:10:57+08:00"><i class="fa-solid fa-spinner fa-spin"></i></div></div>
     </div>
 </div>
 
@@ -1923,8 +2084,8 @@
 <div id="imageModal" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;z-index:1000;background-color:rgba(0,0,0,.8);cursor:pointer;">
     <img id="modalImage" style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);max-width:90vw;max-height:90vh;"/>
 </div>
-<script src="/js/utils.js?v=1788104560"></script>
-<script src="/js/main.js?v=1788104560"></script>
+<script src="/js/utils.js?v=1788106257"></script>
+<script src="/js/main.js?v=1788106257"></script>
 <script src="/assets/vendor/fancybox/fancybox.umd.min.js"></script>
 <script src="/assets/vendor/lazyload/lazyload.iife.min.js"></script>
 <div class="js-pjax"><script>
@@ -1953,8 +2114,8 @@ btf.addGlobalFn('pjaxSendOnce', () => { typed && typed.destroy(); }, 'typedDestr
 function subtitleType () { typedJSFn.processSubtitle(["打码改变世界","公众号：朱猪写作","保持热爱，奔赴山海"]); }
 typedJSFn.run(subtitleType);
 </script></div>
-<script src="/js/time-greeting.js?v=1788104560"></script>
-<script src="/js/header-glow.js?v=1788104560"></script>
+<script src="/js/time-greeting.js?v=1788106257"></script>
+<script src="/js/header-glow.js?v=1788106257"></script>
 <script async src="/assets/vendor/busuanzi/2.3/busuanzi.pure.mini.js"></script>
 <script>
 // Post Views（文章浏览次数）：
@@ -2053,8 +2214,8 @@ typedJSFn.run(subtitleType);
     }, 500);
 })();
 </script>
-<script src="/js/search/local-search.js?v=1788104560"></script>
-<script src="/js/global-music.js?v=1788104560" defer></script>
+<script src="/js/search/local-search.js?v=1788106257"></script>
+<script src="/js/global-music.js?v=1788106257" defer></script>
 <script>
 // 深浅色记忆：主题 JS 按 system 设置后，这里覆盖用户手动选择（跟随系统/浅色/深色）
 (function () {
@@ -2064,7 +2225,7 @@ typedJSFn.run(subtitleType);
     } catch (e) {}
 })();
 </script>
-<script src="/js/fun-extras.js?v=1788104560" defer></script>
+<script src="/js/fun-extras.js?v=1788106257" defer></script>
 <script>
 // 站点增强：阅读进度条 / Ctrl+K 搜索 / 随机一读 / 建站天数 / Service Worker
 (function () {

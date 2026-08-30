@@ -2234,3 +2234,26 @@ select.tool-input { appearance: auto; cursor: pointer; }
   .ios-dock { margin-bottom: env(safe-area-inset-bottom); }
   .music-player__ctrl button { width: 44px; height: 44px; }
 }
+
+/* ---------- App 启动动效（从图标处放大弹出） ---------- */
+.music-app, .games-pop { will-change: transform; }
+.is-launching { animation: ios-launch .32s cubic-bezier(.22, .9, .36, 1); }
+@keyframes ios-launch {
+  from { transform: scale(.35); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+@media (prefers-reduced-motion: reduce) { .is-launching { animation: none; } }
+
+/* ---------- 每日一言组件 ---------- */
+.ios-widget__quote { margin-top: 8px; font-size: .74rem; line-height: 1.5; color: rgba(31, 45, 61, .72); }
+.ios-widget__quote .ios-quote__text { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.ios-widget__quote .ios-quote__src { display: block; margin-top: 2px; font-size: .66rem; color: rgba(31, 45, 61, .5); }
+[data-theme=dark] .ios-widget__quote { color: rgba(216, 226, 236, .72); }
+[data-theme=dark] .ios-widget__quote .ios-quote__src { color: rgba(216, 226, 236, .5); }
+
+/* ---------- 日历农历 / 节日 ---------- */
+.cal-lunar { font-size: .66rem; color: rgba(31, 45, 61, .6); margin: 2px 0 6px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+[data-theme=dark] .cal-lunar { color: rgba(216, 226, 236, .6); }
+.cal-days span.fest { color: #e8590c; font-weight: 600; }
+[data-theme=dark] .cal-days span.fest { color: #ffab70; }
+.cal-days span.today.fest { color: #fff; }
