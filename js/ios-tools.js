@@ -55,6 +55,12 @@
       }
     } else if (!current) openPop();
   });
+  dock.addEventListener('contextmenu', function (e) {
+    var meta = current ? grid.querySelector('[data-tool="' + current + '"]') : null;
+    window.dockMenu.show(e, meta ? meta.getAttribute('data-name') : '工具箱', [
+      { label: '关闭工具箱', danger: true, fn: function () { closePop(); showGrid(); } }
+    ]);
+  });
   document.addEventListener('keydown', function (e) {
     if (e.key === 'Escape' && !pop.hidden) closePop();
   });

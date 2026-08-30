@@ -371,6 +371,7 @@ body.home #page-header { display: none; }
   text-decoration: none;
 }
 .ios-app__icon {
+  position: relative;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -382,6 +383,61 @@ body.home #page-header { display: none; }
   box-shadow: 0 6px 16px rgba(31, 45, 61, .22), inset 0 1px 0 rgba(255, 255, 255, .35);
   transition: transform .25s ease, box-shadow .25s ease;
 }
+/* 运行中的应用在 Dock 图标下方亮一颗小圆点（macOS 风格） */
+.ios-app.is-running .ios-app__icon::after,
+#dock-game .ios-app__icon::after,
+#dock-tool .ios-app__icon::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  bottom: -6px;
+  transform: translateX(-50%);
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, .9);
+  box-shadow: 0 0 5px rgba(255, 255, 255, .65);
+}
+
+/* Dock 右键菜单 */
+.dock-menu {
+  position: fixed;
+  z-index: 3000;
+  min-width: 148px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 6px;
+  border-radius: 12px;
+  background: rgba(28, 36, 50, .92);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, .12);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, .35);
+}
+.dock-menu__title {
+  font-size: .72rem;
+  color: #8b98a5;
+  padding: 4px 10px 6px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 200px;
+}
+.dock-menu button {
+  border: none;
+  background: transparent;
+  color: #e6edf3;
+  text-align: left;
+  padding: 8px 12px;
+  border-radius: 8px;
+  font-size: .86rem;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background .15s;
+}
+.dock-menu button:hover { background: rgba(255, 255, 255, .12); }
+.dock-menu button.is-danger:hover { background: #ff453a; color: #fff; }
 .ios-app:hover .ios-app__icon { transform: scale(1.1); box-shadow: 0 10px 24px rgba(31, 45, 61, .30); }
 .ios-app:active .ios-app__icon { transform: scale(.96); }
 .ios-app__label {
