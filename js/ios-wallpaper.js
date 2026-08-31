@@ -4,6 +4,7 @@
  *   随机风景      https://picsum.photos/seed/{seed}/1920/1080
  *   随机二次元    https://t.alcy.cc/ycy（备用 https://www.dmoe.cc/random.php）
  *   默认壁纸      /assets/images/wallpaper.jpg（深色主题 /assets/images/wallpaper-dark.jpg）
+ * 默认动态壁纸    Sintel 预告（首次访问且未选择过壁纸时播放）
  * 选择缓存于 localStorage；必应模式每次进首页静默刷新当天图，随机模式超 12 小时自动换新。
  */
 (function () {
@@ -20,6 +21,8 @@
 
   var KEY = 'ios_wallpaper_v1';
   var RANDOM_TTL = 12 * 3600 * 1000;
+  /* 无本地选择时的默认动态壁纸 */
+  var DEFAULT_VIDEO = { name: 'Sintel 预告', url: 'https://media.w3.org/2010/05/sintel/trailer.mp4' };
   var bingItems = [];
   var bingLoaded = false;
 
@@ -186,6 +189,11 @@
    */
   (function boot() {
     var saved = readStore();
+    if (!saved) {
+      applyVideo(DEFAULT_VIDEO.url, { title: DEFAULT_VIDEO.name });
+      saveMode('video', DEFAULT_VIDEO.url, { title: DEFAULT_VIDEO.name });
+      return;
+    }
     if (saved && saved.mode === 'video' && saved.url) { applyVideo(saved.url, saved); return; }
     if (saved && saved.url && saved.mode !== 'static' && saved.mode !== 'video' && saved.mode !== 'video-custom') apply(saved.url, saved);
     if (!saved || saved.mode === 'static') bootBing();
@@ -279,7 +287,7 @@
   var VIDEOS = [
     { name: '花开', url: 'https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4' },
     { name: '海洋', url: 'https://vjs.zencdn.net/v/oceans.mp4' },
-    { name: 'Sintel 预告', url: 'https://media.w3.org/2010/05/sintel/trailer.mp4' }
+    { name: DEFAULT_VIDEO.name, url: DEFAULT_VIDEO.url }
   ];
   var vlist = document.getElementById('wp-video-list');
   if (vlist) {
