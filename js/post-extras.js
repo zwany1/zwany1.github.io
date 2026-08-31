@@ -102,16 +102,19 @@
         var dateStr = meta ? (meta.getAttribute('datetime') || '').slice(0, 10) : '';
         var url = location.origin + location.pathname;
 
-        /* 保底取图：文章首图(已加载) → og:image(cover/默认头像) → 默认头像，保证海报有图 */
+        /* 保底取图：文章首图真实URL(排除懒加载占位图) → og:image(cover/默认头像) → 默认头像 */
         function resolveCover(cb) {
             var art = document.getElementById('article-container');
-            var imgs = art ? art.querySelectorAll('img') : [];
-            for (var i = 0; i < imgs.length; i++) {
-                if (imgs[i].naturalWidth) { cb(imgs[i]); return; }
-            }
             var candidates = [];
+            var artImgs = art ? art.querySelectorAll('img') : [];
+            for (var i = 0; i < artImgs.length; i++) {
+                var im = artImgs[i];
+                var real = im.getAttribute('data-src') || im.getAttribute('data-lazy-src') || im.src;
+                if (real && !/^data:/.test(real) && !/\.gif(\?|$)/i.test(real)) candidates.push(real);
+            }
             if (ogMeta && ogMeta.content) candidates.push(ogMeta.content);
-            if (candidates[candidates.length - 1] !== defaultCover) candidates.push(defaultCover);
+            var last = candidates[candidates.length - 1];
+            if (last !== defaultCover) candidates.push(defaultCover);
             var idx = 0;
             function next() {
                 if (idx >= candidates.length) { cb(null); return; }
