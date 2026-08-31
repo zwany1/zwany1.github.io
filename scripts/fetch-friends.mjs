@@ -10,6 +10,11 @@ const FRIENDS = [
     site: 'https://keysqiu.github.io/',
     feeds: ['feed.xml', 'atom.xml', 'rss.xml', 'index.xml', 'feed'],
   },
+  {
+    name: '月明星稀',
+    site: 'https://blog.leguans.cn',
+    feeds: ['feed.xml', 'atom.xml', 'rss.xml', 'index.xml', 'feed'],
+  },
   // 新朋友加这里，或直接给出 feeds: ['https://xxx/atom.xml']
 ];
 
