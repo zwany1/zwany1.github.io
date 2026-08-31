@@ -1,0 +1,1083 @@
+<!DOCTYPE html>
+<html lang="zh-cmn-Hans" data-theme="light">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>Redis 集群 - 朱的小屋</title>
+    <meta name="author" content="朱">
+    <meta name="copyright" content="朱">
+    <meta name="format-detection" content="telephone=no">
+    <meta name="theme-color" content="#ffffff">
+    <meta name="description" content="Redis集群的实现原理是什么?">
+    <meta name="keywords" content="朱, zwany1, 朱猪写作">
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="Redis 集群">
+    <meta property="og:url" content="https://zwany1.github.io/2026/08/31/redis/">
+    <meta property="og:site_name" content="朱的小屋">
+    <meta property="og:description" content="朱的个人博客，公众号：朱猪写作">
+    <meta property="og:image" content="https://zwany1.github.io/assets/images/avatar.jpg">
+    <link rel="shortcut icon" href="/favicon.ico">
+    <link rel="canonical" href="https://zwany1.github.io/2026/08/31/redis/">
+    <link rel="alternate" type="application/atom+xml" title="朱的小屋" href="https://zwany1.github.io/feed.xml">
+    <link rel="preconnect" href="//cdn.jsdelivr.net">
+    <link rel="preconnect" href="//busuanzi.ibruce.info">
+    <link rel="stylesheet" href="/assets/vendor/fontawesome/css/all.min.css">
+    <link rel="stylesheet" href="/assets/css/butterfly.css">
+    <link rel="stylesheet" href="/css/header-glow.css?v=1788142283">
+    <link rel="stylesheet" href="/css/time-greeting.css?v=1788142283">
+    <link rel="stylesheet" href="/css/gh-projects.css?v=1788142283">
+    <link rel="stylesheet" href="/css/custom.css?v=1788142283">
+    <link rel="manifest" href="/manifest.webmanifest">
+    <link rel="stylesheet" href="/assets/vendor/fancybox/fancybox.min.css" media="print" onload="this.media='all'">
+    
+    <link rel="stylesheet" href="https://fastly.jsdelivr.net/gh/mzlogin/rouge-themes@master/dist/github.css">
+    <script>
+    (() => {
+      const saveToLocal = {
+        set: (key, value, ttl) => { const data = { value }; if (ttl != null) data.expiry = Date.now() + ttl * 86400000; localStorage.setItem(key, JSON.stringify(data)); },
+        get: key => { const itemStr = localStorage.getItem(key); if (!itemStr) return; try { const data = JSON.parse(itemStr); if (data.expiry && Date.now() > data.expiry) { localStorage.removeItem(key); return; } return data.value; } catch { localStorage.removeItem(key); } }
+      };
+      const scriptCache = new Map();
+      const cssCache = new Map();
+      window.btf = {
+        saveToLocal,
+        getScript: (url, attr = {}) => { if (scriptCache.has(url)) return scriptCache.get(url); const promise = new Promise((resolve, reject) => { const script = document.createElement('script'); script.src = url; script.async = true; for (const key in attr) script.setAttribute(key, attr[key]); script.onload = resolve; script.onerror = reject; document.head.appendChild(script); }); scriptCache.set(url, promise); return promise; },
+        getCSS: (url, id) => { if (cssCache.has(url)) return cssCache.get(url); const promise = new Promise((resolve, reject) => { const link = document.createElement('link'); link.rel = 'stylesheet'; link.href = url; if (id) link.id = id; link.onload = resolve; link.onerror = reject; document.head.appendChild(link); }); cssCache.set(url, promise); return promise; },
+        addGlobalFn: (key, fn, name = false, parent = window) => { if (!false && key.startsWith('pjax')) return; const globalFn = parent.globalFn || {}; globalFn[key] = globalFn[key] || {}; globalFn[key][name || Object.keys(globalFn[key]).length] = fn; parent.globalFn = globalFn; }
+      };
+      const metaThemeColor = document.querySelector('meta[name="theme-color"]');
+      const activateDarkMode = () => { document.documentElement.dataset.theme = 'dark'; if (metaThemeColor !== null) metaThemeColor.setAttribute('content', '#0d0d0d'); };
+      const activateLightMode = () => { document.documentElement.dataset.theme = 'light'; if (metaThemeColor !== null) metaThemeColor.setAttribute('content', '#ffffff'); };
+      btf.activateDarkMode = activateDarkMode;
+      btf.activateLightMode = activateLightMode;
+      const theme = saveToLocal.get('theme');
+      theme === 'dark' ? activateDarkMode() : theme === 'light' ? activateLightMode() : null;
+      const asideStatus = saveToLocal.get('aside-status');
+      if (asideStatus !== undefined) document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide');
+      const detectApple = () => { if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) document.documentElement.classList.add('apple'); };
+      detectApple();
+    })();
+    window.GLOBAL_CONFIG = {
+      root: '/',
+      algolia: undefined,
+      localSearch: { "path": "/search.xml?v=1788142283", "preload": false, "top_n_per_article": 1, "unescape": false, "pagination": { "enable": false, "hitsPerPage": 8 }, "languages": { "hits_empty": "未找到包含 ${query} 的文章", "hits_stats": "找到 ${hits} 篇文章" } },
+      translate: undefined,
+      highlight: { "plugin": "highlight.js", "highlightCopy": true, "highlightLang": true, "highlightHeightLimit": false, "highlightFullpage": false, "highlightMacStyle": false },
+      copy: { success: '复制成功', error: '复制失败', noSupport: '浏览器不支持' },
+      relativeDate: { homepage: false, post: false },
+      runtime: '',
+      dateSuffix: { just: '刚刚', min: '分钟前', hour: '小时前', day: '天前', month: '个月前' },
+      copyright: undefined,
+      lightbox: 'fancybox',
+      Snackbar: undefined,
+      infinitegrid: { js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid@4.13.0/dist/infinitegrid.min.js', buttonText: '加载更多' },
+      isPhotoFigcaption: false,
+      islazyloadPlugin: true,
+      isAnchor: false,
+      percent: { toc: true, rightside: false },
+      autoDarkmode: true
+    };
+    window.GLOBAL_CONFIG_SITE = {
+      title: 'Redis 集群',
+      isHighlightShrink: false,
+      isToc: false,
+      pageType: 'page'
+    };
+    </script>
+</head>
+<body class=" type-post">
+<div id="web_bg"></div>
+<div id="sidebar">
+    <div id="menu-mask"></div>
+    <div id="sidebar-menus">
+        <div class="avatar-img text-center">
+            <img src="/assets/images/avatar.jpg" alt="avatar" onerror="this.onerror=null;this.src='https://github.com/zwany1.png'"/>
+        </div>
+        <div class="site-data text-center">
+            <a href="/archives/"><div class="headline">Articles</div><div class="length-num">4</div></a>
+            <a href="/tags/"><div class="headline">Tags</div><div class="length-num">9</div></a>
+            <a href="/categories/"><div class="headline">Categories</div><div class="length-num">3</div></a>
+        </div>
+        <div class="menus_items">
+            <div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div>
+            <div class="menus_item"><a class="site-page" href="/projects/"><i class="fa-fw fas fa-rocket"></i><span> 项目</span></a></div>
+            <div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></div>
+            <div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div>
+            <div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div>
+            <div class="menus_item"><a class="site-page" href="/links/"><i class="fa-fw fas fa-link"></i><span> 友链</span></a></div>
+            <div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-user"></i><span> 关于</span></a></div>
+        </div>
+    </div>
+</div>
+<div class="page" id="body-wrap">
+    <header class="post-bg" id="page-header" style="background: linear-gradient(135deg, #4c8bf5 0%, #9a6cf5 50%, #f56ec6 100%);">
+        <nav id="nav">
+            <span id="blog-info">
+                <a class="nav-site-title" href="/"><span class="site-name">朱的小屋</span></a>
+            </span>
+            <div id="menus">
+                <div id="search-button">
+                    <span class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> Search</span></span>
+                </div>
+                <div class="menus_items">
+                    <div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div>
+                    <div class="menus_item"><a class="site-page" href="/projects/"><i class="fa-fw fas fa-rocket"></i><span> 项目</span></a></div>
+                    <div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></div>
+                    <div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div>
+                    <div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div>
+                    <div class="menus_item"><a class="site-page" href="/links/"><i class="fa-fw fas fa-link"></i><span> 友链</span></a></div>
+                    <div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-user"></i><span> 关于</span></a></div>
+                </div>
+                <div id="toggle-menu">
+                    <span class="site-page"><i class="fas fa-bars fa-fw"></i></span>
+                </div>
+            </div>
+        </nav>
+        
+        <div id="post-info">
+            <h1 class="post-title">Redis 集群</h1>
+            <div id="post-meta">
+                <div class="meta-firstline">
+                    <span class="post-meta-date">
+                        <i class="far fa-calendar-alt fa-fw post-meta-icon"></i>
+                        <span class="post-meta-label">Created</span>
+                        <time class="post-meta-date-created" datetime="2026-08-31T10:00:00+08:00" title="Created 2026-08-31 10:00:00">2026-08-31</time>
+                    </span>
+                    
+                    <span class="post-meta-categories">
+                        <span class="post-meta-separator">|</span>
+                        <i class="fas fa-inbox fa-fw post-meta-icon"></i>
+                        <a class="post-meta-categories" href="/categories/#Redis">Redis</a>
+                    </span>
+                    
+                    <span class="post-meta-separator">|</span>
+                    <span class="post-meta-readtime"><i class="far fa-clock fa-fw post-meta-icon"></i>约 23 分钟</span>
+                </div>
+                <div class="meta-secondline">
+                    <span class="post-meta-separator">|</span>
+                    <span class="post-meta-pv-cv" data-flag-title="Redis 集群">
+                        <i class="far fa-eye fa-fw post-meta-icon"></i>
+                        <span class="post-meta-label">Post Views:</span>
+                        <span id="page_views_value"><i class="fa-solid fa-spinner fa-spin"></i></span>
+                    </span>
+                </div>
+            </div>
+        </div>
+        
+    </header>
+    <main class="layout" id="content-inner">
+
+<div id="post">
+    <div class="post-extras-bar">
+        <button id="pe-tts" type="button" title="浏览器本地朗读全文"><i class="fas fa-volume-high"></i> 听全文</button>
+        <button id="pe-poster" type="button" title="生成分享海报图片"><i class="fas fa-image"></i> 分享图</button>
+        <button id="pe-like" type="button" title="点赞这篇文章"><i class="fas fa-heart"></i> <span id="pe-like-count">—</span></button>
+        <span class="pe-font">
+            <button id="pe-font-minus" type="button" title="减小字号">A-</button>
+            <button id="pe-font-plus" type="button" title="增大字号">A+</button>
+        </span>
+    </div>
+    <article class="container post-content" id="article-container">
+    <h2 id="redis集群的实现原理是什么">Redis集群的实现原理是什么?</h2>
+
+<h3 id="为什么需要集群">为什么需要集群？</h3>
+
+<p>在讲Redis集群架构之前，我们先简单讲下Redis单实例的架构，从最开始的一主N从，到读写分离，再到Sentinel哨兵机制，单实例的Redis缓存足以应对大多数的使用场景，也能实现主从故障迁移。</p>
+
+<p><img src="/assets/notes/Pasted-image-20260831095941.png" alt="" /></p>
+
+<ul>
+  <li>
+    <p>单实例 Redis 缓存在某些场景下存在问题：</p>
+  </li>
+  <li>
+    <p>写并发：单实例读写分离能解决读操作负载均衡，但写操作全在 master 节点，海量数据高并发时，该节点易出现写瓶颈，压力上升。</p>
+  </li>
+  <li>
+    <p>海量数据的存储压力：单实例仅靠一台 Master 存储，面对海量数据难以应付，数据量大导致持久化成本高，可能阻塞服务器，降低服务请求成功率与服务稳定性。</p>
+  </li>
+  <li>
+    <p>Redis 集群提供完善方案，解决了存储受单机限制和写操作无法负载均衡的问题。</p>
+  </li>
+</ul>
+
+<h3 id="什么是集群">什么是集群？</h3>
+
+<ul>
+  <li>
+    <p>Redis 3.0 加入集群模式，带来以下特性：</p>
+  </li>
+  <li>
+    <p>实现数据分布式存储：对数据分片，将不同数据存于不同 master 节点，解决海量数据存储问题。</p>
+  </li>
+  <li>
+    <p>去中心化思想：无中心节点，客户端视整个集群为一个整体，可连接任意节点操作，如同操作单一 Redis 实例，无需代理中间件。若操作的 key 未分配到该节点，Redis 返回转向指令，指向正确节点。</p>
+  </li>
+  <li>
+    <p>内置高可用机制：支持 N 个 master 节点，每个 master 节点可挂载多个 slave 节点。当 master 节点挂掉，集群会提升某个 slave 节点为新的 master 节点。</p>
+  </li>
+</ul>
+
+<p><img src="/assets/notes/Pasted-image-20260831100027.png" alt="" /></p>
+
+<p>如上图所示，Redis集群可以看成多个主从架构组合起来的，每一个主从架构可以看成一个节点（其中，只有master节点具有处理请求的能力，slave节点主要是用于节点的高可用）</p>
+
+<h3 id="哈希槽算法">哈希槽算法</h3>
+
+<h4 id="什么是哈希槽算法">什么是哈希槽算法？</h4>
+
+<p>分布式存储需考虑如何将数据拆分到不同 Redis 服务器，常见分区算法有 hash 算法、一致性 hash 算法。</p>
+
+<ul>
+  <li>
+    <p>普通 hash 算法：</p>
+  </li>
+  <li>
+    <p>计算方式：将 key 用 hash 算法计算后按节点数量取余，即 hash (key)% N。</p>
+  </li>
+  <li>
+    <p>优点：简单。</p>
+  </li>
+  <li>
+    <p>缺点：扩容或摘除节点时需重新计算映射关系，导致数据重新迁移。</p>
+  </li>
+  <li>
+    <p>一致性 hash 算法：</p>
+  </li>
+  <li>
+    <p>计算方式：为每个节点分配一个 token 构成哈希环，查找时先算 key 的 hash 值，再顺时针找第一个大于等于该哈希值的 token 节点。</p>
+  </li>
+  <li>
+    <p>优点：加入和删除节点仅影响相邻两个节点。</p>
+  </li>
+  <li>
+    <p>缺点：加减节点会造成部分数据无法命中，一般用于缓存，且适用于节点量大的情况，扩容通常增加一倍节点以保障数据负载均衡 。</p>
+  </li>
+</ul>
+
+<p>Redis 集群采用哈希槽分区算法：</p>
+
+<ul>
+  <li>集群中有 16384 个哈希槽（范围 0 - 16383），不同哈希槽分布在不同 Redis 节点管理，每个节点负责部分哈希槽。</li>
+  <li>数据操作时，集群用 CRC16 算法对 key 计算并对 16384 取模（slot = CRC16 (key)%16383 ），得到的值就是 Key - Value 要放入的槽。</li>
+  <li>通过该值找到对应槽的 Redis 节点，进而在该节点进行存取操作。</li>
+</ul>
+
+<p>使用哈希槽的好处就在于可以方便的<strong>添加或者移除节点</strong>，并且无论是添加删除或者修改某一个节点，都不会造成集群不可用的状态。当需要增加节点时，只需要把其他节点的某些哈希槽挪到新节点就可以了；当需要移除节点时，只需要把移除节点上的哈希槽挪到其他节点就行了；哈希槽数据分区算法具有以下几种特点：</p>
+
+<ul>
+  <li><strong>解耦数据和节点之间的关系，简化了扩容和收缩难度；</strong></li>
+  <li><strong>节点自身维护槽的映射关系，不需要客户端代理服务维护槽分区元数据</strong></li>
+  <li><strong>支持节点、槽、键之间的映射查询，用于数据路由，在线伸缩等场景</strong></li>
+</ul>
+
+<p><strong>槽的迁移与指派命令：CLUSTER ADDSLOTS 0 1 2 3 4 … 5000</strong></p>
+
+<h4 id="redis中哈希槽相关的数据结构">Redis中哈希槽相关的数据结构</h4>
+
+<ol>
+  <li><strong>clusterNode数据结构：</strong>保存节点的当前状态，比如节点的创建时间，节点的名字，节点当前的配置纪元，节点的IP和地址，等等。</li>
+</ol>
+
+<p><code class="language-plaintext highlighter-rouge">// 定义一个名为 clusterNode 的结构体，用于表示 Redis 集群中的节点 typedef struct clusterNode {     
+</code>// 节点对象的创建时间，以毫秒为单位的时间戳     mstime_t ctime; /* Node object creation time. <em>/<code class="language-plaintext highlighter-rouge">         
+</code>// 节点名称，是一个十六进制字符串，长度为 REDIS_CLUSTER_NAMELEN（通常为 40 字节，SHA1 哈希值的长度）     char name[REDIS_CLUSTER_NAMELEN]; /</em> Node name, hex string, sha1-size <em>/<code class="language-plaintext highlighter-rouge">       
+</code>// 节点的标志位，用于表示节点的各种状态，如是否是主节点、从节点、是否下线等，取值为 REDIS_NODE_… 系列的常量     int flags;      /</em> REDIS_NODE_… <em>/<code class="language-plaintext highlighter-rouge">      
+</code>// 该节点观察到的最后一个配置纪元，用于集群配置的版本管理     uint64_t configEpoch; /</em> Last configEpoch observed for this node <em>/<code class="language-plaintext highlighter-rouge">         
+</code>// 一个数组，用于表示该节点负责的哈希槽。每个字节表示 8 个哈希槽，REDIS_CLUSTER_SLOTS 通常为 16384，所以数组大小为 16384 / 8     unsigned char slots[REDIS_CLUSTER_SLOTS/8]; /</em> slots handled by this node <em>/<code class="language-plaintext highlighter-rouge">          
+</code>// 该节点负责的哈希槽数量     int numslots;   /</em> Number of slots handled by this node <em>/          // 如果该节点是主节点，这个字段表示它拥有的从节点数量     int numslaves;  /</em> Number of slave nodes, if this is a master <em>/<code class="language-plaintext highlighter-rouge">        
+</code>// 一个指针数组，指向该主节点的所有从节点     struct clusterNode **slaves; /</em> pointers to slave nodes <em>/<code class="language-plaintext highlighter-rouge">        
+</code>// 指向该从节点的主节点，如果该节点本身是主节点，则为 NULL     struct clusterNode *slaveof; /</em> pointer to the master node <em>/<code class="language-plaintext highlighter-rouge">          
+</code>// 最近一次发送 PING 命令的时间，以毫秒为单位的时间戳     mstime_t ping_sent;      /</em> Unix time we sent latest ping <em>/<code class="language-plaintext highlighter-rouge">          
+</code>// 最近一次接收到 PONG 响应的时间，以毫秒为单位的时间戳     mstime_t pong_received;  /</em> Unix time we received the pong <em>/<code class="language-plaintext highlighter-rouge">        
+</code>// 当该节点被标记为 FAIL 状态的时间，以毫秒为单位的时间戳     mstime_t fail_time;      /</em> Unix time when FAIL flag was set <em>/<code class="language-plaintext highlighter-rouge">         
+</code>// 最近一次为该主节点的某个从节点投票的时间，以毫秒为单位的时间戳     mstime_t voted_time;     /</em> Last time we voted for a slave of this master <em>/<code class="language-plaintext highlighter-rouge">         
+</code>// 最近一次接收到该节点的复制偏移量的时间，以毫秒为单位的时间戳     mstime_t repl_offset_time;  /</em> Unix time we received offset for this node <em>/<code class="language-plaintext highlighter-rouge">          
+</code>// 该节点最近已知的复制偏移量，用于主从复制的同步     PORT_LONGLONG repl_offset;      /</em> Last known repl offset for this node. <em>/<code class="language-plaintext highlighter-rouge">        
+</code>// 该节点最近已知的 IP 地址，长度为 REDIS_IP_STR_LEN     char ip[REDIS_IP_STR_LEN];  /</em> Latest known IP address of this node <em>/<code class="language-plaintext highlighter-rouge">         
+</code>// 该节点最近已知的端口号     int port;                   /</em> Latest known port of this node */       <br />
+<code class="language-plaintext highlighter-rouge">// 指向与该节点的 TCP/IP 连接的结构体     clusterLink *link;          /* TCP/IP link with this node */</code>       <br />
+<code class="language-plaintext highlighter-rouge">// 一个链表，存储了所有报告该节点为失败的节点信息     list *fail_reports;         /* List of nodes signaling this as failing */ } clusterNode;</code></p>
+
+<ol>
+  <li><strong>clusterState数据结构</strong>：记录当前节点所认为的集群目前所处的状态。
+<code class="language-plaintext highlighter-rouge">// 定义一个名为 clusterState 的结构体，用于表示 Redis 集群的整体状态 typedef struct clusterState {     
+`// 指向代表本节点的 clusterNode 结构体指针     clusterNode *myself;  /* This node */`         
+`// 当前的集群配置纪元，用于标识集群配置的版本     uint64_t currentEpoch;`          
+`// 集群的当前状态，取值为 REDIS_CLUSTER_OK（集群正常）、REDIS_CLUSTER_FAIL（集群故障）等相关常量     int state;            /* REDIS_CLUSTER_OK, REDIS_CLUSTER_FAIL,... */`          
+`// 至少负责一个哈希槽的主节点数量     int size;             /* Num of master nodes with at least one slot */`        
+`// 一个字典，用于通过节点名称（字符串）查找对应的 clusterNode 结构体，方便快速定位节点     dict *nodes;          /* Hash table of name -&gt; clusterNode structures */`        
+`// 一个字典，存储了在一段时间内不重新添加的节点，这些节点可能是出现问题或正在被处理的节点     dict *nodes_black_list; /* Nodes we don't re-add for a few seconds. */`       
+`// 一个数组，长度为 REDIS_CLUSTER_SLOTS（16384），每个元素指向一个 clusterNode 结构体，表示正在将某个哈希槽迁移到的目标节点     clusterNode *migrating_slots_to[REDIS_CLUSTER_SLOTS];`        
+`// 一个数组，长度为 REDIS_CLUSTER_SLOTS（16384），每个元素指向一个 clusterNode 结构体，表示正在从某个节点导入哈希槽     clusterNode *importing_slots_from[REDIS_CLUSTER_SLOTS];`         
+`// 一个数组，长度为 REDIS_CLUSTER_SLOTS（16384），每个元素指向一个 clusterNode 结构体，保存所有哈希槽位的分配情况     clusterNode *slots[REDIS_CLUSTER_SLOTS];//保存所有槽位分配情况`         
+`// 一个跳跃表，用于存储哈希槽到键的映射关系，方便根据哈希槽查找相关的键     zskiplist *slots_to_keys;          /* 以下字段用于从节点在选举中的状态 */     // 上次或下次选举的时间，以毫秒为单位的时间戳     mstime_t failover_auth_time; /* Time of previous or next election. */          // 到目前为止收到的投票数     int failover_auth_count;    /* Number of votes received so far. */          // 表示是否已经请求过投票，为真则表示已经请求过     int failover_auth_sent;     /* True if we already asked for votes. */`         
+`// 当前从节点在本次选举请求中的排名     int failover_auth_rank;     /* This slave rank for current auth request. */`          
+`// 当前选举的纪元     uint64_t failover_auth_epoch; /* Epoch of the current election. */          // 表示从节点当前不能进行故障转移的原因，取值为 CANT_FAILOVER_* 系列的宏定义     int cant_failover_reason;   /* Why a slave is currently not able to                                    failover. See the CANT_FAILOVER_* macros. */`         
+`/* 手动故障转移的通用状态 */`     
+`// 手动故障转移的时间限制（以毫秒为单位的 Unix 时间戳），如果没有正在进行的手动故障转移，则为零     mstime_t mf_end;            /* Manual failover time limit (ms unixtime).                                    It is zero if there is no MF in progress. */`         
+`/* 主节点手动故障转移的状态 */     /`
+`/ 执行手动故障转移的从节点指针     clusterNode *mf_slave;      /* Slave performing the manual failover. */`         
+`/* 从节点手动故障转移的状态 */`     
+`// 从节点开始手动故障转移所需的主节点偏移量，如果尚未收到则为零     PORT_LONGLONG mf_master_offset; /* Master offset the slave needs to start MF                                    or zero if stil not received. */`        
+`// 如果非零，表示手动故障转移可以开始请求主节点投票     int mf_can_start;           
+`/* If non-zero signal that the manual failover                                    can start requesting masters vote. */`       
+`/* 以下字段用于主节点在选举中的状态 */`     
+`// 上次授予投票的纪元     uint64_t lastVoteEpoch;     /* Epoch of the last vote granted. */         
+`// 在 clusterBeforeSleep() 函数中需要完成的任务数量     int todo_before_sleep; /* Things to do in clusterBeforeSleep(). */`          
+`// 通过集群总线发送的消息数量     PORT_LONGLONG stats_bus_messages_sent;  /* Num of msg sent via cluster bus. */`       
+`// 通过集群总线接收的消息数量     PORT_LONGLONG stats_bus_messages_received; /* Num of msg rcvd via cluster bus.*/ } clusterState;</code></li>
+</ol>
+
+<h4 id="节点的槽指派信息">节点的槽指派信息</h4>
+
+<p>clusterNode数据结构的slots属性和numslot属性记录了节点负责处理那些槽：slots属性是一个二进制位数组(bit array)，这个数组的长度为16384/8=2048个字节，共包含16384个二进制位。Master节点用bit来标识对于某个槽自己是否拥有，时间复杂度为O(1)</p>
+
+<p><img src="/assets/notes/Pasted-image-20260831100954.png" alt="" /></p>
+
+<h4 id="集群所有槽的指派信息">集群所有槽的指派信息</h4>
+
+<p>当收到集群中其他节点发送的信息时，通过将节点槽的指派信息保存在本地的clusterState.slots数组里面，程序要检查槽i是否已经被指派，又或者取得负责处理槽i的节点，只需要访问clusterState.slots[i]的值即可，时间复杂度仅为O(1)</p>
+
+<p><img src="/assets/notes/Pasted-image-20260831101018.png" alt="" /></p>
+
+<p>ClusterState 中的 Slots 数组下标对应槽，槽信息对应 clusterNode（缓存节点），节点含实际 Redis 缓存服务的 IP 和 Port 信息。Redis Cluster 通讯机制确保各节点有其他节点和槽数据对应关系，因每个节点都有 ClusterState 记录所有槽与节点对应关系，所以客户端访问集群中任意节点都可路由到对应节点。</p>
+
+<h4 id="集群的请求重定向">集群的请求重定向</h4>
+
+<p>前面讲到，Redis集群在客户端层面没有采用代理，并且无论Redis 的客户端访问集群中的哪个节点都可以路由到对应的节点上，下面来看看 Redis 客户端是如何通过路由来调用缓存节点的：</p>
+
+<ol>
+  <li>MOVED请求</li>
+</ol>
+
+<p><img src="/assets/notes/Pasted-image-20260831100910.png" alt="" /></p>
+
+<ul>
+  <li>Redis 客户端经计算找 “缓存节点 1” 操作数据。</li>
+  <li>因数据迁移等，对应 Slot 数据到 “缓存节点 2”，客户端无法从 “缓存节点 1” 获取。</li>
+  <li>“缓存节点 1” 存集群节点信息，知数据在 “缓存节点 2”，发 MOVED 重定向请求。</li>
+  <li>客户端获 “缓存节点 2” 地址，继续访问并拿到数据。</li>
+</ul>
+
+<ol>
+  <li>ASK请求</li>
+</ol>
+
+<p>上面的例子说明了，数据 Slot 从“缓存节点1”已经迁移到“缓存节点2”了，那么客户端可以直接找“缓存节点2”要数据。那么如果两个缓存节点正在做节点的数据迁移，此时客户端请求会如何处理呢？</p>
+
+<p><img src="/assets/notes/Pasted-image-20260831100901.png" alt="" /></p>
+
+<ul>
+  <li>
+    <p>Redis 客户端向 “缓存节点 1” 发出请求。</p>
+  </li>
+  <li>
+    <p>若 “缓存节点 1” 正向 “缓存节点 2” 迁移数据且未命中对应 Slot：</p>
+  </li>
+  <li>
+    <p>“缓存节点 1” 会返回客户端一个 ASK 重定向请求，并告知 “缓存节点 2” 的地址。</p>
+  </li>
+  <li>
+    <p>客户端向 “缓存节点 2” 发送 Asking 命令，询问所需数据是否在 “缓存节点 2” 上。</p>
+  </li>
+  <li>
+    <p>“缓存节点 2” 接到消息后，返回数据是否存在的结果。</p>
+  </li>
+</ul>
+
+<ol>
+  <li>
+    <p>频繁重定向造成的网络开销的处理：smart客户端</p>
+  </li>
+  <li>
+    <p><strong>什么是smart客户端</strong></p>
+  </li>
+</ol>
+
+<p>在大部分情况下，可能都会出现一次请求重定向才能找到正确的节点，这个重定向过程显然会增加集群的网络负担和单次请求耗时。所以大部分的客户端都是smart的。所谓 smart客户端，就是指客户端本地维护一份hashslot =&gt; node的映射表缓存，大部分情况下，直接走本地缓存就可以找到hashslot =&gt; node，不需要通过节点进行moved重定向，</p>
+
+<ol>
+  <li><strong>JedisCluster的工作原理</strong></li>
+</ol>
+
+<ul>
+  <li>
+    <p>JedisCluster 初始化时：</p>
+  </li>
+  <li>
+    <p>随机选择一个 node。</p>
+  </li>
+  <li>
+    <p>初始化 hashslot =&gt; node 映射表。</p>
+  </li>
+  <li>
+    <p>为每个节点创建一个 JedisPool 连接池。</p>
+  </li>
+  <li>
+    <p>每次基于 JedisCluster 执行操作时：</p>
+  </li>
+  <li>
+    <p>先在本地计算 key 的 hashslot。</p>
+  </li>
+  <li>
+    <p>在本地映射表找到对应的节点 node。</p>
+  </li>
+  <li>
+    <p>存在两种情况：</p>
+  </li>
+  <li>
+    <p>若该 node 仍持有此 hashslot，则操作正常进行。</p>
+  </li>
+  <li>
+    <p>若进行了 reshard 操作，hashslot 不在该 node 上，会返回 moved。</p>
+  </li>
+  <li>
+    <p>当 JedisCluster API 发现对应节点返回 moved 时：</p>
+  </li>
+  <li>
+    <p>利用节点返回的元数据，更新本地的 hashslot =&gt; node 映射表缓存。</p>
+  </li>
+  <li>
+    <p>重复上述步骤直至找到对应节点。</p>
+  </li>
+  <li>
+    <p>若重试超过 5 次：</p>
+  </li>
+  <li>
+    <p>报错，抛出 JedisClusterMaxRedirectionException。</p>
+  </li>
+</ul>
+
+<ol>
+  <li>hashslot迁移和ask重定向</li>
+</ol>
+
+<p>若 hashslot 正在迁移，会向客户端返回 ask 重定向，客户端接收后重新定位到目标节点执行；因 ask 发生在迁移过程中，JedisCluster API 收到 ask 不会更新 hashslot 本地缓存。ASK 和 MOVED 虽都是对客户端的重定向控制，但有本质区别：ASK 重定向表明集群正在进行 slot 数据迁移，客户端无法知晓迁移完成时间，属于临时性重定向，客户端不更新 slots 缓存；MOVED 重定向说明键对应的槽已明确指定到新节点，客户端需更新 slots 缓存。</p>
+
+<h4 id="redis集群中节点的通信机制goosip协议">Redis集群中节点的通信机制：goosip协议</h4>
+
+<p>Redis 集群的哈希槽算法解决数据存取问题，不同哈希槽分布在不同节点，各节点维护自身认知的集群状态，且集群采用去中心化架构。当集群状态如新节点加入、slot 迁移、节点宕机、从节点提升为主节点等发生变化时，需让其他节点尽快知晓，那么 Redis 如何处理以及不同节点间怎样通信以维护集群同步状态的呢？</p>
+
+<p>在Redis集群中，不同的节点之间采用gossip协议进行通信，节点之间通讯的目的是为了维护节点之间的元数据信息。这些元数据就是每个节点包含哪些数据，是否出现故障，<strong>通过gossip协议，达到最终数据的一致性。</strong></p>
+
+    </article>
+    <div class="post-copyright">
+        <div class="post-copyright__author">
+            <span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>Author: </span>
+            <span class="post-copyright-info"><a href="https://zwany1.github.io">朱</a></span>
+        </div>
+        <div class="post-copyright__type">
+            <span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>Link: </span>
+            <span class="post-copyright-info"><a href="/2026/08/31/redis/">/2026/08/31/redis/</a></span>
+        </div>
+        <div class="post-copyright__notice">
+            <span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>Copyright Notice: </span>
+            <span class="post-copyright-info">All articles on this blog are licensed under <a target="_blank" rel="noopener" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a> unless otherwise stated.</span>
+        </div>
+    </div>
+    <div class="tag_share">
+        <div class="post-meta__tag-list">
+            <a class="post-meta__tags" href="/tags/#redis"><i class="fas fa-tag fa-fw"></i>redis</a><a class="post-meta__tags" href="/tags/#redis集群"><i class="fas fa-tag fa-fw"></i>redis集群</a>
+        </div>
+        
+    </div>
+    
+
+<div class="qrcode-promo">
+    <div class="qrcode-promo__text">
+        <div class="qrcode-promo__title">感谢读完 ✍️</div>
+        <div class="qrcode-promo__desc">
+            我是朱，在这里记录技术与生活。<br>
+            更多写作与思考，欢迎关注公众号<b>「朱猪写作」</b>。
+        </div>
+    </div>
+    <img class="qrcode-promo__img" src="/assets/images/qrcode.jpg" alt="公众号：朱猪写作" loading="lazy">
+</div>
+
+
+    
+
+
+    
+    
+    
+    
+    
+    
+
+    
+    
+    
+    
+    
+
+    
+    
+    
+    
+    
+
+
+
+<section class="related-posts">
+    <div class="related-posts__title"><i class="fas fa-book-open fa-fw"></i> 延伸阅读</div>
+    <div class="related-posts__list">
+        
+        <a class="related-post" href="/2026/08/28/redis/">
+            <span class="related-post__title">Redis 主从复制</span>
+            <span class="related-post__meta">2026-08-28 · Redis</span>
+        </a>
+        
+    </div>
+</section>
+
+
+    
+    <nav class="pagination-post" id="pagination">
+        
+        
+        <a class="pagination-related next-post" href="/2026/08/28/redis/" title="Redis 主从复制">
+            <div class="cover" style="background: var(--default-bg-color)"></div>
+            <div class="info">
+                <div class="info-1">
+                    <div class="info-item-1">Next</div>
+                    <div class="info-item-2">Redis 主从复制</div>
+                </div>
+                <div class="info-2"><div class="info-item-1">首先我先说说主从复制是什么？为了减轻redis的压力，使用了读写分离的形式，也就是主节点写，从节点读，这样就要求主从节点数据必须一致，所以就有了主从复制。主从复制就是，将一个主节点上的数据全部复制到其他的从节点上，以保持主从节点的数据一致。</div></div>
+            </div>
+        </a>
+        
+    </nav>
+    
+    <div class="post-comment">
+    
+
+  
+
+  
+        <script src="https://utteranc.es/client.js"
+                repo="zwany1/zwany1.github.io"
+                issue-term="pathname"
+                label="gitment"
+                theme="github-light"
+                crossorigin="anonymous"
+                async>
+        </script>
+  
+
+
+    </div>
+</div>
+<script src="/js/post-extras.js?v=1788142283" defer></script>
+
+<div class="aside-content" id="aside-content">
+    <div class="card-widget card-info text-center">
+    <div class="avatar-img">
+        <img src="/assets/images/avatar.jpg" alt="avatar" onerror="this.onerror=null;this.src='https://github.com/zwany1.png'"/>
+    </div>
+    <div class="author-info-name">朱</div>
+    <div class="author-info-description">公众号：朱猪写作</div>
+    <div class="site-data">
+        <a href="/archives/"><div class="headline">Articles</div><div class="length-num">4</div></a>
+        <a href="/tags/"><div class="headline">Tags</div><div class="length-num">9</div></a>
+        <a href="/categories/"><div class="headline">Categories</div><div class="length-num">3</div></a>
+    </div>
+    <a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/zwany1"><i class="fab fa-github"></i><span> Follow Me</span></a>
+    <div class="card-info-social-icons">
+        <a class="social-icon" href="https://github.com/zwany1" target="_blank" title="GitHub"><i class="fab fa-github" style="color:#24292e;"></i></a>
+    </div>
+</div>
+
+    <div class="card-widget card-announcement">
+    <div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>Announcement</span></div>
+    <div class="announcement_content">文章由 Obsidian 笔记自动发布</div>
+</div>
+
+    <div class="sticky_layout">
+        
+<div class="card-widget card-toc" id="card-toc">
+    <div class="item-headline"><i class="fas fa-stream"></i><span>文章目录</span></div>
+    <div class="card-toc-body" id="card-toc-body"></div>
+</div>
+<script>
+(function () {
+    var article = document.getElementById('article-container');
+    var body = document.getElementById('card-toc-body');
+    var card = document.getElementById('card-toc');
+    if (!article || !body || !card) return;
+
+    var headings = article.querySelectorAll('h2[id], h3[id]');
+    if (headings.length < 2) { card.style.display = 'none'; return; }
+
+    var html = '<ul class="toc-list">';
+    var level = 2;
+    headings.forEach(function (h) {
+        var l = Number(h.tagName.substring(1));
+        if (l > level) html += '<ul class="toc-list toc-sub">';
+        if (l < level) html += '</ul></li>';
+        if (l !== level) level = l;
+        html += '<li class="toc-item toc-level-' + l + '"><a href="#' + h.id + '">' + h.textContent + '</a></li>';
+    });
+    html += '</ul>';
+    body.innerHTML = html;
+
+    // 平滑滚动到对应标题
+    body.addEventListener('click', function (e) {
+        var a = e.target.closest('a');
+        if (!a) return;
+        e.preventDefault();
+        var target = document.getElementById(decodeURIComponent(a.getAttribute('href').slice(1)));
+        if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        history.replaceState(null, '', a.getAttribute('href'));
+    });
+
+    // 滚动高亮：当前阅读位置对应的目录项加 active
+    var links = body.querySelectorAll('a');
+    var offsets = [];
+    var refresh = function () {
+        offsets = Array.prototype.map.call(links, function (a) {
+            var t = document.getElementById(decodeURIComponent(a.getAttribute('href').slice(1)));
+            return t ? t.getBoundingClientRect().top + window.scrollY : Infinity;
+        });
+    };
+    var spy = function () {
+        var pos = window.scrollY + 120, current = -1;
+        for (var i = 0; i < offsets.length; i++) {
+            if (offsets[i] <= pos) current = i; else break;
+        }
+        links.forEach(function (a, i) { a.classList.toggle('active', i === current); });
+    };
+    refresh();
+    spy();
+    window.addEventListener('scroll', spy, { passive: true });
+    window.addEventListener('resize', function () { refresh(); spy(); }, { passive: true });
+})();
+</script>
+
+        <div class="card-widget card-recent-post">
+    <div class="item-headline"><i class="fas fa-history"></i><span>Recent Posts</span></div>
+    <div class="aside-list">
+        
+        <div class="aside-list-item no-cover">
+            <div class="content">
+                <a class="title" href="/2026/08/31/redis/" title="Redis 集群">Redis 集群</a>
+                <time datetime="2026-08-31T10:00:00+08:00">2026-08-31</time>
+            </div>
+        </div>
+        
+        <div class="aside-list-item no-cover">
+            <div class="content">
+                <a class="title" href="/2026/08/28/redis/" title="Redis 主从复制">Redis 主从复制</a>
+                <time datetime="2026-08-28T17:30:00+08:00">2026-08-28</time>
+            </div>
+        </div>
+        
+        <div class="aside-list-item no-cover">
+            <div class="content">
+                <a class="title" href="/2025/12/26/IO%E5%9F%BA%E7%A1%80%E4%B8%8E%E6%B5%81%E6%93%8D%E4%BD%9C/" title="IO基础与流操作">IO基础与流操作</a>
+                <time datetime="2025-12-26T00:00:00+08:00">2025-12-26</time>
+            </div>
+        </div>
+        
+        <div class="aside-list-item no-cover">
+            <div class="content">
+                <a class="title" href="/2025/12/08/best-buddy/" title="Best buddy">Best buddy</a>
+                <time datetime="2025-12-08T17:56:55+08:00">2025-12-08</time>
+            </div>
+        </div>
+        
+    </div>
+</div>
+
+        <div class="card-widget card-categories">
+    <div class="item-headline"><i class="fas fa-folder-open"></i><span>Categories</span><a class="card-more-btn" href="/categories/" title="查看更多"><i class="fas fa-angle-right"></i></a></div>
+    <ul class="card-category-list" id="aside-cat-list">
+        
+        
+        <li class="card-category-list-item">
+            <a class="card-category-list-link" href="/categories/#Java">
+                <span class="card-category-list-name">Java</span>
+                <span class="card-category-list-count">1</span>
+            </a>
+        </li>
+        
+        <li class="card-category-list-item">
+            <a class="card-category-list-link" href="/categories/#Redis">
+                <span class="card-category-list-name">Redis</span>
+                <span class="card-category-list-count">2</span>
+            </a>
+        </li>
+        
+        <li class="card-category-list-item">
+            <a class="card-category-list-link" href="/categories/#life">
+                <span class="card-category-list-name">life</span>
+                <span class="card-category-list-count">1</span>
+            </a>
+        </li>
+        
+    </ul>
+</div>
+
+        <div class="card-widget card-tags">
+    <div class="item-headline"><i class="fas fa-tags"></i><span>Tags</span></div>
+    <div class="card-tag-cloud">
+        
+        
+        
+        
+        <a href="/tags/#friendship" style="font-size: 0.91em; color: #999a9c;">friendship</a>
+        
+        
+        
+        
+        <a href="/tags/#life" style="font-size: 0.91em; color: #999a9c;">life</a>
+        
+        
+        
+        
+        <a href="/tags/#IO" style="font-size: 0.91em; color: #999a9c;">IO</a>
+        
+        
+        
+        
+        <a href="/tags/#Stream" style="font-size: 0.91em; color: #999a9c;">Stream</a>
+        
+        
+        
+        
+        <a href="/tags/#NIO" style="font-size: 0.91em; color: #999a9c;">NIO</a>
+        
+        
+        
+        
+        <a href="/tags/#文件传输" style="font-size: 0.91em; color: #999a9c;">文件传输</a>
+        
+        
+        
+        
+        <a href="/tags/#redis" style="font-size: 0.97em; color: #999a9c;">redis</a>
+        
+        
+        
+        
+        <a href="/tags/#主从复制" style="font-size: 0.91em; color: #999a9c;">主从复制</a>
+        
+        
+        
+        
+        <a href="/tags/#redis集群" style="font-size: 0.91em; color: #999a9c;">redis集群</a>
+        
+    </div>
+</div>
+
+        <div class="card-widget card-archives">
+    <div class="item-headline"><i class="fas fa-archive"></i><span>Archives</span></div>
+    <ul class="card-archive-list">
+        
+        
+        
+        
+        
+        
+        
+        <li class="card-archive-list-item">
+            <a class="card-archive-list-link" href="/archives/">
+                <span class="card-archive-list-date">August 2026</span>
+                <span class="card-archive-list-count">2</span>
+            </a>
+        </li>
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        <li class="card-archive-list-item">
+            <a class="card-archive-list-link" href="/archives/">
+                <span class="card-archive-list-date">December 2025</span>
+                <span class="card-archive-list-count">2</span>
+            </a>
+        </li>
+        
+        
+        
+        
+        
+        
+        
+    </ul>
+</div>
+
+        <div class="card-widget card-webinfo">
+    <div class="item-headline"><i class="fas fa-chart-line"></i><span>Website Info</span></div>
+    <div class="webinfo">
+        <div class="webinfo-item"><div class="item-name">Article Count :</div><div class="item-count">4</div></div>
+        <div class="webinfo-item"><div class="item-name">运行时间 :</div><div class="item-count" id="site-uptime">—</div></div>
+        <div class="webinfo-item"><div class="item-name">Unique Visitors :</div><div class="item-count" id="busuanzi_value_site_uv"><i class="fa-solid fa-spinner fa-spin"></i></div></div>
+        <div class="webinfo-item"><div class="item-name">Page Views :</div><div class="item-count" id="busuanzi_value_site_pv"><i class="fa-solid fa-spinner fa-spin"></i></div></div>
+        <div class="webinfo-item"><div class="item-name">Last Update :</div><div class="item-count" id="last-push-date" data-lastPushDate="2026-08-31T10:11:23+08:00"><i class="fa-solid fa-spinner fa-spin"></i></div></div>
+    </div>
+</div>
+
+    </div>
+</div>
+
+    </main>
+    <footer id="footer">
+        <div class="footer-other">
+            <div class="footer-copyright">
+                <span class="copyright">&copy;&nbsp;2025 - 2026 By 朱</span>
+            </div>
+            <div class="footer_custom_text">
+                <a href="https://github.com/zwany1" target="_blank">GitHub</a> · Obsidian 笔记驱动
+            </div>
+        </div>
+    </footer>
+</div>
+<div id="reading-progress"></div>
+<div id="rightside">
+    <div id="rightside-config-hide">
+        <button id="darkmode" type="button" title="切换深色模式"><i class="fas fa-adjust"></i></button>
+        <button id="hide-aside-btn" type="button" title="切换单/双栏"><i class="fas fa-arrows-alt-h"></i></button>
+    </div>
+    <div id="rightside-config-show">
+        <button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button>
+        <button id="go-random" type="button" title="随机一读"><i class="fas fa-shuffle"></i></button>
+        <button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button>
+    </div>
+</div>
+<div id="local-search">
+    <div class="search-dialog">
+        <nav class="search-nav">
+            <span class="search-dialog-title">Search</span>
+            <i class="fas fa-spinner fa-pulse" id="loading-status" hidden></i>
+            <button class="search-close-button"><i class="fas fa-times"></i></button>
+        </nav>
+        <div class="text-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  Loading Database</span></div>
+        <div class="local-search-input"><input placeholder="搜索文章..." type="text"/></div>
+        <hr/>
+        <div id="local-search-results"></div>
+        <div class="ais-Pagination" id="local-search-pagination" style="display:none;"><ul class="ais-Pagination-list"></ul></div>
+        <div id="local-search-stats"></div>
+    </div>
+    <div id="search-mask"></div>
+</div>
+<div id="imageModal" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;z-index:1000;background-color:rgba(0,0,0,.8);cursor:pointer;">
+    <img id="modalImage" style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);max-width:90vw;max-height:90vh;"/>
+</div>
+<script src="/js/utils.js?v=1788142283"></script>
+<script src="/js/main.js?v=1788142283"></script>
+<script src="/assets/vendor/fancybox/fancybox.umd.min.js"></script>
+<script src="/assets/vendor/lazyload/lazyload.iife.min.js"></script>
+<div class="js-pjax"><script>
+window.typedJSFn = {
+  init: str => { window.typed = new Typed('#subtitle', Object.assign({ strings: str, startDelay: 300, typeSpeed: 150, loop: true, backSpeed: 50 }, null)); },
+  run: subtitleType => {
+    if (true) {
+      if (typeof Typed === 'function') { subtitleType(); }
+      else { btf.getScript('/assets/vendor/typed.js/typed.umd.min.js').then(subtitleType); }
+    } else { subtitleType(); }
+  },
+  processSubtitle: (content, extraContents = []) => {
+    if (true) {
+      const sub = ["打码改变世界","公众号：朱猪写作","保持热爱，奔赴山海"].slice();
+      if (extraContents.length > 0) sub.unshift(...extraContents);
+      if (typeof content === 'string') sub.unshift(content);
+      else if (Array.isArray(content)) sub.unshift(...content);
+      sub.length > 0 && typedJSFn.init(sub);
+    } else {
+      document.getElementById('subtitle').textContent = typeof content === 'string' ? content : (Array.isArray(content) && content.length > 0 ? content[0] : '');
+    }
+  }
+};
+btf.addGlobalFn('pjaxSendOnce', () => { typed && typed.destroy(); }, 'typedDestroy');
+</script><script>
+function subtitleType () { typedJSFn.processSubtitle(["打码改变世界","公众号：朱猪写作","保持热爱，奔赴山海"]); }
+typedJSFn.run(subtitleType);
+</script></div>
+<script src="/js/time-greeting.js?v=1788142283"></script>
+<script src="/js/header-glow.js?v=1788142283"></script>
+<script async src="/assets/vendor/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+<script>
+// Post Views（文章浏览次数）：
+// 由 Abacus 计数服务按 URL 精确计数（每次访问 +1），不再依赖不稳定的 busuanzi；
+// localStorage 缓存上次数值，页面打开立即显示，服务无响应时用缓存兜底，该行始终可见。
+// 本地预览使用 zwany1-github-io-dev 命名空间独立计数，不影响线上数据。
+// 侧栏 Website Info 的本站访问量/访客数仍由不蒜子提供（本地环境隐藏）。
+(function () {
+    var PV_ID = 'page_views_value';
+    var CACHE_KEY = 'site_stats_cache_v1';
+    var TTL = 30 * 24 * 3600 * 1000; // 缓存有效期 30 天
+    var SITE = [['busuanzi_value_site_pv', 'site_pv'], ['busuanzi_value_site_uv', 'site_uv']];
+    var isLocal = /^(localhost|127\.0\.0\.1)$/.test(location.hostname);
+
+    function readCache() {
+        try {
+            var c = JSON.parse(localStorage.getItem(CACHE_KEY) || 'null');
+            if (c && Date.now() - (c.__t || 0) < TTL) return c;
+        } catch (e) {}
+        return null;
+    }
+    function writeCache(fn) {
+        try {
+            var c = readCache() || {};
+            fn(c);
+            c.__t = Date.now();
+            localStorage.setItem(CACHE_KEY, JSON.stringify(c));
+        } catch (e) {}
+    }
+
+    // ---------- Post Views ----------
+    var pvEl = document.getElementById(PV_ID);
+    var pvKey = 'pv:' + location.pathname;
+    function setPv(v) { if (pvEl) pvEl.textContent = v; }
+
+    var cached = readCache();
+    if (cached && cached[pvKey]) setPv(cached[pvKey]); // 秒显上次数值
+
+    var ns = isLocal ? 'zwany1-github-io-dev' : 'zwany1-github-io';
+    var pvKeyEnc = ('pv' + location.pathname).replace(/[^a-zA-Z0-9_-]/g, '-'); // Abacus 的 key 不允许斜杠
+    var pvDone = false;
+    fetch('https://abacus.jasoncameron.dev/hit/' + ns + '/' + pvKeyEnc)
+        .then(function (r) { return r.ok ? r.json() : Promise.reject(new Error(r.status)); })
+        .then(function (d) {
+            pvDone = true;
+            if (d && typeof d.value === 'number') {
+                setPv(d.value);
+                writeCache(function (c) { c[pvKey] = d.value; });
+            }
+        })
+        .catch(function () {});
+    setTimeout(function () { // 10 秒仍无响应：有缓存保留缓存，否则显示占位符
+        if (pvDone || !pvEl) return;
+        var c2 = readCache();
+        setPv((c2 && c2[pvKey]) || '—');
+    }, 10000);
+
+    // ---------- 侧栏 Website Info（不蒜子：本站访问量/访客数） ----------
+    function spin(el) { return el && el.querySelector('i.fa-spinner'); }
+    function hideSiteRows() {
+        SITE.forEach(function (p) {
+            var el = document.getElementById(p[0]);
+            if (el) el.closest('.webinfo-item').style.display = 'none';
+        });
+    }
+    if (isLocal) { hideSiteRows(); return; }
+
+    SITE.forEach(function (p) {
+        var el = document.getElementById(p[0]);
+        if (el && cached && cached[p[1]] && spin(el)) el.textContent = cached[p[1]];
+    });
+    var tries = 0;
+    var timer = setInterval(function () {
+        tries++;
+        var el0 = document.getElementById(SITE[0][0]);
+        if (el0 && /^\d+$/.test(el0.textContent.trim())) {
+            clearInterval(timer);
+            writeCache(function (c) {
+                SITE.forEach(function (p) {
+                    var el = document.getElementById(p[0]);
+                    if (el && /^\d+$/.test(el.textContent.trim())) c[p[1]] = el.textContent.trim();
+                });
+            });
+            return;
+        }
+        if (tries >= 16) { // 8 秒无响应：缓存兜底，无缓存隐藏该行
+            clearInterval(timer);
+            SITE.forEach(function (p) {
+                var el = document.getElementById(p[0]);
+                if (el && spin(el)) {
+                    if (cached && cached[p[1]]) el.textContent = cached[p[1]];
+                    else el.closest('.webinfo-item').style.display = 'none';
+                }
+            });
+        }
+    }, 500);
+})();
+</script>
+<script src="/js/search/local-search.js?v=1788142283"></script>
+<script src="/js/global-music.js?v=1788142283" defer></script>
+<script>
+// 深浅色记忆：主题 JS 按 system 设置后，这里覆盖用户手动选择（跟随系统/浅色/深色）
+(function () {
+    try {
+        var m = localStorage.getItem('theme_mode_v1');
+        if (m === 'light' || m === 'dark') document.documentElement.setAttribute('data-theme', m);
+    } catch (e) {}
+})();
+</script>
+<script src="/js/fun-extras.js?v=1788142283" defer></script>
+<script>
+// 站点增强：阅读进度条 / Ctrl+K 搜索 / 随机一读 / 建站天数 / Service Worker
+(function () {
+    // 阅读进度条（仅文章页显示）
+    var bar = document.getElementById('reading-progress')
+    if (bar && document.body.classList.contains('type-post')) {
+        var updateBar = function () {
+            var el = document.documentElement
+            var max = el.scrollHeight - el.clientHeight
+            bar.style.width = (max > 0 ? (el.scrollTop / max) * 100 : 0) + '%'
+        }
+        window.addEventListener('scroll', updateBar, { passive: true })
+        updateBar()
+    }
+
+    // Ctrl+K / Cmd+K 唤起站内搜索
+    document.addEventListener('keydown', function (e) {
+        if ((e.ctrlKey || e.metaKey) && String(e.key).toLowerCase() === 'k') {
+            e.preventDefault()
+            var btn = document.querySelector('#search-button .search')
+            if (btn) btn.click()
+        }
+    })
+
+    // 随机一读
+    var goRandom = document.getElementById('go-random')
+    if (goRandom) {
+        goRandom.addEventListener('click', function () {
+            var urls = ["/2026/08/31/redis/","/2026/08/28/redis/","/2025/12/26/IO%E5%9F%BA%E7%A1%80%E4%B8%8E%E6%B5%81%E6%93%8D%E4%BD%9C/","/2025/12/08/best-buddy/"]
+            if (!urls.length) return
+            var pick
+            do { pick = urls[Math.floor(Math.random() * urls.length)] } while (urls.length > 1 && pick === location.pathname)
+            location.href = pick
+        })
+    }
+
+    // 建站天数
+    var uptime = document.getElementById('site-uptime')
+    if (uptime) {
+        var start = new Date('2025-01-01T00:00:00+08:00')
+        var days = Math.floor((Date.now() - start.getTime()) / 86400000)
+        if (days > 0) uptime.textContent = days + ' 天'
+        else uptime.closest('.webinfo-item').style.display = 'none'
+    }
+
+    // Service Worker（仅线上环境注册，避免污染本地开发）
+    if ('serviceWorker' in navigator && !/^(localhost|127\.0\.0\.1)$/.test(location.hostname)) {
+        window.addEventListener('load', function () {
+            navigator.serviceWorker.register('/sw.js').catch(function () {})
+        })
+    }
+})();
+</script>
+<script>
+window.showImage = function(imageURL, event){ if(event) event.preventDefault(); var m=document.getElementById('imageModal'),i=document.getElementById('modalImage'); if(m&&i){ i.src=imageURL; m.style.display='block'; } };
+document.addEventListener('DOMContentLoaded', function(){
+    var modal=document.getElementById('imageModal');
+    if(modal){ modal.addEventListener('click', function(){ modal.style.display='none'; }); }
+});
+</script>
+
+
+
+</body>
+</html>
+

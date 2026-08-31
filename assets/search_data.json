@@ -147,6 +147,14 @@
     } ,
   
     {
+      "title"    : "Redis 集群",
+      "category" : "Redis",
+      
+      "url"      : "/2026/08/31/redis/",
+      "keywords" : ""
+    } ,
+  
+    {
       "title"    : "Android Image 里的 pixelStride 和 rowStride",
       "category" : "",
       

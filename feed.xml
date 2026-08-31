@@ -1,4 +1,285 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="3.10.0">Jekyll</generator><link href="https://zwany1.github.io/feed.xml" rel="self" type="application/atom+xml" /><link href="https://zwany1.github.io/" rel="alternate" type="text/html" /><updated>2026-08-31T00:35:57+08:00</updated><id>https://zwany1.github.io/feed.xml</id><title type="html">朱的小屋</title><subtitle>朱的个人博客，公众号：朱猪写作</subtitle><author><name>朱</name></author><entry><title type="html">Redis 主从复制</title><link href="https://zwany1.github.io/2026/08/28/redis/" rel="alternate" type="text/html" title="Redis 主从复制" /><published>2026-08-28T17:30:00+08:00</published><updated>2026-08-28T17:30:00+08:00</updated><id>https://zwany1.github.io/2026/08/28/redis</id><content type="html" xml:base="https://zwany1.github.io/2026/08/28/redis/"><![CDATA[<p>首先我先说说主从复制是什么？为了减轻redis的压力，使用了读写分离的形式，也就是主节点写，从节点读，这样就要求主从节点数据必须一致，所以就有了主从复制。主从复制就是，将一个主节点上的数据全部复制到其他的从节点上，以保持主从节点的数据一致。</p>
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="3.10.0">Jekyll</generator><link href="https://zwany1.github.io/feed.xml" rel="self" type="application/atom+xml" /><link href="https://zwany1.github.io/" rel="alternate" type="text/html" /><updated>2026-08-31T10:11:23+08:00</updated><id>https://zwany1.github.io/feed.xml</id><title type="html">朱的小屋</title><subtitle>朱的个人博客，公众号：朱猪写作</subtitle><author><name>朱</name></author><entry><title type="html">Redis 集群</title><link href="https://zwany1.github.io/2026/08/31/redis/" rel="alternate" type="text/html" title="Redis 集群" /><published>2026-08-31T10:00:00+08:00</published><updated>2026-08-31T10:00:00+08:00</updated><id>https://zwany1.github.io/2026/08/31/redis</id><content type="html" xml:base="https://zwany1.github.io/2026/08/31/redis/"><![CDATA[<h2 id="redis集群的实现原理是什么">Redis集群的实现原理是什么?</h2>
+
+<h3 id="为什么需要集群">为什么需要集群？</h3>
+
+<p>在讲Redis集群架构之前，我们先简单讲下Redis单实例的架构，从最开始的一主N从，到读写分离，再到Sentinel哨兵机制，单实例的Redis缓存足以应对大多数的使用场景，也能实现主从故障迁移。</p>
+
+<p><img src="/assets/notes/Pasted-image-20260831095941.png" alt="" /></p>
+
+<ul>
+  <li>
+    <p>单实例 Redis 缓存在某些场景下存在问题：</p>
+  </li>
+  <li>
+    <p>写并发：单实例读写分离能解决读操作负载均衡，但写操作全在 master 节点，海量数据高并发时，该节点易出现写瓶颈，压力上升。</p>
+  </li>
+  <li>
+    <p>海量数据的存储压力：单实例仅靠一台 Master 存储，面对海量数据难以应付，数据量大导致持久化成本高，可能阻塞服务器，降低服务请求成功率与服务稳定性。</p>
+  </li>
+  <li>
+    <p>Redis 集群提供完善方案，解决了存储受单机限制和写操作无法负载均衡的问题。</p>
+  </li>
+</ul>
+
+<h3 id="什么是集群">什么是集群？</h3>
+
+<ul>
+  <li>
+    <p>Redis 3.0 加入集群模式，带来以下特性：</p>
+  </li>
+  <li>
+    <p>实现数据分布式存储：对数据分片，将不同数据存于不同 master 节点，解决海量数据存储问题。</p>
+  </li>
+  <li>
+    <p>去中心化思想：无中心节点，客户端视整个集群为一个整体，可连接任意节点操作，如同操作单一 Redis 实例，无需代理中间件。若操作的 key 未分配到该节点，Redis 返回转向指令，指向正确节点。</p>
+  </li>
+  <li>
+    <p>内置高可用机制：支持 N 个 master 节点，每个 master 节点可挂载多个 slave 节点。当 master 节点挂掉，集群会提升某个 slave 节点为新的 master 节点。</p>
+  </li>
+</ul>
+
+<p><img src="/assets/notes/Pasted-image-20260831100027.png" alt="" /></p>
+
+<p>如上图所示，Redis集群可以看成多个主从架构组合起来的，每一个主从架构可以看成一个节点（其中，只有master节点具有处理请求的能力，slave节点主要是用于节点的高可用）</p>
+
+<h3 id="哈希槽算法">哈希槽算法</h3>
+
+<h4 id="什么是哈希槽算法">什么是哈希槽算法？</h4>
+
+<p>分布式存储需考虑如何将数据拆分到不同 Redis 服务器，常见分区算法有 hash 算法、一致性 hash 算法。</p>
+
+<ul>
+  <li>
+    <p>普通 hash 算法：</p>
+  </li>
+  <li>
+    <p>计算方式：将 key 用 hash 算法计算后按节点数量取余，即 hash (key)% N。</p>
+  </li>
+  <li>
+    <p>优点：简单。</p>
+  </li>
+  <li>
+    <p>缺点：扩容或摘除节点时需重新计算映射关系，导致数据重新迁移。</p>
+  </li>
+  <li>
+    <p>一致性 hash 算法：</p>
+  </li>
+  <li>
+    <p>计算方式：为每个节点分配一个 token 构成哈希环，查找时先算 key 的 hash 值，再顺时针找第一个大于等于该哈希值的 token 节点。</p>
+  </li>
+  <li>
+    <p>优点：加入和删除节点仅影响相邻两个节点。</p>
+  </li>
+  <li>
+    <p>缺点：加减节点会造成部分数据无法命中，一般用于缓存，且适用于节点量大的情况，扩容通常增加一倍节点以保障数据负载均衡 。</p>
+  </li>
+</ul>
+
+<p>Redis 集群采用哈希槽分区算法：</p>
+
+<ul>
+  <li>集群中有 16384 个哈希槽（范围 0 - 16383），不同哈希槽分布在不同 Redis 节点管理，每个节点负责部分哈希槽。</li>
+  <li>数据操作时，集群用 CRC16 算法对 key 计算并对 16384 取模（slot = CRC16 (key)%16383 ），得到的值就是 Key - Value 要放入的槽。</li>
+  <li>通过该值找到对应槽的 Redis 节点，进而在该节点进行存取操作。</li>
+</ul>
+
+<p>使用哈希槽的好处就在于可以方便的<strong>添加或者移除节点</strong>，并且无论是添加删除或者修改某一个节点，都不会造成集群不可用的状态。当需要增加节点时，只需要把其他节点的某些哈希槽挪到新节点就可以了；当需要移除节点时，只需要把移除节点上的哈希槽挪到其他节点就行了；哈希槽数据分区算法具有以下几种特点：</p>
+
+<ul>
+  <li><strong>解耦数据和节点之间的关系，简化了扩容和收缩难度；</strong></li>
+  <li><strong>节点自身维护槽的映射关系，不需要客户端代理服务维护槽分区元数据</strong></li>
+  <li><strong>支持节点、槽、键之间的映射查询，用于数据路由，在线伸缩等场景</strong></li>
+</ul>
+
+<p><strong>槽的迁移与指派命令：CLUSTER ADDSLOTS 0 1 2 3 4 … 5000</strong></p>
+
+<h4 id="redis中哈希槽相关的数据结构">Redis中哈希槽相关的数据结构</h4>
+
+<ol>
+  <li><strong>clusterNode数据结构：</strong>保存节点的当前状态，比如节点的创建时间，节点的名字，节点当前的配置纪元，节点的IP和地址，等等。</li>
+</ol>
+
+<p><code class="language-plaintext highlighter-rouge">// 定义一个名为 clusterNode 的结构体，用于表示 Redis 集群中的节点 typedef struct clusterNode {     
+</code>// 节点对象的创建时间，以毫秒为单位的时间戳     mstime_t ctime; /* Node object creation time. <em>/<code class="language-plaintext highlighter-rouge">         
+</code>// 节点名称，是一个十六进制字符串，长度为 REDIS_CLUSTER_NAMELEN（通常为 40 字节，SHA1 哈希值的长度）     char name[REDIS_CLUSTER_NAMELEN]; /</em> Node name, hex string, sha1-size <em>/<code class="language-plaintext highlighter-rouge">       
+</code>// 节点的标志位，用于表示节点的各种状态，如是否是主节点、从节点、是否下线等，取值为 REDIS_NODE_… 系列的常量     int flags;      /</em> REDIS_NODE_… <em>/<code class="language-plaintext highlighter-rouge">      
+</code>// 该节点观察到的最后一个配置纪元，用于集群配置的版本管理     uint64_t configEpoch; /</em> Last configEpoch observed for this node <em>/<code class="language-plaintext highlighter-rouge">         
+</code>// 一个数组，用于表示该节点负责的哈希槽。每个字节表示 8 个哈希槽，REDIS_CLUSTER_SLOTS 通常为 16384，所以数组大小为 16384 / 8     unsigned char slots[REDIS_CLUSTER_SLOTS/8]; /</em> slots handled by this node <em>/<code class="language-plaintext highlighter-rouge">          
+</code>// 该节点负责的哈希槽数量     int numslots;   /</em> Number of slots handled by this node <em>/          // 如果该节点是主节点，这个字段表示它拥有的从节点数量     int numslaves;  /</em> Number of slave nodes, if this is a master <em>/<code class="language-plaintext highlighter-rouge">        
+</code>// 一个指针数组，指向该主节点的所有从节点     struct clusterNode **slaves; /</em> pointers to slave nodes <em>/<code class="language-plaintext highlighter-rouge">        
+</code>// 指向该从节点的主节点，如果该节点本身是主节点，则为 NULL     struct clusterNode *slaveof; /</em> pointer to the master node <em>/<code class="language-plaintext highlighter-rouge">          
+</code>// 最近一次发送 PING 命令的时间，以毫秒为单位的时间戳     mstime_t ping_sent;      /</em> Unix time we sent latest ping <em>/<code class="language-plaintext highlighter-rouge">          
+</code>// 最近一次接收到 PONG 响应的时间，以毫秒为单位的时间戳     mstime_t pong_received;  /</em> Unix time we received the pong <em>/<code class="language-plaintext highlighter-rouge">        
+</code>// 当该节点被标记为 FAIL 状态的时间，以毫秒为单位的时间戳     mstime_t fail_time;      /</em> Unix time when FAIL flag was set <em>/<code class="language-plaintext highlighter-rouge">         
+</code>// 最近一次为该主节点的某个从节点投票的时间，以毫秒为单位的时间戳     mstime_t voted_time;     /</em> Last time we voted for a slave of this master <em>/<code class="language-plaintext highlighter-rouge">         
+</code>// 最近一次接收到该节点的复制偏移量的时间，以毫秒为单位的时间戳     mstime_t repl_offset_time;  /</em> Unix time we received offset for this node <em>/<code class="language-plaintext highlighter-rouge">          
+</code>// 该节点最近已知的复制偏移量，用于主从复制的同步     PORT_LONGLONG repl_offset;      /</em> Last known repl offset for this node. <em>/<code class="language-plaintext highlighter-rouge">        
+</code>// 该节点最近已知的 IP 地址，长度为 REDIS_IP_STR_LEN     char ip[REDIS_IP_STR_LEN];  /</em> Latest known IP address of this node <em>/<code class="language-plaintext highlighter-rouge">         
+</code>// 该节点最近已知的端口号     int port;                   /</em> Latest known port of this node */       <br />
+<code class="language-plaintext highlighter-rouge">// 指向与该节点的 TCP/IP 连接的结构体     clusterLink *link;          /* TCP/IP link with this node */</code>       <br />
+<code class="language-plaintext highlighter-rouge">// 一个链表，存储了所有报告该节点为失败的节点信息     list *fail_reports;         /* List of nodes signaling this as failing */ } clusterNode;</code></p>
+
+<ol>
+  <li><strong>clusterState数据结构</strong>：记录当前节点所认为的集群目前所处的状态。
+<code class="language-plaintext highlighter-rouge">// 定义一个名为 clusterState 的结构体，用于表示 Redis 集群的整体状态 typedef struct clusterState {     
+`// 指向代表本节点的 clusterNode 结构体指针     clusterNode *myself;  /* This node */`         
+`// 当前的集群配置纪元，用于标识集群配置的版本     uint64_t currentEpoch;`          
+`// 集群的当前状态，取值为 REDIS_CLUSTER_OK（集群正常）、REDIS_CLUSTER_FAIL（集群故障）等相关常量     int state;            /* REDIS_CLUSTER_OK, REDIS_CLUSTER_FAIL,... */`          
+`// 至少负责一个哈希槽的主节点数量     int size;             /* Num of master nodes with at least one slot */`        
+`// 一个字典，用于通过节点名称（字符串）查找对应的 clusterNode 结构体，方便快速定位节点     dict *nodes;          /* Hash table of name -&gt; clusterNode structures */`        
+`// 一个字典，存储了在一段时间内不重新添加的节点，这些节点可能是出现问题或正在被处理的节点     dict *nodes_black_list; /* Nodes we don't re-add for a few seconds. */`       
+`// 一个数组，长度为 REDIS_CLUSTER_SLOTS（16384），每个元素指向一个 clusterNode 结构体，表示正在将某个哈希槽迁移到的目标节点     clusterNode *migrating_slots_to[REDIS_CLUSTER_SLOTS];`        
+`// 一个数组，长度为 REDIS_CLUSTER_SLOTS（16384），每个元素指向一个 clusterNode 结构体，表示正在从某个节点导入哈希槽     clusterNode *importing_slots_from[REDIS_CLUSTER_SLOTS];`         
+`// 一个数组，长度为 REDIS_CLUSTER_SLOTS（16384），每个元素指向一个 clusterNode 结构体，保存所有哈希槽位的分配情况     clusterNode *slots[REDIS_CLUSTER_SLOTS];//保存所有槽位分配情况`         
+`// 一个跳跃表，用于存储哈希槽到键的映射关系，方便根据哈希槽查找相关的键     zskiplist *slots_to_keys;          /* 以下字段用于从节点在选举中的状态 */     // 上次或下次选举的时间，以毫秒为单位的时间戳     mstime_t failover_auth_time; /* Time of previous or next election. */          // 到目前为止收到的投票数     int failover_auth_count;    /* Number of votes received so far. */          // 表示是否已经请求过投票，为真则表示已经请求过     int failover_auth_sent;     /* True if we already asked for votes. */`         
+`// 当前从节点在本次选举请求中的排名     int failover_auth_rank;     /* This slave rank for current auth request. */`          
+`// 当前选举的纪元     uint64_t failover_auth_epoch; /* Epoch of the current election. */          // 表示从节点当前不能进行故障转移的原因，取值为 CANT_FAILOVER_* 系列的宏定义     int cant_failover_reason;   /* Why a slave is currently not able to                                    failover. See the CANT_FAILOVER_* macros. */`         
+`/* 手动故障转移的通用状态 */`     
+`// 手动故障转移的时间限制（以毫秒为单位的 Unix 时间戳），如果没有正在进行的手动故障转移，则为零     mstime_t mf_end;            /* Manual failover time limit (ms unixtime).                                    It is zero if there is no MF in progress. */`         
+`/* 主节点手动故障转移的状态 */     /`
+`/ 执行手动故障转移的从节点指针     clusterNode *mf_slave;      /* Slave performing the manual failover. */`         
+`/* 从节点手动故障转移的状态 */`     
+`// 从节点开始手动故障转移所需的主节点偏移量，如果尚未收到则为零     PORT_LONGLONG mf_master_offset; /* Master offset the slave needs to start MF                                    or zero if stil not received. */`        
+`// 如果非零，表示手动故障转移可以开始请求主节点投票     int mf_can_start;           
+`/* If non-zero signal that the manual failover                                    can start requesting masters vote. */`       
+`/* 以下字段用于主节点在选举中的状态 */`     
+`// 上次授予投票的纪元     uint64_t lastVoteEpoch;     /* Epoch of the last vote granted. */         
+`// 在 clusterBeforeSleep() 函数中需要完成的任务数量     int todo_before_sleep; /* Things to do in clusterBeforeSleep(). */`          
+`// 通过集群总线发送的消息数量     PORT_LONGLONG stats_bus_messages_sent;  /* Num of msg sent via cluster bus. */`       
+`// 通过集群总线接收的消息数量     PORT_LONGLONG stats_bus_messages_received; /* Num of msg rcvd via cluster bus.*/ } clusterState;</code></li>
+</ol>
+
+<h4 id="节点的槽指派信息">节点的槽指派信息</h4>
+
+<p>clusterNode数据结构的slots属性和numslot属性记录了节点负责处理那些槽：slots属性是一个二进制位数组(bit array)，这个数组的长度为16384/8=2048个字节，共包含16384个二进制位。Master节点用bit来标识对于某个槽自己是否拥有，时间复杂度为O(1)</p>
+
+<p><img src="/assets/notes/Pasted-image-20260831100954.png" alt="" /></p>
+
+<h4 id="集群所有槽的指派信息">集群所有槽的指派信息</h4>
+
+<p>当收到集群中其他节点发送的信息时，通过将节点槽的指派信息保存在本地的clusterState.slots数组里面，程序要检查槽i是否已经被指派，又或者取得负责处理槽i的节点，只需要访问clusterState.slots[i]的值即可，时间复杂度仅为O(1)</p>
+
+<p><img src="/assets/notes/Pasted-image-20260831101018.png" alt="" /></p>
+
+<p>ClusterState 中的 Slots 数组下标对应槽，槽信息对应 clusterNode（缓存节点），节点含实际 Redis 缓存服务的 IP 和 Port 信息。Redis Cluster 通讯机制确保各节点有其他节点和槽数据对应关系，因每个节点都有 ClusterState 记录所有槽与节点对应关系，所以客户端访问集群中任意节点都可路由到对应节点。</p>
+
+<h4 id="集群的请求重定向">集群的请求重定向</h4>
+
+<p>前面讲到，Redis集群在客户端层面没有采用代理，并且无论Redis 的客户端访问集群中的哪个节点都可以路由到对应的节点上，下面来看看 Redis 客户端是如何通过路由来调用缓存节点的：</p>
+
+<ol>
+  <li>MOVED请求</li>
+</ol>
+
+<p><img src="/assets/notes/Pasted-image-20260831100910.png" alt="" /></p>
+
+<ul>
+  <li>Redis 客户端经计算找 “缓存节点 1” 操作数据。</li>
+  <li>因数据迁移等，对应 Slot 数据到 “缓存节点 2”，客户端无法从 “缓存节点 1” 获取。</li>
+  <li>“缓存节点 1” 存集群节点信息，知数据在 “缓存节点 2”，发 MOVED 重定向请求。</li>
+  <li>客户端获 “缓存节点 2” 地址，继续访问并拿到数据。</li>
+</ul>
+
+<ol>
+  <li>ASK请求</li>
+</ol>
+
+<p>上面的例子说明了，数据 Slot 从“缓存节点1”已经迁移到“缓存节点2”了，那么客户端可以直接找“缓存节点2”要数据。那么如果两个缓存节点正在做节点的数据迁移，此时客户端请求会如何处理呢？</p>
+
+<p><img src="/assets/notes/Pasted-image-20260831100901.png" alt="" /></p>
+
+<ul>
+  <li>
+    <p>Redis 客户端向 “缓存节点 1” 发出请求。</p>
+  </li>
+  <li>
+    <p>若 “缓存节点 1” 正向 “缓存节点 2” 迁移数据且未命中对应 Slot：</p>
+  </li>
+  <li>
+    <p>“缓存节点 1” 会返回客户端一个 ASK 重定向请求，并告知 “缓存节点 2” 的地址。</p>
+  </li>
+  <li>
+    <p>客户端向 “缓存节点 2” 发送 Asking 命令，询问所需数据是否在 “缓存节点 2” 上。</p>
+  </li>
+  <li>
+    <p>“缓存节点 2” 接到消息后，返回数据是否存在的结果。</p>
+  </li>
+</ul>
+
+<ol>
+  <li>
+    <p>频繁重定向造成的网络开销的处理：smart客户端</p>
+  </li>
+  <li>
+    <p><strong>什么是smart客户端</strong></p>
+  </li>
+</ol>
+
+<p>在大部分情况下，可能都会出现一次请求重定向才能找到正确的节点，这个重定向过程显然会增加集群的网络负担和单次请求耗时。所以大部分的客户端都是smart的。所谓 smart客户端，就是指客户端本地维护一份hashslot =&gt; node的映射表缓存，大部分情况下，直接走本地缓存就可以找到hashslot =&gt; node，不需要通过节点进行moved重定向，</p>
+
+<ol>
+  <li><strong>JedisCluster的工作原理</strong></li>
+</ol>
+
+<ul>
+  <li>
+    <p>JedisCluster 初始化时：</p>
+  </li>
+  <li>
+    <p>随机选择一个 node。</p>
+  </li>
+  <li>
+    <p>初始化 hashslot =&gt; node 映射表。</p>
+  </li>
+  <li>
+    <p>为每个节点创建一个 JedisPool 连接池。</p>
+  </li>
+  <li>
+    <p>每次基于 JedisCluster 执行操作时：</p>
+  </li>
+  <li>
+    <p>先在本地计算 key 的 hashslot。</p>
+  </li>
+  <li>
+    <p>在本地映射表找到对应的节点 node。</p>
+  </li>
+  <li>
+    <p>存在两种情况：</p>
+  </li>
+  <li>
+    <p>若该 node 仍持有此 hashslot，则操作正常进行。</p>
+  </li>
+  <li>
+    <p>若进行了 reshard 操作，hashslot 不在该 node 上，会返回 moved。</p>
+  </li>
+  <li>
+    <p>当 JedisCluster API 发现对应节点返回 moved 时：</p>
+  </li>
+  <li>
+    <p>利用节点返回的元数据，更新本地的 hashslot =&gt; node 映射表缓存。</p>
+  </li>
+  <li>
+    <p>重复上述步骤直至找到对应节点。</p>
+  </li>
+  <li>
+    <p>若重试超过 5 次：</p>
+  </li>
+  <li>
+    <p>报错，抛出 JedisClusterMaxRedirectionException。</p>
+  </li>
+</ul>
+
+<ol>
+  <li>hashslot迁移和ask重定向</li>
+</ol>
+
+<p>若 hashslot 正在迁移，会向客户端返回 ask 重定向，客户端接收后重新定位到目标节点执行；因 ask 发生在迁移过程中，JedisCluster API 收到 ask 不会更新 hashslot 本地缓存。ASK 和 MOVED 虽都是对客户端的重定向控制，但有本质区别：ASK 重定向表明集群正在进行 slot 数据迁移，客户端无法知晓迁移完成时间，属于临时性重定向，客户端不更新 slots 缓存；MOVED 重定向说明键对应的槽已明确指定到新节点，客户端需更新 slots 缓存。</p>
+
+<h4 id="redis集群中节点的通信机制goosip协议">Redis集群中节点的通信机制：goosip协议</h4>
+
+<p>Redis 集群的哈希槽算法解决数据存取问题，不同哈希槽分布在不同节点，各节点维护自身认知的集群状态，且集群采用去中心化架构。当集群状态如新节点加入、slot 迁移、节点宕机、从节点提升为主节点等发生变化时，需让其他节点尽快知晓，那么 Redis 如何处理以及不同节点间怎样通信以维护集群同步状态的呢？</p>
+
+<p>在Redis集群中，不同的节点之间采用gossip协议进行通信，节点之间通讯的目的是为了维护节点之间的元数据信息。这些元数据就是每个节点包含哪些数据，是否出现故障，<strong>通过gossip协议，达到最终数据的一致性。</strong></p>]]></content><author><name>朱</name></author><category term="Redis" /><category term="redis" /><category term="redis集群" /><summary type="html"><![CDATA[Redis集群的实现原理是什么?]]></summary></entry><entry><title type="html">Redis 主从复制</title><link href="https://zwany1.github.io/2026/08/28/redis/" rel="alternate" type="text/html" title="Redis 主从复制" /><published>2026-08-28T17:30:00+08:00</published><updated>2026-08-28T17:30:00+08:00</updated><id>https://zwany1.github.io/2026/08/28/redis</id><content type="html" xml:base="https://zwany1.github.io/2026/08/28/redis/"><![CDATA[<p>首先我先说说主从复制是什么？为了减轻redis的压力，使用了读写分离的形式，也就是主节点写，从节点读，这样就要求主从节点数据必须一致，所以就有了主从复制。主从复制就是，将一个主节点上的数据全部复制到其他的从节点上，以保持主从节点的数据一致。</p>
 
 <p>具体怎么实现的呢？首先，其他节点需要先向主节点发送psync命令来发起开始同步。接着，主节点通过发送来的psync来判断是进行全局同步还是增量复制。假如是第一次进行同步，或者是之前的连接失效，就会进行全量复制。全量复制完毕后，主从节点之间会维护一个长链接，在此期间会将主节点的操作进行增量复制到从节点，维护主从节点一致性。</p>
 <h2 id="为什么需要主从复制">为什么需要主从复制？</h2>
@@ -17,7 +298,7 @@
   <li>写操作: 仅主库可执行，然后主库将写操作同步给从库</li>
 </ol>
 
-<p><img src="/assets/notes/Pasted-image-20260828154041.webp" alt="" /></p>
+<p><img src="/assets/notes/Pasted-image-20260828154041.png" alt="" /></p>
 
 <h3 id="两种同步复制方式">两种同步复制方式</h3>
 
@@ -35,7 +316,7 @@
   <li>其中 <code class="language-plaintext highlighter-rouge">repl buffer</code> 是 <code class="language-plaintext highlighter-rouge">replication buffer</code> 简写</li>
 </ul>
 
-<p><img src="/assets/notes/Pasted-image-20260828154104.webp" alt="" /></p>
+<p><img src="/assets/notes/Pasted-image-20260828154104.png" alt="" /></p>
 
 <h3 id="第一阶段">第一阶段</h3>
 
@@ -89,7 +370,7 @@
   <li><strong>repl buffer</strong> 表示 <code class="language-plaintext highlighter-rouge">replication buffer</code></li>
 </ul>
 
-<p><img src="/assets/notes/Pasted-image-20260828154123.webp" alt="" /></p>
+<p><img src="/assets/notes/Pasted-image-20260828154123.png" alt="" /></p>
 
 <h3 id="过程">过程</h3>
 
@@ -137,7 +418,7 @@
 
 <p>支持基于 <code class="language-plaintext highlighter-rouge">redis.conf</code> 配置项修改 <code class="language-plaintext highlighter-rouge">repl_backlog_buffer</code> 缓冲区大小</p>
 
-<p><img src="/assets/notes/Pasted-image-20260828154149.webp" alt="" /></p>
+<p><img src="/assets/notes/Pasted-image-20260828154149.png" alt="" /></p>
 
 <h2 id="扩展---如何搭建一主多从">(扩展) - 如何搭建一主多从？</h2>
 
@@ -149,7 +430,7 @@
   <li>确认其中的配置项为 <code class="language-plaintext highlighter-rouge">daemonize = yes</code></li>
 </ul>
 
-<p><img src="/assets/notes/Pasted-image-20260828154205.webp" alt="" /></p>
+<p><img src="/assets/notes/Pasted-image-20260828154205.png" alt="" /></p>
 
 <p>并且仅开启 RDB 备份持久化策略</p>
 
@@ -158,7 +439,7 @@
   <li>关闭 AOF 持久化策略 <code class="language-plaintext highlighter-rouge">appendonly</code> 设置为 <code class="language-plaintext highlighter-rouge">no</code></li>
 </ul>
 
-<p><img src="/assets/notes/Pasted-image-20260828154215.webp" alt="" /> <img src="/assets/notes/Pasted-image-20260828154222.webp" alt="" /></p>
+<p><img src="/assets/notes/Pasted-image-20260828154215.png" alt="" /> <img src="/assets/notes/Pasted-image-20260828154222.png" alt="" /></p>
 
 <h3 id="分别创建三个配置文件">分别创建三个配置文件</h3>
 
@@ -174,11 +455,11 @@ dbfilename dump[端口].rdb
 
 <p>参考配置</p>
 
-<p><img src="/assets/notes/Pasted-image-20260828154238.webp" alt="" /></p>
+<p><img src="/assets/notes/Pasted-image-20260828154238.png" alt="" /></p>
 
 <h3 id="分别启动三台-redis-服务器">分别启动三台 redis 服务器</h3>
 
-<p><img src="/assets/notes/Pasted-image-20260828154249.webp" alt="" /></p>
+<p><img src="/assets/notes/Pasted-image-20260828154249.png" alt="" /></p>
 
 <p>连接查看相关信息</p>
 
@@ -186,7 +467,7 @@ dbfilename dump[端口].rdb
   <li>指令 <code class="language-plaintext highlighter-rouge">info replication</code> 用于打印主从复制的相关信息</li>
 </ul>
 
-<p><img src="/assets/notes/Pasted-image-20260828154258.webp" alt="" /></p>
+<p><img src="/assets/notes/Pasted-image-20260828154258.png" alt="" /></p>
 
 <h3 id="配置主从关系">配置主从关系</h3>
 
@@ -223,7 +504,7 @@ repl_backlog_first_byte_offset:1
 repl_backlog_histlen:0
 </code></pre></div></div>
 
-<p><img src="/assets/notes/Pasted-image-20260828154310.webp" alt="" /> <img src="/assets/notes/Pasted-image-20260828154319.webp" alt="" /></p>
+<p><img src="/assets/notes/Pasted-image-20260828154310.png" alt="" /> <img src="/assets/notes/Pasted-image-20260828154319.png" alt="" /></p>
 
 <p>查看主机信息</p>
 
@@ -234,18 +515,18 @@ repl_backlog_histlen:0
   <li>一个为端口 <code class="language-plaintext highlighter-rouge">6381</code> 的服务</li>
 </ul>
 
-<p><img src="/assets/notes/Pasted-image-20260828154338.webp" alt="" /></p>
+<p><img src="/assets/notes/Pasted-image-20260828154338.png" alt="" /></p>
 
 <h3 id="测试-主机支持读写但是从机仅支持读">测试: 主机支持读写，但是从机仅支持读</h3>
 
-<p><strong>主机 Master 支持读写</strong> <img src="/assets/notes/Pasted-image-20260828154346.webp" alt="" /></p>
+<p><strong>主机 Master 支持读写</strong> <img src="/assets/notes/Pasted-image-20260828154346.png" alt="" /></p>
 
 <p><strong>从机 Slave 仅支持读</strong></p>
 
 <blockquote>
   <p>尝试写报错: READONLY You can’t write against a read only replice.</p>
 
-  <p><img src="/assets/notes/Pasted-image-20260828154404.webp" alt="" /></p>
+  <p><img src="/assets/notes/Pasted-image-20260828154404.png" alt="" /></p>
 </blockquote>
 
 <h2 id="扩展---测试主从复制-之-全量复制">(扩展) - 测试主从复制 之 全量复制</h2>
@@ -266,7 +547,7 @@ repl_backlog_histlen:0
   <li>推荐这个好用的 Redis 可视化工具 <code class="language-plaintext highlighter-rouge">Another Redis Desktop Manager</code> (๑•̀ㅂ•́)و✧</li>
 </ul>
 
-<p><img src="/assets/notes/Pasted-image-20260828154419.webp" alt="" /></p>
+<p><img src="/assets/notes/Pasted-image-20260828154419.png" alt="" /></p>
 
 <p>查看从库</p>
 
@@ -274,21 +555,21 @@ repl_backlog_histlen:0
   <li>已经自动同步</li>
 </ul>
 
-<p><img src="/assets/notes/Pasted-image-20260828154426.webp" alt="" /></p>
+<p><img src="/assets/notes/Pasted-image-20260828154426.png" alt="" /></p>
 
 <p>停止从库</p>
 
-<p><img src="/assets/notes/Pasted-image-20260828154434.webp" alt="" /></p>
+<p><img src="/assets/notes/Pasted-image-20260828154434.png" alt="" /></p>
 
 <p>主库继续添加新的数据</p>
 
-<p><img src="/assets/notes/Pasted-image-20260828154443.webp" alt="" /></p>
+<p><img src="/assets/notes/Pasted-image-20260828154443.png" alt="" /></p>
 
-<p>当前还存活: <strong>6379 主(Master)， 6380 从（Slave）</strong> <img src="/assets/notes/Pasted-image-20260828154452.webp" alt="" /></p>
+<p>当前还存活: <strong>6379 主(Master)， 6380 从（Slave）</strong> <img src="/assets/notes/Pasted-image-20260828154452.png" alt="" /></p>
 
-<p>重启从库 <code class="language-plaintext highlighter-rouge">6381</code> 从库启动之后，默认仍然是 <strong>master</strong> <img src="/assets/notes/Pasted-image-20260828154501.webp" alt="" /></p>
+<p>重启从库 <code class="language-plaintext highlighter-rouge">6381</code> 从库启动之后，默认仍然是 <strong>master</strong> <img src="/assets/notes/Pasted-image-20260828154501.png" alt="" /></p>
 
-<p>再次将其绑定 <strong>Master</strong>, 设置为从库 <img src="/assets/notes/Pasted-image-20260828154521.webp" alt="" /></p>
+<p>再次将其绑定 <strong>Master</strong>, 设置为从库 <img src="/assets/notes/Pasted-image-20260828154521.png" alt="" /></p>
 
 <p>获取从库内的所有 key</p>
 
@@ -296,9 +577,9 @@ repl_backlog_histlen:0
   <li>进行全量复制，<code class="language-plaintext highlighter-rouge">6381</code>从库仍然可以得到最新的数据</li>
 </ul>
 
-<p><img src="/assets/notes/Pasted-image-20260828154531.webp" alt="" /></p>
+<p><img src="/assets/notes/Pasted-image-20260828154531.png" alt="" /></p>
 
-<p>主库 Master 内此时的最新数据 <img src="/assets/notes/Pasted-image-20260828154553.webp" alt="" /></p>
+<p>主库 Master 内此时的最新数据 <img src="/assets/notes/Pasted-image-20260828154553.png" alt="" /></p>
 
 <h3 id="测试master-意外-down-后重启自动恢复-master-地位">测试：Master 意外 down 后重启自动恢复 Master 地位</h3>
 
@@ -309,11 +590,11 @@ repl_backlog_histlen:0
 <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>SHUTDOWN
 </code></pre></div></div>
 
-<p><img src="/assets/notes/Pasted-image-20260828154718.webp" alt="" /></p>
+<p><img src="/assets/notes/Pasted-image-20260828154718.png" alt="" /></p>
 
-<p>确认 Master 已经 Down <img src="/assets/notes/Pasted-image-20260828154726.webp" alt="" /></p>
+<p>确认 Master 已经 Down <img src="/assets/notes/Pasted-image-20260828154726.png" alt="" /></p>
 
-<p>此时从服务器 <img src="/assets/notes/Pasted-image-20260828154734.webp" alt="" /></p>
+<p>此时从服务器 <img src="/assets/notes/Pasted-image-20260828154734.png" alt="" /></p>
 
 <p><strong>重启端口为 <code class="language-plaintext highlighter-rouge">6379</code> 的 Master</strong></p>
 
@@ -330,9 +611,9 @@ root      375135  374917  0 06:58 pts/2    00:00:00 <span class="nb">grep</span>
 
 <p><code class="language-plaintext highlighter-rouge">6379</code>主服务器启动之后仍然是 <code class="language-plaintext highlighter-rouge">master</code></p>
 
-<p><img src="/assets/notes/Pasted-image-20260828154745.webp" alt="" /></p>
+<p><img src="/assets/notes/Pasted-image-20260828154745.png" alt="" /></p>
 
-<p>查询从服务器 Slave 信息 可以监控到主服务器已经启动 <img src="/assets/notes/Pasted-image-20260828154754.webp" alt="" />提问：从节点能不能再挂从节点？形成级联复制？</p>
+<p>查询从服务器 Slave 信息 可以监控到主服务器已经启动 <img src="/assets/notes/Pasted-image-20260828154754.png" alt="" />提问：从节点能不能再挂从节点？形成级联复制？</p>
 
 <p>回答：可以的。从节点可以配置成另一个从节点的主节点，形成链式结构。这样做的好处是减轻主节点的复制压力。假设有 10 个从节点都直接连主节点，主节点要维护 10 个 replication buffer，要发 10 份数据。如果用级联结构，主节点只连 2 个从节点，这 2 个再各自连 4 个，主节点的压力就小多了。缺点是链路越长延迟越高，最底层的从节点数据延迟会叠加。</p>
 
