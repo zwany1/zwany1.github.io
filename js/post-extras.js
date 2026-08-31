@@ -96,10 +96,34 @@
         if (!btn) return;
         var title = (document.querySelector('.post-title') || {}).textContent
             || document.title || '';
-        var coverEl = document.querySelector('#article-container img');
+        var ogMeta = document.querySelector('meta[property="og:image"]');
+        var defaultCover = location.origin + '/assets/images/avatar.jpg';
         var meta = document.querySelector('.post-meta-date time');
         var dateStr = meta ? (meta.getAttribute('datetime') || '').slice(0, 10) : '';
         var url = location.origin + location.pathname;
+
+        /* 保底取图：文章首图(已加载) → og:image(cover/默认头像) → 默认头像，保证海报有图 */
+        function resolveCover(cb) {
+            var art = document.getElementById('article-container');
+            var imgs = art ? art.querySelectorAll('img') : [];
+            for (var i = 0; i < imgs.length; i++) {
+                if (imgs[i].naturalWidth) { cb(imgs[i]); return; }
+            }
+            var candidates = [];
+            if (ogMeta && ogMeta.content) candidates.push(ogMeta.content);
+            if (candidates[candidates.length - 1] !== defaultCover) candidates.push(defaultCover);
+            var idx = 0;
+            function next() {
+                if (idx >= candidates.length) { cb(null); return; }
+                var src = candidates[idx++];
+                var probe = new Image();
+                probe.crossOrigin = 'anonymous';
+                probe.onload = function () { cb(probe); };
+                probe.onerror = next;
+                probe.src = src;
+            }
+            next();
+        }
 
         function wrapText(ctx, text, maxWidth) {
             var lines = [];
@@ -121,7 +145,7 @@
             ctx.arcTo(x, y, x + w, y, r);
             ctx.closePath();
         }
-        function draw(qrImg) {
+        function draw(cover, qrImg) {
             var W = 900, H = 1200;
             var c = document.createElement('canvas');
             c.width = W; c.height = H;
@@ -134,21 +158,34 @@
             ctx.fillStyle = 'rgba(255,255,255,.92)';
             roundRect(ctx, 40, 40, W - 80, H - 80, 28);
             ctx.fill();
-            // 封面
+            // 封面（resolveCover 已保证有图，兜底再画纯色块）
             var drawY = 40;
-            if (coverEl && coverEl.complete && coverEl.naturalWidth) {
+            if (cover && cover.naturalWidth) {
                 try {
                     var cw = W - 80, ch = 420;
-                    var ratio = Math.max(cw / coverEl.naturalWidth, ch / coverEl.naturalHeight);
+                    var ratio = Math.max(cw / cover.naturalWidth, ch / cover.naturalHeight);
                     var sw = cw / ratio, sh = ch / ratio;
-                    var sx = (coverEl.naturalWidth - sw) / 2, sy = (coverEl.naturalHeight - sh) / 2;
+                    var sx = (cover.naturalWidth - sw) / 2, sy = (cover.naturalHeight - sh) / 2;
                     ctx.save();
                     roundRect(ctx, 40, 40, cw, ch, 24);
                     ctx.clip();
-                    ctx.drawImage(coverEl, sx, sy, sw, sh, 40, 40, cw, ch);
+                    ctx.drawImage(cover, sx, sy, sw, sh, 40, 40, cw, ch);
                     ctx.restore();
                     drawY = 40 + ch + 36;
                 } catch (e) { /* 忽略绘制失败 */ }
+            } else {
+                ctx.save();
+                var grad = ctx.createLinearGradient(0, 40, 0, 40 + 420);
+                grad.addColorStop(0, '#4c8bf5'); grad.addColorStop(1, '#9a6cf5');
+                ctx.fillStyle = grad;
+                roundRect(ctx, 40, 40, W - 80, 420, 24);
+                ctx.fill();
+                ctx.fillStyle = '#fff';
+                ctx.font = 'bold 42px "PingFang SC", "Microsoft YaHei", sans-serif';
+                ctx.textAlign = 'center';
+                ctx.fillText('朱的小屋', W / 2, 40 + 420 / 2 + 14);
+                ctx.restore();
+                drawY = 40 + 420 + 36;
             }
             // 标题
             ctx.fillStyle = '#1f2d3d';
@@ -205,12 +242,25 @@
         }
         btn.addEventListener('click', function () {
             btn.disabled = true;
+            var state = { cover: null, qr: null, coverDone: false, qrDone: false };
+            function finish() {
+                if (state.coverDone && state.qrDone) {
+                    clearTimeout(timer);
+                    draw(state.cover, state.qr);
+                }
+            }
+            var timer = setTimeout(function () {
+                if (!state.qrDone) { state.qrDone = true; state.qr = null; finish(); }
+            }, 4000);
+            resolveCover(function (c) {
+                state.cover = c;
+                state.coverDone = true;
+                finish();
+            });
             var qr = new Image();
             qr.crossOrigin = 'anonymous';
-            var done = false;
-            var timer = setTimeout(function () { if (!done) { done = true; draw(null); } }, 4000);
-            qr.onload = function () { if (!done) { done = true; clearTimeout(timer); draw(qr); } };
-            qr.onerror = function () { if (!done) { done = true; clearTimeout(timer); draw(null); } };
+            qr.onload = function () { if (!state.qrDone) { state.qrDone = true; state.qr = qr; finish(); } };
+            qr.onerror = function () { if (!state.qrDone) { state.qrDone = true; state.qr = null; finish(); } };
             qr.src = 'https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=' + encodeURIComponent(url);
         });
     })();
