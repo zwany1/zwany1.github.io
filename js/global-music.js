@@ -407,7 +407,7 @@
         renderDiscover();
         showView('discover');
     }
-    if (app.mask) app.mask.addEventListener('click', function () { app.root.hidden = true });
+    if (app.mask) app.mask.addEventListener('click', function () { window.__closePop(app.root); });
     if (app.close) app.close.addEventListener('click', function () { app.root.hidden = true });
     if (app.back) app.back.addEventListener('click', function () { showView('discover') });
     if (app.nav) app.nav.addEventListener('click', function (e) {

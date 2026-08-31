@@ -25,10 +25,10 @@
     <link rel="preconnect" href="//busuanzi.ibruce.info">
     <link rel="stylesheet" href="/assets/vendor/fontawesome/css/all.min.css">
     <link rel="stylesheet" href="/assets/css/butterfly.css">
-    <link rel="stylesheet" href="/css/header-glow.css?v=1788156730">
-    <link rel="stylesheet" href="/css/time-greeting.css?v=1788156730">
-    <link rel="stylesheet" href="/css/gh-projects.css?v=1788156730">
-    <link rel="stylesheet" href="/css/custom.css?v=1788156730">
+    <link rel="stylesheet" href="/css/header-glow.css?v=1788158703">
+    <link rel="stylesheet" href="/css/time-greeting.css?v=1788158703">
+    <link rel="stylesheet" href="/css/gh-projects.css?v=1788158703">
+    <link rel="stylesheet" href="/css/custom.css?v=1788158703">
     <link rel="manifest" href="/manifest.webmanifest">
     <link rel="stylesheet" href="/assets/vendor/fancybox/fancybox.min.css" media="print" onload="this.media='all'">
     
@@ -62,7 +62,7 @@
     window.GLOBAL_CONFIG = {
       root: '/',
       algolia: undefined,
-      localSearch: { "path": "/search.xml?v=1788156730", "preload": false, "top_n_per_article": 1, "unescape": false, "pagination": { "enable": false, "hitsPerPage": 8 }, "languages": { "hits_empty": "未找到包含 ${query} 的文章", "hits_stats": "找到 ${hits} 篇文章" } },
+      localSearch: { "path": "/search.xml?v=1788158703", "preload": false, "top_n_per_article": 1, "unescape": false, "pagination": { "enable": false, "hitsPerPage": 8 }, "languages": { "hits_empty": "未找到包含 ${query} 的文章", "hits_stats": "找到 ${hits} 篇文章" } },
       translate: undefined,
       highlight: { "plugin": "highlight.js", "highlightCopy": true, "highlightLang": true, "highlightHeightLimit": false, "highlightFullpage": false, "highlightMacStyle": false },
       copy: { success: '复制成功', error: '复制失败', noSupport: '浏览器不支持' },
@@ -503,7 +503,7 @@
         <div class="webinfo-item"><div class="item-name">运行时间 :</div><div class="item-count" id="site-uptime">—</div></div>
         <div class="webinfo-item"><div class="item-name">Unique Visitors :</div><div class="item-count" id="busuanzi_value_site_uv"><i class="fa-solid fa-spinner fa-spin"></i></div></div>
         <div class="webinfo-item"><div class="item-name">Page Views :</div><div class="item-count" id="busuanzi_value_site_pv"><i class="fa-solid fa-spinner fa-spin"></i></div></div>
-        <div class="webinfo-item"><div class="item-name">Last Update :</div><div class="item-count" id="last-push-date" data-lastPushDate="2026-08-31T14:12:10+08:00"><i class="fa-solid fa-spinner fa-spin"></i></div></div>
+        <div class="webinfo-item"><div class="item-name">Last Update :</div><div class="item-count" id="last-push-date" data-lastPushDate="2026-08-31T14:45:03+08:00"><i class="fa-solid fa-spinner fa-spin"></i></div></div>
     </div>
 </div>
 
@@ -553,8 +553,8 @@
 <div id="imageModal" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;z-index:1000;background-color:rgba(0,0,0,.8);cursor:pointer;">
     <img id="modalImage" style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);max-width:90vw;max-height:90vh;"/>
 </div>
-<script src="/js/utils.js?v=1788156730"></script>
-<script src="/js/main.js?v=1788156730"></script>
+<script src="/js/utils.js?v=1788158703"></script>
+<script src="/js/main.js?v=1788158703"></script>
 <script src="/assets/vendor/fancybox/fancybox.umd.min.js"></script>
 <script src="/assets/vendor/lazyload/lazyload.iife.min.js"></script>
 <div class="js-pjax"><script>
@@ -583,8 +583,8 @@ btf.addGlobalFn('pjaxSendOnce', () => { typed && typed.destroy(); }, 'typedDestr
 function subtitleType () { typedJSFn.processSubtitle(["打码改变世界","公众号：朱猪写作","保持热爱，奔赴山海"]); }
 typedJSFn.run(subtitleType);
 </script></div>
-<script src="/js/time-greeting.js?v=1788156730"></script>
-<script src="/js/header-glow.js?v=1788156730"></script>
+<script src="/js/time-greeting.js?v=1788158703"></script>
+<script src="/js/header-glow.js?v=1788158703"></script>
 <script async src="/assets/vendor/busuanzi/2.3/busuanzi.pure.mini.js"></script>
 <script>
 // Post Views（文章浏览次数）：
@@ -626,13 +626,20 @@ typedJSFn.run(subtitleType);
     var ns = isLocal ? 'zwany1-github-io-dev' : 'zwany1-github-io';
     var pvKeyEnc = ('pv' + location.pathname).replace(/[^a-zA-Z0-9_-]/g, '-'); // Abacus 的 key 不允许斜杠
     var pvDone = false;
-    fetch('https://abacus.jasoncameron.dev/hit/' + ns + '/' + pvKeyEnc)
+    // 同一会话内刷新不重复计数（去重，避免刷新刷爆浏览量）；跨会话每次访问 +1
+    var ssHit = false;
+    try { ssHit = sessionStorage.getItem('pv_hit' + pvKeyEnc) === '1'; } catch (e) {}
+    var pvReq = ssHit
+        ? 'https://abacus.jasoncameron.dev/get/' + ns + '/' + pvKeyEnc
+        : 'https://abacus.jasoncameron.dev/hit/' + ns + '/' + pvKeyEnc;
+    fetch(pvReq)
         .then(function (r) { return r.ok ? r.json() : Promise.reject(new Error(r.status)); })
         .then(function (d) {
             pvDone = true;
             if (d && typeof d.value === 'number') {
                 setPv(d.value);
                 writeCache(function (c) { c[pvKey] = d.value; });
+                if (!ssHit) { try { sessionStorage.setItem('pv_hit' + pvKeyEnc, '1'); } catch (e) {} }
             }
         })
         .catch(function () {});
@@ -683,8 +690,8 @@ typedJSFn.run(subtitleType);
     }, 500);
 })();
 </script>
-<script src="/js/search/local-search.js?v=1788156730"></script>
-<script src="/js/global-music.js?v=1788156730" defer></script>
+<script src="/js/search/local-search.js?v=1788158703"></script>
+<script src="/js/global-music.js?v=1788158703" defer></script>
 <script>
 // 深浅色记忆：主题 JS 按 system 设置后，这里覆盖用户手动选择（跟随系统/浅色/深色）
 (function () {
@@ -694,7 +701,60 @@ typedJSFn.run(subtitleType);
     } catch (e) {}
 })();
 </script>
-<script src="/js/fun-extras.js?v=1788156730" defer></script>
+<script src="/js/fun-extras.js?v=1788158703" defer></script>
+<script>
+// 统一弹窗关闭动效 / Esc 关闭所有弹窗 / 离线提示 / 相对时间
+(function () {
+    // 关闭动效：先播 .is-closing 动画再隐藏
+    window.__closePop = function (el) {
+        if (!el || el.hidden || el.classList.contains('is-closing')) return;
+        el.classList.add('is-closing');
+        var done = function () { el.classList.remove('is-closing'); el.hidden = true; };
+        el.addEventListener('animationend', done, { once: true });
+        setTimeout(done, 260);
+    };
+
+    // Esc：关闭所有弹窗（游戏/壁纸/工具/相册/音乐/搜索/海报/图片灯箱）
+    document.addEventListener('keydown', function (e) {
+        if (e.key !== 'Escape') return;
+        document.querySelectorAll('.games-pop, .music-app').forEach(function (el) {
+            if (!el.hidden) window.__closePop(el);
+        });
+        var sd = document.querySelector('#local-search .search-dialog.open');
+        if (sd) { var sc = document.querySelector('#local-search .search-close-button'); if (sc) sc.click(); }
+        var pm = document.querySelector('.pe-poster-mask'); if (pm) pm.remove();
+        var im = document.getElementById('imageModal');
+        if (im && im.style.display === 'block') im.style.display = 'none';
+    });
+
+    // 离线提示
+    var pill = document.createElement('div');
+    pill.className = 'offline-pill';
+    pill.textContent = '网络已断开';
+    document.body.appendChild(pill);
+    function updOffline() { pill.classList.toggle('is-offline', !navigator.onLine); }
+    window.addEventListener('offline', updOffline);
+    window.addEventListener('online', updOffline);
+    updOffline();
+
+    // 相对时间：time[datetime] 显示"x 天前"，hover/原属性保留完整日期
+    function relTime() {
+        var m = { 31536000: '年前', 2592000: '个月前', 86400: '天前', 3600: '小时前', 60: '分钟前' };
+        document.querySelectorAll('time[datetime]').forEach(function (el) {
+            var d = new Date(el.getAttribute('datetime'));
+            if (isNaN(d.getTime()) || el.getAttribute('data-rel')) return;
+            el.setAttribute('data-rel', '1');
+            if (!el.getAttribute('title')) el.setAttribute('title', el.textContent.trim());
+            var diff = Date.now() - d.getTime();
+            if (diff < 60000) { el.textContent = '刚刚'; return; }
+            var out = '刚刚';
+            for (var k in m) if (diff >= k * 1000) { out = Math.floor(diff / (k * 1000)) + m[k]; break; }
+            el.textContent = out;
+        });
+    }
+    relTime();
+})();
+</script>
 <script>
 // 站点增强：阅读进度条 / Ctrl+K 搜索 / 随机一读 / 建站天数 / Service Worker
 (function () {

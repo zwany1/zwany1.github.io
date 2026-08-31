@@ -15,7 +15,7 @@
   var current = null;
 
   function openPop() { pop.hidden = false; }
-  function closePop() { pop.hidden = true; }
+  function closePop() { window.__closePop(pop); }
   function showGrid() {
     title.textContent = '工具箱';
     grid.hidden = false;

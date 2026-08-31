@@ -325,7 +325,7 @@ body.home #page-header { display: none; }
   font-size: .9rem;
   font-weight: 600;
   color: rgba(31, 45, 61, .85);
-  padding: 0 4px;
+  padding: env(safe-area-inset-top) 4px 0;
 }
 .ios-statusbar__right { display: flex; gap: 10px; }
 
@@ -2247,7 +2247,42 @@ select.tool-input { appearance: auto; cursor: pointer; }
   from { transform: scale(.35); opacity: 0; }
   to { transform: scale(1); opacity: 1; }
 }
-@media (prefers-reduced-motion: reduce) { .is-launching { animation: none; } }
+.is-closing { animation: ios-close .22s ease-in forwards; }
+@keyframes ios-close {
+  from { transform: scale(1); opacity: 1; }
+  to { transform: scale(.92); opacity: 0; }
+}
+@media (prefers-reduced-motion: reduce) { .is-launching, .is-closing { animation: none; } }
+
+/* ---------- 文章阅读进度条 ---------- */
+#reading-progress {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 3px;
+  width: 0;
+  z-index: 4000;
+  background: linear-gradient(90deg, #4c8bf5, #9a6cf5, #f56ec6);
+  pointer-events: none;
+}
+
+/* ---------- 离线提示胶囊 ---------- */
+.offline-pill {
+  position: fixed;
+  left: 50%;
+  bottom: calc(24px + env(safe-area-inset-bottom));
+  transform: translate(-50%, 20px);
+  background: rgba(31, 45, 61, .92);
+  color: #fff;
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-size: .85rem;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity .3s, transform .3s;
+  z-index: 3000;
+}
+.offline-pill.is-offline { opacity: 1; transform: translate(-50%, 0); }
 
 /* ---------- 每日一言组件 ---------- */
 .ios-widget__quote { margin-top: 8px; font-size: .74rem; line-height: 1.5; color: rgba(31, 45, 61, .72); }

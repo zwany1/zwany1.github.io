@@ -228,7 +228,7 @@
   };
 
   /* ---- 弹窗 ---- */
-  function closePop() { pop.hidden = true; }
+  function closePop() { window.__closePop(pop); }
   widget.addEventListener('click', function () {
     pop.hidden = false;
     if (!bingLoaded) { bingLoaded = true; fetchBing(renderBingGrid); }

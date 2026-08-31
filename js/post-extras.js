@@ -49,14 +49,28 @@
         var btn = $('pe-like'), count = $('pe-like-count');
         if (!btn || !count) return;
         var likedKey = 'pe_liked' + location.pathname;
+        var countKey = 'pe_like_count' + location.pathname;
         var liked = false;
         try { liked = localStorage.getItem(likedKey) === '1'; } catch (e) {}
+        var cachedN = null;
+        try { cachedN = Number(localStorage.getItem(countKey)) || null; } catch (e) {}
         function paint(n) { count.textContent = (n == null ? '—' : n) + (liked ? ' 已赞' : ''); }
+        function paintFail() {
+            // 服务无响应：有缓存显示缓存，否则显示占位，但不写死错误文案覆盖计数
+            count.textContent = (cachedN == null ? '—' : cachedN) + (liked ? ' 已赞' : '');
+        }
         btn.classList.toggle('liked', liked);
+        if (cachedN != null) paint(cachedN); // 秒显上次点赞数
         fetch('https://abacus.jasoncameron.dev/get/' + NS + '/like' + pathKey)
             .then(function (r) { return r.ok ? r.json() : Promise.reject(0); })
-            .then(function (d) { if (d && typeof d.value === 'number') paint(d.value); })
-            .catch(function () { paint(null); });
+            .then(function (d) {
+                if (d && typeof d.value === 'number') {
+                    cachedN = d.value;
+                    paint(d.value);
+                    try { localStorage.setItem(countKey, String(d.value)); } catch (e) {}
+                } else paintFail();
+            })
+            .catch(function () { paintFail(); });
         btn.addEventListener('click', function () {
             if (liked) { btn.classList.remove('pop'); void btn.offsetWidth; btn.classList.add('pop'); return; }
             fetch('https://abacus.jasoncameron.dev/hit/' + NS + '/like' + pathKey)
@@ -65,10 +79,14 @@
                     liked = true;
                     try { localStorage.setItem(likedKey, '1'); } catch (e) {}
                     btn.classList.add('liked');
-                    if (d && typeof d.value === 'number') paint(d.value); else paint('已赞');
+                    if (d && typeof d.value === 'number') {
+                        cachedN = d.value;
+                        paint(d.value);
+                        try { localStorage.setItem(countKey, String(d.value)); } catch (e) {}
+                    } else paint('已赞');
                     btn.classList.remove('pop'); void btn.offsetWidth; btn.classList.add('pop');
                 })
-                .catch(function () { count.textContent = '网络不佳'; });
+                .catch(function () { count.textContent = (cachedN == null ? '已赞' : cachedN + ' 已赞'); });
         });
     })();
 
