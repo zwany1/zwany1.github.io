@@ -147,6 +147,14 @@
     } ,
   
     {
+      "title"    : "Redis 主从复制",
+      "category" : "Redis",
+      
+      "url"      : "/2026/08/28/s/",
+      "keywords" : ""
+    } ,
+  
+    {
       "title"    : "Redis 集群",
       "category" : "Redis",
       
