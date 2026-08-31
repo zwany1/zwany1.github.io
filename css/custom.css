@@ -1089,7 +1089,8 @@ body.home #pagination { max-width: 1100px; margin: 0 auto; }
 .games-pop__close {
   position: absolute;
   top: 12px;
-  left: 12px;
+  right: 12px;
+  left: auto;
   z-index: 3;
   width: 26px;
   height: 26px;
