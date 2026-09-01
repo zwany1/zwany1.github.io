@@ -158,6 +158,30 @@
       "title"    : "Redis 跳表",
       "category" : "Redis",
       
+      "url"      : "/2026/09/01/note-b99cfd/",
+      "keywords" : ""
+    } ,
+  
+    {
+      "title"    : "为什么 Redis 设计为单线程？6.0 版本为何引入多线程",
+      "category" : "Redis",
+      
+      "url"      : "/2026/09/01/redis-6-0/",
+      "keywords" : ""
+    } ,
+  
+    {
+      "title"    : "Redis 跳表",
+      "category" : "Redis",
+      
+      "url"      : "/2026/09/01/redis-hash/",
+      "keywords" : ""
+    } ,
+  
+    {
+      "title"    : "Redis 跳表",
+      "category" : "Redis",
+      
       "url"      : "/2026/09/01/redis/",
       "keywords" : ""
     } ,

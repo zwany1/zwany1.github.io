@@ -1,4 +1,78 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="3.10.0">Jekyll</generator><link href="https://zwany1.github.io/feed.xml" rel="self" type="application/atom+xml" /><link href="https://zwany1.github.io/" rel="alternate" type="text/html" /><updated>2026-09-01T15:59:51+08:00</updated><id>https://zwany1.github.io/feed.xml</id><title type="html">朱的小屋</title><subtitle>朱的个人博客，公众号：朱猪写作</subtitle><author><name>朱</name></author><entry><title type="html">Redis 跳表</title><link href="https://zwany1.github.io/2026/09/01/redis/" rel="alternate" type="text/html" title="Redis 跳表" /><published>2026-09-01T15:00:00+08:00</published><updated>2026-09-01T15:00:00+08:00</updated><id>https://zwany1.github.io/2026/09/01/redis</id><content type="html" xml:base="https://zwany1.github.io/2026/09/01/redis/"><![CDATA[<p>跳表本质上是一个<strong>多层链表</strong>，底层链表保存所有元素，上层链表是下层的子集，通过这种分层索引结构把链表的 O(n) 查找优化到 O(logn)。</p>
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="3.10.0">Jekyll</generator><link href="https://zwany1.github.io/feed.xml" rel="self" type="application/atom+xml" /><link href="https://zwany1.github.io/" rel="alternate" type="text/html" /><updated>2026-09-01T16:00:47+08:00</updated><id>https://zwany1.github.io/feed.xml</id><title type="html">朱的小屋</title><subtitle>朱的个人博客，公众号：朱猪写作</subtitle><author><name>朱</name></author><entry><title type="html">为什么 Redis 设计为单线程？6.0 版本为何引入多线程</title><link href="https://zwany1.github.io/2026/09/01/redis-6-0/" rel="alternate" type="text/html" title="为什么 Redis 设计为单线程？6.0 版本为何引入多线程" /><published>2026-09-01T16:00:25+08:00</published><updated>2026-09-01T16:00:25+08:00</updated><id>https://zwany1.github.io/2026/09/01/redis-6-0</id><content type="html" xml:base="https://zwany1.github.io/2026/09/01/redis-6-0/"><![CDATA[]]></content><author><name>朱</name></author><category term="Redis" /><category term="redis" /><category term="单线程" /><category term="多线程" /><summary type="html"><![CDATA[]]></summary></entry><entry><title type="html">Redis 跳表</title><link href="https://zwany1.github.io/2026/09/01/redis-hash/" rel="alternate" type="text/html" title="Redis 跳表" /><published>2026-09-01T16:00:25+08:00</published><updated>2026-09-01T16:00:25+08:00</updated><id>https://zwany1.github.io/2026/09/01/redis-hash</id><content type="html" xml:base="https://zwany1.github.io/2026/09/01/redis-hash/"><![CDATA[<h3 id="hash-是什么">Hash 是什么？</h3>
+
+<p>Redis Hash 本质是一个<strong>字段-值（field-value）集合</strong>，适合存储对象。</p>
+
+<p>例如：</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>HSET user:1001 name "mianshiya" age 18 city "Tokyo"
+HGET user:1001 name
+HINCRBY user:1001 age 1
+</code></pre></div></div>
+
+<p>Redis 不会一次性把整个哈希表搬完，而是采用：</p>
+
+<blockquote>
+  <p><strong>渐进式 Rehash</strong></p>
+</blockquote>
+
+<p>原因：</p>
+
+<p><strong>Redis 单线程，一次性迁移大量数据会阻塞其他请求。</strong></p>
+
+<p>流程：</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>ht[0]：旧表
+ht[1]：新表
+
+        ↓ 扩容
+
+每次处理请求
+        ↓
+迁移一部分桶
+        ↓
+rehashidx++
+        ↓
+继续迁移
+        ↓
+全部迁移完成
+        ↓
+ht[1] 成为新 ht[0]
+</code></pre></div></div>
+
+<p>Rehash 期间：</p>
+
+<ul>
+  <li>新数据直接写 <code class="language-plaintext highlighter-rouge">ht[1]</code></li>
+  <li>查询两个表都查</li>
+  <li>增删改查过程中顺便迁移数据</li>
+  <li><code class="language-plaintext highlighter-rouge">rehashidx = -1</code> 表示没有进行 Rehash</li>
+</ul>
+
+<p><strong>负载因子=已存储的哈希表节点数量/哈希表总容量</strong></p>
+<h2 id="rehash-触发条件">rehash 触发条件</h2>
+<p>触发条件也非常简单：</p>
+
+<ul>
+  <li>负载因子 &gt;= 1 &amp;&amp; Redis 没有在执行 bgsave 命令或者 bgrewiteaof 命令</li>
+  <li>负载因子 &gt;= 5，直接触发</li>
+</ul>
+
+<p>然后还有一个点，负载因子 &lt; 0.1 会触发缩容操作。</p>
+<h4 id="提问hash-和-string-存-json-相比各有什么优缺点">提问：Hash 和 String 存 JSON 相比，各有什么优缺点？</h4>
+
+<p>回答：Hash 的优势是能单独改某个字段，不用整个对象读出来改完再写回去，省网络带宽也省 CPU。缺点是不支持嵌套结构，只能存一层键值对。String 存 JSON 能存复杂嵌套结构，但改单个字段得整体覆盖。一般对象属性平铺的用 Hash，结构复杂的用 String 存 JSON。</p>
+
+<h4 id="提问渐进式-rehash-期间读写操作是怎么处理的">提问：渐进式 rehash 期间，读写操作是怎么处理的？</h4>
+
+<p>回答：写操作直接写到新表 ht[1]，保证新数据不会被搬两次。读操作先查 ht[0]，没找到再查 ht[1]。删除和更新也是两个表都要检查。每次操作完顺便搬一个桶，所以 rehash 期间每个请求会稍微慢一点，但不会出现长时间阻塞。</p>
+
+<h4 id="提问为什么扩容是-2-倍而不是-15-倍">提问：为什么扩容是 2 倍而不是 1.5 倍？</h4>
+
+<p>回答：因为哈希表大小必须是 2 的幂次，这样计算桶位置可以用位运算 <code class="language-plaintext highlighter-rouge">hash &amp; (size-1)</code> 代替取模，效率高很多。2 倍扩容刚好还是 2 的幂次。另外 2 倍扩容时，原来的元素要么在原位置，要么在原位置 + 原大小的位置，只用看 hash 值新增的那一位是 0 还是 1，迁移逻辑也简单。</p>
+
+<h4 id="提问hash-的大-key-问题怎么处理">提问：Hash 的大 key 问题怎么处理？</h4>
+
+<p>回答：一个 Hash 存几十万个字段就是大 key，删除的时候会阻塞很久。解决办法是拆分，比如按字段名哈希取模拆成多个小 Hash。或者用 HSCAN 分批删除，每次删一部分。Redis 4.0 之后有 UNLINK 命令可以异步删除，不会阻塞主线程。</p>]]></content><author><name>朱</name></author><category term="Redis" /><category term="redis" /><category term="redishash" /><summary type="html"><![CDATA[Hash 是什么？]]></summary></entry><entry><title type="html">Redis 跳表</title><link href="https://zwany1.github.io/2026/09/01/redis/" rel="alternate" type="text/html" title="Redis 跳表" /><published>2026-09-01T16:00:25+08:00</published><updated>2026-09-01T16:00:25+08:00</updated><id>https://zwany1.github.io/2026/09/01/redis</id><content type="html" xml:base="https://zwany1.github.io/2026/09/01/redis/"><![CDATA[<p>跳表本质上是一个<strong>多层链表</strong>，底层链表保存所有元素，上层链表是下层的子集，通过这种分层索引结构把链表的 O(n) 查找优化到 O(logn)。</p>
 
 <p>查找的时候从最高层开始，先往右走，遇到比目标值大的节点就往下走一层，重复这个过程直到找到目标或确定不存在。比如查找 50，从顶层的 10 开始，跳到 40 发现比 50 小继续往右，发现下一个是 70 比目标大，就往下走一层，在第二层从 40 往右一步就找到 50 了。</p>
 
@@ -30,7 +104,7 @@
 
 <h4 id="提问跳表插入和删除会不会导致索引层不平衡">提问：跳表插入和删除会不会导致索引层不平衡？</h4>
 
-<p>回答：不会，因为层级是随机决定的。只要随机函数够均匀，插入删除多少次，整体的层级分布都会趋近于理论值。这跟红黑树不一样，红黑树必须靠旋转维护平衡，跳表靠概率天然就是平衡的。</p>]]></content><author><name>朱</name></author><category term="Redis" /><category term="redis" /><summary type="html"><![CDATA[跳表本质上是一个多层链表，底层链表保存所有元素，上层链表是下层的子集，通过这种分层索引结构把链表的 O(n) 查找优化到 O(logn)。]]></summary></entry><entry><title type="html">Redis 集群</title><link href="https://zwany1.github.io/2026/08/31/redis/" rel="alternate" type="text/html" title="Redis 集群" /><published>2026-08-31T10:00:00+08:00</published><updated>2026-08-31T10:00:00+08:00</updated><id>https://zwany1.github.io/2026/08/31/redis</id><content type="html" xml:base="https://zwany1.github.io/2026/08/31/redis/"><![CDATA[<h2 id="redis集群的实现原理是什么">Redis集群的实现原理是什么?</h2>
+<p>回答：不会，因为层级是随机决定的。只要随机函数够均匀，插入删除多少次，整体的层级分布都会趋近于理论值。这跟红黑树不一样，红黑树必须靠旋转维护平衡，跳表靠概率天然就是平衡的。</p>]]></content><author><name>朱</name></author><category term="Redis" /><category term="redis" /><summary type="html"><![CDATA[跳表本质上是一个多层链表，底层链表保存所有元素，上层链表是下层的子集，通过这种分层索引结构把链表的 O(n) 查找优化到 O(logn)。]]></summary></entry><entry><title type="html">Redis 跳表</title><link href="https://zwany1.github.io/2026/09/01/note-b99cfd/" rel="alternate" type="text/html" title="Redis 跳表" /><published>2026-09-01T16:00:00+08:00</published><updated>2026-09-01T16:00:00+08:00</updated><id>https://zwany1.github.io/2026/09/01/note-b99cfd</id><content type="html" xml:base="https://zwany1.github.io/2026/09/01/note-b99cfd/"><![CDATA[]]></content><author><name>朱</name></author><category term="Redis" /><category term="redis" /><category term="redishash" /><summary type="html"><![CDATA[]]></summary></entry><entry><title type="html">Redis 集群</title><link href="https://zwany1.github.io/2026/08/31/redis/" rel="alternate" type="text/html" title="Redis 集群" /><published>2026-08-31T10:00:00+08:00</published><updated>2026-08-31T10:00:00+08:00</updated><id>https://zwany1.github.io/2026/08/31/redis</id><content type="html" xml:base="https://zwany1.github.io/2026/08/31/redis/"><![CDATA[<h2 id="redis集群的实现原理是什么">Redis集群的实现原理是什么?</h2>
 
 <h3 id="为什么需要集群">为什么需要集群？</h3>
 

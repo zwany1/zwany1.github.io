@@ -4,22 +4,22 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <title>SpringMVC Controller 单元测试示例 - 朱的小屋</title>
+    <title>Redis 跳表 - 朱的小屋</title>
     <meta name="author" content="朱">
     <meta name="copyright" content="朱">
     <meta name="format-detection" content="telephone=no">
     <meta name="theme-color" content="#ffffff">
-    <meta name="description" content="SpringMVC Controller 单元测试示例">
-    <meta name="keywords" content="Java, Spring, SpringMVC">
+    <meta name="description" content="">
+    <meta name="keywords" content="朱, zwany1, 朱猪写作">
     <meta property="og:type" content="website">
-    <meta property="og:title" content="SpringMVC Controller 单元测试示例">
-    <meta property="og:url" content="https://zwany1.github.io/fragment/springmvc-controller-unittest/">
+    <meta property="og:title" content="Redis 跳表">
+    <meta property="og:url" content="https://zwany1.github.io/2026/09/01/note-b99cfd/">
     <meta property="og:site_name" content="朱的小屋">
-    <meta property="og:description" content="SpringMVC Controller 单元测试示例">
+    <meta property="og:description" content="朱的个人博客，公众号：朱猪写作">
     <meta property="og:image" content="https://zwany1.github.io/assets/images/avatar.jpg">
     <link rel="icon" href="/assets/images/site-icon.ico">
     <link rel="shortcut icon" href="/assets/images/site-icon.ico">
-    <link rel="canonical" href="https://zwany1.github.io/fragment/springmvc-controller-unittest/">
+    <link rel="canonical" href="https://zwany1.github.io/2026/09/01/note-b99cfd/">
     <link rel="alternate" type="application/atom+xml" title="朱的小屋" href="https://zwany1.github.io/feed.xml">
     <link rel="preconnect" href="//cdn.jsdelivr.net">
     <link rel="preconnect" href="//busuanzi.ibruce.info">
@@ -80,14 +80,14 @@
       autoDarkmode: true
     };
     window.GLOBAL_CONFIG_SITE = {
-      title: 'SpringMVC Controller 单元测试示例',
+      title: 'Redis 跳表',
       isHighlightShrink: false,
       isToc: false,
       pageType: 'page'
     };
     </script>
 </head>
-<body class=" type-fragment">
+<body class=" type-post">
 <div id="web_bg"></div>
 <div id="sidebar">
     <div id="menu-mask"></div>
@@ -112,7 +112,7 @@
     </div>
 </div>
 <div class="page" id="body-wrap">
-    <header class="not-home-page" id="page-header" style="background: linear-gradient(135deg, #4c8bf5 0%, #9a6cf5 50%, #f56ec6 100%);">
+    <header class="post-bg" id="page-header" style="background: linear-gradient(135deg, #4c8bf5 0%, #9a6cf5 50%, #f56ec6 100%);">
         <nav id="nav">
             <span id="blog-info">
                 <a class="nav-site-title" href="/"><span class="site-name">朱的小屋</span></a>
@@ -136,113 +136,195 @@
             </div>
         </nav>
         
-        <div id="page-site-info">
-            <h1 id="site-title">SpringMVC Controller 单元测试示例</h1>
+        <div id="post-info">
+            <h1 class="post-title">Redis 跳表</h1>
+            <div id="post-meta">
+                <div class="meta-firstline">
+                    <span class="post-meta-date">
+                        <i class="far fa-calendar-alt fa-fw post-meta-icon"></i>
+                        <span class="post-meta-label">Created</span>
+                        <time class="post-meta-date-created" datetime="2026-09-01T16:00:00+08:00" title="Created 2026-09-01 16:00:00">2026-09-01</time>
+                    </span>
+                    
+                    <span class="post-meta-categories">
+                        <span class="post-meta-separator">|</span>
+                        <i class="fas fa-inbox fa-fw post-meta-icon"></i>
+                        <a class="post-meta-categories" href="/categories/#Redis">Redis</a>
+                    </span>
+                    
+                    <span class="post-meta-separator">|</span>
+                    <span class="post-meta-readtime"><i class="far fa-clock fa-fw post-meta-icon"></i>约 1 分钟</span>
+                </div>
+                <div class="meta-secondline">
+                    <span class="post-meta-separator">|</span>
+                    <span class="post-meta-pv-cv" data-flag-title="Redis 跳表">
+                        <i class="far fa-eye fa-fw post-meta-icon"></i>
+                        <span class="post-meta-label">Post Views:</span>
+                        <span id="page_views_value"><i class="fa-solid fa-spinner fa-spin"></i></span>
+                    </span>
+                </div>
+            </div>
         </div>
         
     </header>
     <main class="layout" id="content-inner">
 
-
-
-<section class="collection-head small geopattern" data-pattern-id="SpringMVC Contr">
-<div class="container">
-  <div class="columns">
-    <div class="column three-fourths">
-      <div class="collection-title">
-        <h1 class="collection-header">SpringMVC Controller 单元测试示例</h1>
-        <div class="collection-info">
-          
-          <span class="meta-info">
-            <span class="octicon octicon-tag"></span>
-            <a href="https://zwany1.github.io/fragments/?tag=java" title="java">java</a>
-          </span>
-          
-        </div>
-      </div>
+<div id="reading-progress"></div>
+<div id="post">
+    <div class="post-extras-bar">
+        <button id="pe-tts" type="button" title="浏览器本地朗读全文"><i class="fas fa-volume-high"></i> 听全文</button>
+        <button id="pe-poster" type="button" title="生成分享海报图片"><i class="fas fa-image"></i> 分享图</button>
+        <button id="pe-like" type="button" title="点赞这篇文章"><i class="fas fa-heart"></i> <span id="pe-like-count">—</span></button>
+        <span class="pe-font">
+            <button id="pe-font-minus" type="button" title="减小字号">A-</button>
+            <button id="pe-font-plus" type="button" title="增大字号">A+</button>
+        </span>
     </div>
-    <div class="column one-fourth mobile-hidden">
-      <div class="collection-title">
-        
-<img style="height:72px;width:72px; position: relative; z-index: 20;" src="https://zwany1.github.io/assets/images/qrcode.jpg" alt="朱猪写作" />
-
-
-      </div>
-    </div>
-  </div>
-</div>
-</section>
-<!-- / .banner -->
-<section class="container content">
-<div class="columns">
-  <div class="column three-fourths" >
+    <article class="container post-content" id="article-container">
     
-
-    <article class="article-content markdown-body">
-    <div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">import</span> <span class="nn">lombok.extern.slf4j.Slf4j</span><span class="o">;</span>
-<span class="kn">import</span> <span class="nn">org.junit.Test</span><span class="o">;</span>
-<span class="kn">import</span> <span class="nn">org.springframework.http.MediaType</span><span class="o">;</span>
-<span class="kn">import</span> <span class="nn">org.springframework.test.web.servlet.MvcResult</span><span class="o">;</span>
-<span class="kn">import</span> <span class="nn">org.springframework.test.web.servlet.ResultActions</span><span class="o">;</span>
-<span class="kn">import</span> <span class="nn">org.springframework.test.web.servlet.request.MockMvcRequestBuilders</span><span class="o">;</span>
-<span class="kn">import</span> <span class="nn">org.springframework.test.web.servlet.result.MockMvcResultHandlers</span><span class="o">;</span>
-<span class="kn">import</span> <span class="nn">org.springframework.test.web.servlet.result.MockMvcResultMatchers</span><span class="o">;</span>
-
-<span class="nd">@Slf4j</span>
-<span class="nd">@RunWith</span><span class="o">(</span><span class="nc">SpringJUnit4ClassRunner</span><span class="o">.</span><span class="na">class</span><span class="o">)</span>
-<span class="nd">@ContextConfiguration</span><span class="o">(</span><span class="n">value</span> <span class="o">=</span> <span class="o">{</span><span class="s">"classpath:applicationContextTest.xml"</span><span class="o">,</span><span class="s">"classpath:applicationContext-common.xml"</span><span class="o">})</span>
-<span class="nd">@WebAppConfiguration</span>
-<span class="kd">public</span> <span class="kd">class</span> <span class="nc">XxxControllerTest</span> <span class="o">{</span>
-    <span class="nd">@Autowired</span>
-    <span class="kd">private</span> <span class="nc">WebApplicationContext</span> <span class="n">webApplicationContext</span><span class="o">;</span>
-
-    <span class="kd">protected</span> <span class="nc">MockMvc</span> <span class="n">mockMvc</span><span class="o">;</span>
-
-    <span class="nd">@Before</span>
-    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">setup</span><span class="o">(){</span>
-        <span class="n">mockMvc</span> <span class="o">=</span> <span class="nc">MockMvcBuilders</span><span class="o">.</span><span class="na">webAppContextSetup</span><span class="o">(</span><span class="n">webApplicationContext</span><span class="o">).</span><span class="na">build</span><span class="o">();</span>
-    <span class="o">}</span>
-
-    <span class="nd">@Test</span>
-    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">testX</span><span class="o">()</span> <span class="o">{</span>
-        <span class="nc">ResultActions</span> <span class="n">resultActions</span> <span class="o">=</span> <span class="n">mockMvc</span><span class="o">.</span><span class="na">perform</span><span class="o">(</span>
-                <span class="nc">MockMvcRequestBuilders</span><span class="o">.</span><span class="na">post</span><span class="o">(</span><span class="s">"/x/xx"</span><span class="o">)</span>
-                <span class="o">.</span><span class="na">contentType</span><span class="o">(</span><span class="nc">MediaType</span><span class="o">.</span><span class="na">APPLICATION_FORM_URLENCODED_VALUE</span><span class="o">)</span>
-                <span class="o">.</span><span class="na">requestAttr</span><span class="o">(</span><span class="s">"user"</span><span class="o">,</span> <span class="s">"xxx"</span><span class="o">)</span>
-                <span class="o">.</span><span class="na">param</span><span class="o">(</span><span class="s">"id"</span><span class="o">,</span> <span class="s">"xxx"</span><span class="o">)</span>
-                <span class="o">);</span>
-        <span class="nc">MvcResult</span> <span class="n">mvcResult</span> <span class="o">=</span> <span class="n">resultActions</span>
-            <span class="o">.</span><span class="na">andDo</span><span class="o">(</span><span class="nc">MockMvcResultHandlers</span><span class="o">.</span><span class="na">print</span><span class="o">())</span>
-            <span class="o">.</span><span class="na">andExpect</span><span class="o">(</span><span class="nc">MockMvcResultMatchers</span><span class="o">.</span><span class="na">status</span><span class="o">().</span><span class="na">isOk</span><span class="o">())</span>
-            <span class="o">.</span><span class="na">andReturn</span><span class="o">();</span>
-        <span class="nc">String</span> <span class="n">result</span> <span class="o">=</span> <span class="n">mvcResult</span><span class="o">.</span><span class="na">getResponse</span><span class="o">().</span><span class="na">getContentAsString</span><span class="o">();</span>
-        <span class="n">log</span><span class="o">.</span><span class="na">info</span><span class="o">(</span><span class="s">"响应内容：{}"</span><span class="o">,</span> <span class="n">result</span><span class="o">);</span>
-    <span class="o">}</span>
-<span class="o">}</span>
-</code></pre></div></div>
-
-    
-<div style="margin-top:2em;padding:0 1.5em;border:1px solid #d3d3d3;background-color:#deebf7">
-  <h3>文档信息</h3>
-  <ul>
-    <li>本文作者：<a href="https://zwany1.github.io" target="_blank">朱</a></li>
-    <li>本文链接：<a href="https://zwany1.github.io/fragment/springmvc-controller-unittest/" target="_blank">https://zwany1.github.io/fragment/springmvc-controller-unittest/</a></li>
-    <li>版权声明：自由转载-非商用-非衍生-保持署名（<a href="http://creativecommons.org/licenses/by-nc-nd/3.0/deed.zh" target="_blank">创意共享3.0许可证</a>）</li>
-  </ul>
-</div>
-
 
     </article>
-    <div class="share">
-      
-<div class="share-component" data-disabled='qq,facebook'></div>
-
-
+    <div class="post-copyright">
+        <div class="post-copyright__author">
+            <span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>Author: </span>
+            <span class="post-copyright-info"><a href="https://zwany1.github.io">朱</a></span>
+        </div>
+        <div class="post-copyright__type">
+            <span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>Link: </span>
+            <span class="post-copyright-info"><a href="/2026/09/01/note-b99cfd/">/2026/09/01/note-b99cfd/</a></span>
+        </div>
+        <div class="post-copyright__notice">
+            <span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>Copyright Notice: </span>
+            <span class="post-copyright-info">All articles on this blog are licensed under <a target="_blank" rel="noopener" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a> unless otherwise stated.</span>
+        </div>
+    </div>
+    <div class="tag_share">
+        <div class="post-meta__tag-list">
+            <a class="post-meta__tags" href="/tags/#redis"><i class="fas fa-tag fa-fw"></i>redis</a><a class="post-meta__tags" href="/tags/#redishash"><i class="fas fa-tag fa-fw"></i>redishash</a>
+        </div>
+        
+        <div class="post-share">
+            <div class="social-share" data-image="https://zwany1.github.io/assets/images/avatar.jpg" data-sites="facebook,x,wechat,weibo,qq"></div>
+            <link rel="stylesheet" href="/assets/vendor/sharejs/css/share.min.css" media="print" onload="this.media='all'">
+            <script src="/assets/vendor/sharejs/js/social-share.min.js" defer></script>
+        </div>
+        
     </div>
     
 
-    <div class="comment">
-      
+<div class="qrcode-promo">
+    <div class="qrcode-promo__text">
+        <div class="qrcode-promo__title">感谢读完 ✍️</div>
+        <div class="qrcode-promo__desc">
+            我是朱，在这里记录技术与生活。<br>
+            更多写作与思考，欢迎关注公众号<b>「朱猪写作」</b>。
+        </div>
+    </div>
+    <img class="qrcode-promo__img" src="/assets/images/qrcode.jpg" alt="公众号：朱猪写作" loading="lazy">
+</div>
+
+
+    
+
+
+    
+    
+    
+    
+    
+
+    
+    
+    
+    
+    
+
+    
+    
+    
+    
+    
+
+    
+    
+    
+    
+    
+    
+
+    
+    
+    
+    
+    
+
+    
+    
+    
+    
+    
+
+    
+    
+    
+    
+    
+
+
+
+<section class="related-posts">
+    <div class="related-posts__title"><i class="fas fa-book-open fa-fw"></i> 延伸阅读</div>
+    <div class="related-posts__list">
+        
+        <a class="related-post" href="/2026/09/01/redis/">
+            <span class="related-post__title">Redis 跳表</span>
+            <span class="related-post__meta">2026-09-01 · Redis</span>
+        </a>
+        
+        <a class="related-post" href="/2026/09/01/redis-hash/">
+            <span class="related-post__title">Redis 跳表</span>
+            <span class="related-post__meta">2026-09-01 · Redis</span>
+        </a>
+        
+        <a class="related-post" href="/2026/09/01/redis-6-0/">
+            <span class="related-post__title">为什么 Redis 设计为单线程？6.0 版本为何引入多线程</span>
+            <span class="related-post__meta">2026-09-01 · Redis</span>
+        </a>
+        
+    </div>
+</section>
+
+
+    
+    <nav class="pagination-post" id="pagination">
+        
+        <a class="pagination-related" href="/2026/09/01/redis-6-0/" title="为什么 Redis 设计为单线程？6.0 版本为何引入多线程">
+            <div class="cover" style="background: var(--default-bg-color)"></div>
+            <div class="info">
+                <div class="info-1">
+                    <div class="info-item-1">Previous</div>
+                    <div class="info-item-2">为什么 Redis 设计为单线程？6.0 版本为何引入多线程</div>
+                </div>
+                <div class="info-2"><div class="info-item-1"></div></div>
+            </div>
+        </a>
+        
+        
+        <a class="pagination-related next-post" href="/2026/08/31/redis/" title="Redis 集群">
+            <div class="cover" style="background: var(--default-bg-color)"></div>
+            <div class="info">
+                <div class="info-1">
+                    <div class="info-item-1">Next</div>
+                    <div class="info-item-2">Redis 集群</div>
+                </div>
+                <div class="info-2"><div class="info-item-1">Redis集群的实现原理是什么?</div></div>
+            </div>
+        </a>
+        
+    </nav>
+    
+    <div class="post-comment">
+    
 
   
 
@@ -259,49 +341,8 @@
 
 
     </div>
-  </div>
-  <div class="column one-fourth">
-    
-<h3>Search</h3>
-<div id="site_search">
-    <input style="width:96%" type="text" id="search_box" placeholder="Search">
 </div>
-
-<ul id="search_results" style="font-size:14px;list-style-type:none;padding-top:10px;padding-left:10px;"></ul>
-
-<script src="https://fastly.jsdelivr.net/gh/zwany1/zwany1.github.io@master/assets/js/simple-jekyll-search.min.js"></script>
-
-<script type="text/javascript">
-SimpleJekyllSearch({
-    searchInput: document.getElementById('search_box'),
-    resultsContainer: document.getElementById('search_results'),
-    json: '/assets/search_data.json?v=1788249647',
-    searchResultTemplate: '<li><a href="{url}" title="{title}">{title}</a></li>',
-    noResultsText: 'No results found',
-    limit: 10,
-    fuzzy: false,
-    exclude: ['Welcome']
-})
-</script>
-
-    
-<h3 class="post-directory-title mobile-hidden">Table of Contents</h3>
-<div id="post-directory-module" class="mobile-hidden">
-  <section class="post-directory">
-  <!-- Links that trigger the jumping -->
-  <!-- Added by javascript below -->
-  <dl></dl>
-  </section>
-</div>
-
-<script src="https://fastly.jsdelivr.net/gh/zwany1/zwany1.github.io@master/assets/js/jquery.toc.js"></script>
-
-    
-
-  </div>
-</div>
-</section>
-<!-- /section.content -->
+<script src="/js/post-extras.js?v=1788249647" defer></script>
 
 <div class="aside-content" id="aside-content">
     <div class="card-widget card-info text-center">
@@ -328,6 +369,65 @@ SimpleJekyllSearch({
 
     <div class="sticky_layout">
         
+<div class="card-widget card-toc" id="card-toc">
+    <div class="item-headline"><i class="fas fa-stream"></i><span>文章目录</span></div>
+    <div class="card-toc-body" id="card-toc-body"></div>
+</div>
+<script>
+(function () {
+    var article = document.getElementById('article-container');
+    var body = document.getElementById('card-toc-body');
+    var card = document.getElementById('card-toc');
+    if (!article || !body || !card) return;
+
+    var headings = article.querySelectorAll('h2[id], h3[id]');
+    if (headings.length < 2) { card.style.display = 'none'; return; }
+
+    var html = '<ul class="toc-list">';
+    var level = 2;
+    headings.forEach(function (h) {
+        var l = Number(h.tagName.substring(1));
+        if (l > level) html += '<ul class="toc-list toc-sub">';
+        if (l < level) html += '</ul></li>';
+        if (l !== level) level = l;
+        html += '<li class="toc-item toc-level-' + l + '"><a href="#' + h.id + '">' + h.textContent + '</a></li>';
+    });
+    html += '</ul>';
+    body.innerHTML = html;
+
+    // 平滑滚动到对应标题
+    body.addEventListener('click', function (e) {
+        var a = e.target.closest('a');
+        if (!a) return;
+        e.preventDefault();
+        var target = document.getElementById(decodeURIComponent(a.getAttribute('href').slice(1)));
+        if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        history.replaceState(null, '', a.getAttribute('href'));
+    });
+
+    // 滚动高亮：当前阅读位置对应的目录项加 active
+    var links = body.querySelectorAll('a');
+    var offsets = [];
+    var refresh = function () {
+        offsets = Array.prototype.map.call(links, function (a) {
+            var t = document.getElementById(decodeURIComponent(a.getAttribute('href').slice(1)));
+            return t ? t.getBoundingClientRect().top + window.scrollY : Infinity;
+        });
+    };
+    var spy = function () {
+        var pos = window.scrollY + 120, current = -1;
+        for (var i = 0; i < offsets.length; i++) {
+            if (offsets[i] <= pos) current = i; else break;
+        }
+        links.forEach(function (a, i) { a.classList.toggle('active', i === current); });
+    };
+    refresh();
+    spy();
+    window.addEventListener('scroll', spy, { passive: true });
+    window.addEventListener('resize', function () { refresh(); spy(); }, { passive: true });
+})();
+</script>
+
         <div class="card-widget card-recent-post">
     <div class="item-headline"><i class="fas fa-history"></i><span>Recent Posts</span></div>
     <div class="aside-list">
