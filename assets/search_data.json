@@ -171,7 +171,7 @@
     } ,
   
     {
-      "title"    : "Redis 跳表",
+      "title"    : "Redis hash",
       "category" : "Redis",
       
       "url"      : "/2026/09/01/redis-hash/",
