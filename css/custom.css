@@ -313,7 +313,12 @@ body.home #page-header { display: none; }
   transition: opacity .9s ease;
   pointer-events: none;
 }
-.ios-wallpaper.is-ready { opacity: 1; }
+.ios-wallpaper.is-ready { opacity: var(--wp-op, 1); }
+/* 壁纸透明度滑杆 */
+.wp-op-row { display: flex; align-items: center; gap: 10px; padding: 2px 2px 12px; }
+.wp-op-row input[type=range] { flex: 1; accent-color: #49b1f5; cursor: pointer; }
+.wp-op-row .wp-op-val { font-size: .8rem; min-width: 44px; text-align: right; color: #1f2d3d; }
+[data-theme=dark] .wp-op-row .wp-op-val { color: #d8e2ec; }
 @media (prefers-reduced-motion: reduce) {
   .ios-wallpaper { transition: none; }
 }

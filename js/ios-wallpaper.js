@@ -317,4 +317,33 @@
   }
   bindUpload('wp-img-upload-btn', 'wp-file-img', customImage);
   bindUpload('wp-video-upload-btn', 'wp-file-video', customVideo);
+
+  /* ---- 壁纸透明度（100% 完整显示，调低则透出页面底色） ---- */
+  (function () {
+    var slider = document.getElementById('wp-op');
+    var val = document.getElementById('wp-op-val');
+    function applyOp(n) {
+      n = Math.max(20, Math.min(100, Number(n) || 100));
+      document.documentElement.style.setProperty('--wp-op', String(n / 100));
+      if (val) val.textContent = n + '%';
+      return n;
+    }
+    var saved = readStore();
+    var init = applyOp(saved && saved.op ? saved.op : 100);
+    if (slider) {
+      slider.value = init;
+      slider.addEventListener('input', function () {
+        var st = readStore() || {};
+        st.op = applyOp(slider.value);
+        writeStore(st);
+      });
+    }
+    var reset = document.getElementById('wp-op-reset');
+    if (reset) reset.addEventListener('click', function () {
+      var st = readStore() || {};
+      st.op = applyOp(100);
+      writeStore(st);
+      if (slider) slider.value = 100;
+    });
+  })();
 })();
