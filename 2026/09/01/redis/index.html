@@ -4,22 +4,22 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <title>生成自签名证书 - 朱的小屋</title>
+    <title>Redis 跳表 - 朱的小屋</title>
     <meta name="author" content="朱">
     <meta name="copyright" content="朱">
     <meta name="format-detection" content="telephone=no">
     <meta name="theme-color" content="#ffffff">
-    <meta name="description" content="生成和应用自签名证书">
-    <meta name="keywords" content="openssl, https">
+    <meta name="description" content="跳表本质上是一个多层链表，底层链表保存所有元素，上层链表是下层的子集，通过这种分层索引结构把链表的 O(n) 查找优化到 O(logn)。">
+    <meta name="keywords" content="朱, zwany1, 朱猪写作">
     <meta property="og:type" content="website">
-    <meta property="og:title" content="生成自签名证书">
-    <meta property="og:url" content="https://zwany1.github.io/fragment/gen-self-sign-cert/">
+    <meta property="og:title" content="Redis 跳表">
+    <meta property="og:url" content="https://zwany1.github.io/2026/09/01/redis/">
     <meta property="og:site_name" content="朱的小屋">
-    <meta property="og:description" content="生成和应用自签名证书">
-    <meta property="og:image" content="https://zwany1.github.io/assets/images/avatar.jpg">
+    <meta property="og:description" content="朱的个人博客，公众号：朱猪写作">
+    <meta property="og:image" content="https://zwany1.github.io/assets/notes/Pasted-image-20260901145238.png">
     <link rel="icon" href="/assets/images/site-icon.ico">
     <link rel="shortcut icon" href="/assets/images/site-icon.ico">
-    <link rel="canonical" href="https://zwany1.github.io/fragment/gen-self-sign-cert/">
+    <link rel="canonical" href="https://zwany1.github.io/2026/09/01/redis/">
     <link rel="alternate" type="application/atom+xml" title="朱的小屋" href="https://zwany1.github.io/feed.xml">
     <link rel="preconnect" href="//cdn.jsdelivr.net">
     <link rel="preconnect" href="//busuanzi.ibruce.info">
@@ -80,14 +80,14 @@
       autoDarkmode: true
     };
     window.GLOBAL_CONFIG_SITE = {
-      title: '生成自签名证书',
+      title: 'Redis 跳表',
       isHighlightShrink: false,
       isToc: false,
       pageType: 'page'
     };
     </script>
 </head>
-<body class=" type-fragment">
+<body class=" type-post">
 <div id="web_bg"></div>
 <div id="sidebar">
     <div id="menu-mask"></div>
@@ -112,7 +112,7 @@
     </div>
 </div>
 <div class="page" id="body-wrap">
-    <header class="not-home-page" id="page-header" style="background: linear-gradient(135deg, #4c8bf5 0%, #9a6cf5 50%, #f56ec6 100%);">
+    <header class="post-bg" id="page-header" style="background: linear-gradient(135deg, #4c8bf5 0%, #9a6cf5 50%, #f56ec6 100%);">
         <nav id="nav">
             <span id="blog-info">
                 <a class="nav-site-title" href="/"><span class="site-name">朱的小屋</span></a>
@@ -136,130 +136,193 @@
             </div>
         </nav>
         
-        <div id="page-site-info">
-            <h1 id="site-title">生成自签名证书</h1>
+        <div id="post-info">
+            <h1 class="post-title">Redis 跳表</h1>
+            <div id="post-meta">
+                <div class="meta-firstline">
+                    <span class="post-meta-date">
+                        <i class="far fa-calendar-alt fa-fw post-meta-icon"></i>
+                        <span class="post-meta-label">Created</span>
+                        <time class="post-meta-date-created" datetime="2026-09-01T15:00:00+08:00" title="Created 2026-09-01 15:00:00">2026-09-01</time>
+                    </span>
+                    
+                    <span class="post-meta-categories">
+                        <span class="post-meta-separator">|</span>
+                        <i class="fas fa-inbox fa-fw post-meta-icon"></i>
+                        <a class="post-meta-categories" href="/categories/#Redis">Redis</a>
+                    </span>
+                    
+                    <span class="post-meta-separator">|</span>
+                    <span class="post-meta-readtime"><i class="far fa-clock fa-fw post-meta-icon"></i>约 2 分钟</span>
+                </div>
+                <div class="meta-secondline">
+                    <span class="post-meta-separator">|</span>
+                    <span class="post-meta-pv-cv" data-flag-title="Redis 跳表">
+                        <i class="far fa-eye fa-fw post-meta-icon"></i>
+                        <span class="post-meta-label">Post Views:</span>
+                        <span id="page_views_value"><i class="fa-solid fa-spinner fa-spin"></i></span>
+                    </span>
+                </div>
+            </div>
         </div>
         
     </header>
     <main class="layout" id="content-inner">
 
-
-
-<section class="collection-head small geopattern" data-pattern-id="生成自签名证书">
-<div class="container">
-  <div class="columns">
-    <div class="column three-fourths">
-      <div class="collection-title">
-        <h1 class="collection-header">生成自签名证书</h1>
-        <div class="collection-info">
-          
-          <span class="meta-info">
-            <span class="octicon octicon-tag"></span>
-            <a href="https://zwany1.github.io/fragments/?tag=openssl" title="openssl">openssl</a>
-          </span>
-          
-          <span class="meta-info">
-            <span class="octicon octicon-tag"></span>
-            <a href="https://zwany1.github.io/fragments/?tag=https" title="https">https</a>
-          </span>
-          
-        </div>
-      </div>
+<div id="reading-progress"></div>
+<div id="post">
+    <div class="post-extras-bar">
+        <button id="pe-tts" type="button" title="浏览器本地朗读全文"><i class="fas fa-volume-high"></i> 听全文</button>
+        <button id="pe-poster" type="button" title="生成分享海报图片"><i class="fas fa-image"></i> 分享图</button>
+        <button id="pe-like" type="button" title="点赞这篇文章"><i class="fas fa-heart"></i> <span id="pe-like-count">—</span></button>
+        <span class="pe-font">
+            <button id="pe-font-minus" type="button" title="减小字号">A-</button>
+            <button id="pe-font-plus" type="button" title="增大字号">A+</button>
+        </span>
     </div>
-    <div class="column one-fourth mobile-hidden">
-      <div class="collection-title">
-        
-<img style="height:72px;width:72px; position: relative; z-index: 20;" src="https://zwany1.github.io/assets/images/qrcode.jpg" alt="朱猪写作" />
+    <article class="container post-content" id="article-container">
+    <p>跳表本质上是一个<strong>多层链表</strong>，底层链表保存所有元素，上层链表是下层的子集，通过这种分层索引结构把链表的 O(n) 查找优化到 O(logn)。</p>
 
+<p>查找的时候从最高层开始，先往右走，遇到比目标值大的节点就往下走一层，重复这个过程直到找到目标或确定不存在。比如查找 50，从顶层的 10 开始，跳到 40 发现比 50 小继续往右，发现下一个是 70 比目标大，就往下走一层，在第二层从 40 往右一步就找到 50 了。</p>
 
-      </div>
-    </div>
-  </div>
-</div>
-</section>
-<!-- / .banner -->
-<section class="container content">
-<div class="columns">
-  <div class="column three-fourths" >
-    
+<p>插入的时候，先用查找的方式定位到插入位置，然后随机决定新节点要建几层索引。Redis 用 25% 的概率往上加一层，所以大部分节点只在底层，少部分节点会出现在高层索引中。</p>
 
-    <article class="article-content markdown-body">
-    <h2 id="生成自签名证书">生成自签名证书</h2>
+<p>删除就是先找到节点，然后把这个节点在各层的前后指针都接上，跟普通链表删除一样，只是要在多层都操作一遍。<img src="/assets/notes/Pasted-image-20260901145238.png" alt="" />### 为什么用跳表不用红黑树</p>
 
-<p>两步走：</p>
+<p>Redis 选跳表有几个原因：</p>
 
-<p>一、生成密钥和证书签名请求（Certificate Signing Request)：</p>
+<p>1）实现简单，红黑树那套左旋右旋太复杂，跳表就是多层链表，好写好调试</p>
 
-<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>openssl req  <span class="nt">-newkey</span> rsa:2048 <span class="nt">-nodes</span> <span class="nt">-keyout</span> local_self_key.pem  <span class="nt">-out</span> local_self_csr.pem
-</code></pre></div></div>
+<p>2）范围查询效率高，Zset 经常要取排名 10-20 的数据，跳表在底层链表上顺着走就行，红黑树得中序遍历</p>
 
-<p>二、生成自签名证书：</p>
+<p>3）并发友好，跳表只需要锁住相关的几个节点，红黑树旋转的时候可能要锁一大片（这里可以提一嘴不过 Redis 执行命令是单线程的，所以并发不是主要考虑的点。说出并发友好这点的目的，是让你在面试中表现出你不仅知道数据结构差异、并发锁和性能的关系还有 Redis 的执行模型）</p>
 
-<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>openssl x509 <span class="nt">-signkey</span> local_self_key.pem <span class="nt">-in</span> local_self_csr.pem  <span class="nt">-req</span> <span class="nt">-days</span> 365 <span class="nt">-out</span> local_self_cert.pem
-</code></pre></div></div>
+<p>4）内存占用可控，跳表每个节点平均 1.33 个指针，红黑树每个节点固定 3 个指针</p>
 
-<p>至此我们得到了三个文件：</p>
+<h4 id="提问跳表的空间复杂度是多少比普通链表多占多少内存">提问：跳表的空间复杂度是多少？比普通链表多占多少内存？</h4>
 
-<ul>
-  <li>local_self_key.pem 密钥</li>
-  <li>local_self_csr.pem 证书签名请求</li>
-  <li>local_self_cert.pem 证书</li>
-</ul>
+<p>回答：跳表空间复杂度是 O(n)。因为每个节点有 25% 概率升一层，所以平均每个节点的层数是 1/(1-0.25) = 1.33 层。总指针数大约是 n * 1.33，比普通链表多 33% 左右的指针开销。</p>
 
-<h2 id="使用自签名证书">使用自签名证书</h2>
+<h4 id="提问跳表最高层数为什么是-32-层能不能设成更大">提问：跳表最高层数为什么是 32 层？能不能设成更大？</h4>
 
-<p>比如如果我们使用 Nginx 作为服务器，那么可以在配置文件里：</p>
+<p>回答：32 层是够用的。每层节点数是上一层的 4 倍，32 层理论上能索引 4^32 也就是 2^64 个元素，远超实际需要。层数太多反而浪费内存，每多一层就多一个指针。Redis 5.0 之前是 64 层，后来改成 32 就是因为实际场景用不到那么多。</p>
 
-<div class="language-conf highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># HTTPS server
-</span>
-<span class="n">server</span> {
-   <span class="n">listen</span>       <span class="m">443</span> <span class="n">ssl</span>;
-   <span class="n">server_name</span>  <span class="n">local</span>.<span class="n">mazhuang</span>.<span class="n">org</span>;
+<h4 id="提问跳表的层级概率为什么是-25-而不是-50">提问：跳表的层级概率为什么是 25% 而不是 50%？</h4>
 
-   <span class="n">ssl_certificate</span>      <span class="n">local_self_cert</span>.<span class="n">pem</span>;
-   <span class="n">ssl_certificate_key</span>  <span class="n">local_self_key</span>.<span class="n">pem</span>;
+<p>回答：这是空间和时间的权衡。50% 的话每两个节点就有一个上升，索引层太密集，浪费内存。25% 的话平均每 4 个节点有一个上升，既能保证 O(logn) 的查询效率，又不会占太多额外空间。Redis 这个 0.25 是经过实测调优的。</p>
 
-   <span class="n">ssl_session_cache</span>    <span class="n">shared</span>:<span class="n">SSL</span>:<span class="m">1</span><span class="n">m</span>;
-   <span class="n">ssl_session_timeout</span>  <span class="m">5</span><span class="n">m</span>;
+<h4 id="提问跳表插入和删除会不会导致索引层不平衡">提问：跳表插入和删除会不会导致索引层不平衡？</h4>
 
-   <span class="n">ssl_ciphers</span>  <span class="n">HIGH</span>:!<span class="n">aNULL</span>:!<span class="n">MD5</span>;
-   <span class="n">ssl_prefer_server_ciphers</span>  <span class="n">on</span>;
-
-   <span class="n">location</span> / {
-       <span class="n">root</span>   <span class="n">html</span>;
-       <span class="n">index</span>  <span class="n">index</span>.<span class="n">html</span> <span class="n">index</span>.<span class="n">htm</span>;
-   }
-}
-</code></pre></div></div>
-
-<h2 id="参考">参考</h2>
-
-<ul>
-  <li>https://www.cnblogs.com/wufengtinghai/p/15559537.html</li>
-</ul>
-
-    
-<div style="margin-top:2em;padding:0 1.5em;border:1px solid #d3d3d3;background-color:#deebf7">
-  <h3>文档信息</h3>
-  <ul>
-    <li>本文作者：<a href="https://zwany1.github.io" target="_blank">朱</a></li>
-    <li>本文链接：<a href="https://zwany1.github.io/fragment/gen-self-sign-cert/" target="_blank">https://zwany1.github.io/fragment/gen-self-sign-cert/</a></li>
-    <li>版权声明：自由转载-非商用-非衍生-保持署名（<a href="http://creativecommons.org/licenses/by-nc-nd/3.0/deed.zh" target="_blank">创意共享3.0许可证</a>）</li>
-  </ul>
-</div>
-
+<p>回答：不会，因为层级是随机决定的。只要随机函数够均匀，插入删除多少次，整体的层级分布都会趋近于理论值。这跟红黑树不一样，红黑树必须靠旋转维护平衡，跳表靠概率天然就是平衡的。</p>
 
     </article>
-    <div class="share">
-      
-<div class="share-component" data-disabled='qq,facebook'></div>
-
-
+    <div class="post-copyright">
+        <div class="post-copyright__author">
+            <span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>Author: </span>
+            <span class="post-copyright-info"><a href="https://zwany1.github.io">朱</a></span>
+        </div>
+        <div class="post-copyright__type">
+            <span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>Link: </span>
+            <span class="post-copyright-info"><a href="/2026/09/01/redis/">/2026/09/01/redis/</a></span>
+        </div>
+        <div class="post-copyright__notice">
+            <span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>Copyright Notice: </span>
+            <span class="post-copyright-info">All articles on this blog are licensed under <a target="_blank" rel="noopener" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a> unless otherwise stated.</span>
+        </div>
+    </div>
+    <div class="tag_share">
+        <div class="post-meta__tag-list">
+            <a class="post-meta__tags" href="/tags/#redis"><i class="fas fa-tag fa-fw"></i>redis</a>
+        </div>
+        
+        <div class="post-share">
+            <div class="social-share" data-image="https://zwany1.github.io/assets/notes/Pasted-image-20260901145238.png" data-sites="facebook,x,wechat,weibo,qq"></div>
+            <link rel="stylesheet" href="/assets/vendor/sharejs/css/share.min.css" media="print" onload="this.media='all'">
+            <script src="/assets/vendor/sharejs/js/social-share.min.js" defer></script>
+        </div>
+        
     </div>
     
 
-    <div class="comment">
-      
+<div class="qrcode-promo">
+    <div class="qrcode-promo__text">
+        <div class="qrcode-promo__title">感谢读完 ✍️</div>
+        <div class="qrcode-promo__desc">
+            我是朱，在这里记录技术与生活。<br>
+            更多写作与思考，欢迎关注公众号<b>「朱猪写作」</b>。
+        </div>
+    </div>
+    <img class="qrcode-promo__img" src="/assets/images/qrcode.jpg" alt="公众号：朱猪写作" loading="lazy">
+</div>
+
+
+    
+
+
+    
+    
+    
+    
+    
+    
+
+    
+    
+    
+    
+    
+
+    
+    
+    
+    
+    
+
+    
+    
+    
+    
+    
+
+
+
+<section class="related-posts">
+    <div class="related-posts__title"><i class="fas fa-book-open fa-fw"></i> 延伸阅读</div>
+    <div class="related-posts__list">
+        
+        <a class="related-post" href="/2026/08/31/redis/">
+            <span class="related-post__title">Redis 集群</span>
+            <span class="related-post__meta">2026-08-31 · Redis</span>
+        </a>
+        
+        <a class="related-post" href="/2026/08/28/redis/">
+            <span class="related-post__title">Redis 主从复制</span>
+            <span class="related-post__meta">2026-08-28 · Redis</span>
+        </a>
+        
+    </div>
+</section>
+
+
+    
+    <nav class="pagination-post" id="pagination">
+        
+        
+        <a class="pagination-related next-post" href="/2026/08/31/redis/" title="Redis 集群">
+            <div class="cover" style="background: var(--default-bg-color)"></div>
+            <div class="info">
+                <div class="info-1">
+                    <div class="info-item-1">Next</div>
+                    <div class="info-item-2">Redis 集群</div>
+                </div>
+                <div class="info-2"><div class="info-item-1">Redis集群的实现原理是什么?</div></div>
+            </div>
+        </a>
+        
+    </nav>
+    
+    <div class="post-comment">
+    
 
   
 
@@ -276,49 +339,8 @@
 
 
     </div>
-  </div>
-  <div class="column one-fourth">
-    
-<h3>Search</h3>
-<div id="site_search">
-    <input style="width:96%" type="text" id="search_box" placeholder="Search">
 </div>
-
-<ul id="search_results" style="font-size:14px;list-style-type:none;padding-top:10px;padding-left:10px;"></ul>
-
-<script src="https://fastly.jsdelivr.net/gh/zwany1/zwany1.github.io@master/assets/js/simple-jekyll-search.min.js"></script>
-
-<script type="text/javascript">
-SimpleJekyllSearch({
-    searchInput: document.getElementById('search_box'),
-    resultsContainer: document.getElementById('search_results'),
-    json: '/assets/search_data.json?v=1788249591',
-    searchResultTemplate: '<li><a href="{url}" title="{title}">{title}</a></li>',
-    noResultsText: 'No results found',
-    limit: 10,
-    fuzzy: false,
-    exclude: ['Welcome']
-})
-</script>
-
-    
-<h3 class="post-directory-title mobile-hidden">Table of Contents</h3>
-<div id="post-directory-module" class="mobile-hidden">
-  <section class="post-directory">
-  <!-- Links that trigger the jumping -->
-  <!-- Added by javascript below -->
-  <dl></dl>
-  </section>
-</div>
-
-<script src="https://fastly.jsdelivr.net/gh/zwany1/zwany1.github.io@master/assets/js/jquery.toc.js"></script>
-
-    
-
-  </div>
-</div>
-</section>
-<!-- /section.content -->
+<script src="/js/post-extras.js?v=1788249591" defer></script>
 
 <div class="aside-content" id="aside-content">
     <div class="card-widget card-info text-center">
@@ -345,6 +367,65 @@ SimpleJekyllSearch({
 
     <div class="sticky_layout">
         
+<div class="card-widget card-toc" id="card-toc">
+    <div class="item-headline"><i class="fas fa-stream"></i><span>文章目录</span></div>
+    <div class="card-toc-body" id="card-toc-body"></div>
+</div>
+<script>
+(function () {
+    var article = document.getElementById('article-container');
+    var body = document.getElementById('card-toc-body');
+    var card = document.getElementById('card-toc');
+    if (!article || !body || !card) return;
+
+    var headings = article.querySelectorAll('h2[id], h3[id]');
+    if (headings.length < 2) { card.style.display = 'none'; return; }
+
+    var html = '<ul class="toc-list">';
+    var level = 2;
+    headings.forEach(function (h) {
+        var l = Number(h.tagName.substring(1));
+        if (l > level) html += '<ul class="toc-list toc-sub">';
+        if (l < level) html += '</ul></li>';
+        if (l !== level) level = l;
+        html += '<li class="toc-item toc-level-' + l + '"><a href="#' + h.id + '">' + h.textContent + '</a></li>';
+    });
+    html += '</ul>';
+    body.innerHTML = html;
+
+    // 平滑滚动到对应标题
+    body.addEventListener('click', function (e) {
+        var a = e.target.closest('a');
+        if (!a) return;
+        e.preventDefault();
+        var target = document.getElementById(decodeURIComponent(a.getAttribute('href').slice(1)));
+        if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        history.replaceState(null, '', a.getAttribute('href'));
+    });
+
+    // 滚动高亮：当前阅读位置对应的目录项加 active
+    var links = body.querySelectorAll('a');
+    var offsets = [];
+    var refresh = function () {
+        offsets = Array.prototype.map.call(links, function (a) {
+            var t = document.getElementById(decodeURIComponent(a.getAttribute('href').slice(1)));
+            return t ? t.getBoundingClientRect().top + window.scrollY : Infinity;
+        });
+    };
+    var spy = function () {
+        var pos = window.scrollY + 120, current = -1;
+        for (var i = 0; i < offsets.length; i++) {
+            if (offsets[i] <= pos) current = i; else break;
+        }
+        links.forEach(function (a, i) { a.classList.toggle('active', i === current); });
+    };
+    refresh();
+    spy();
+    window.addEventListener('scroll', spy, { passive: true });
+    window.addEventListener('resize', function () { refresh(); spy(); }, { passive: true });
+})();
+</script>
+
         <div class="card-widget card-recent-post">
     <div class="item-headline"><i class="fas fa-history"></i><span>Recent Posts</span></div>
     <div class="aside-list">
