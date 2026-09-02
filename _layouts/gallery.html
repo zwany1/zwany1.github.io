@@ -1,0 +1,56 @@
+---
+layout: page
+---
+
+<style>
+  .gallery {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 12px;
+    margin: 20px 0;
+  }
+
+  .gallery a {
+    width: calc(33.333% - 8px);
+    height: 200px;
+    display: inline-block;
+    overflow: hidden;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+  }
+
+  .gallery a:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
+  }
+
+  .gallery img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.3s ease;
+  }
+
+  .gallery a:hover img {
+    transform: scale(1.05);
+  }
+
+  /* 响应式设计 */
+  @media (max-width: 768px) {
+    .gallery a {
+      width: calc(50% - 8px);
+    }
+  }
+
+  @media (max-width: 480px) {
+    .gallery a {
+      width: 100%;
+    }
+  }
+</style>
+
+<div class="gallery">
+{{ content }}
+</div>

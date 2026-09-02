@@ -1,0 +1,12 @@
+<div class="aside-content" id="aside-content">
+    {% include widget-card-info.html %}
+    {% include widget-announcement.html %}
+    <div class="sticky_layout">
+        {% if page.layout == 'post' %}{% include widget-toc.html %}{% endif %}
+        {% include widget-recent-posts.html %}
+        {% include widget-categories.html %}
+        {% include widget-tags.html %}
+        {% include widget-archives.html %}
+        {% include widget-webinfo.html %}
+    </div>
+</div>

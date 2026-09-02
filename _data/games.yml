@@ -1,0 +1,107 @@
+# 游戏中心：全部为免登录、打开即玩的 H5 游戏直链
+# 图标已本地化到 assets/games/
+- name: 召唤神龙
+  url: https://arcxingye.github.io/zhsl/
+  icon: /assets/games/zhsl.png
+  letter: 龙
+  bg: "#e6194b"
+- name: 无尽驾驶
+  url: https://topograph.io/
+  icon: /assets/games/topograph.png
+  letter: 驾
+  bg: "#22a6b3"
+- name: Flappy 小鸟
+  url: https://ellisonleao.github.io/clumsy-bird/
+  icon: /assets/games/bird.png
+  letter: 鸟
+  bg: "#f0932b"
+- name: 吃豆人
+  url: https://passer-by.com/pacman/
+  icon: /assets/games/pacman.png
+  letter: 吃
+  bg: "#f7b731"
+- name: 盖楼
+  url: https://iamkun.github.io/tower_game/
+  icon: /assets/games/tower.png
+  letter: 楼
+  bg: "#f0932b"
+- name: 恐龙跳跳
+  url: https://chromedino.com/
+  icon: /assets/games/dino.png
+  letter: 龙
+  bg: "#607d8b"
+- name: HexGL 赛车
+  url: https://hexgl.bkcore.com/play/
+  icon: /assets/games/hexgl.png
+  letter: 赛
+  bg: "#e6194b"
+- name: 贪吃蛇大作战
+  url: https://slither.io/
+  icon: /assets/games/slither.png
+  letter: 蛇
+  bg: "#4cd964"
+- name: 3D 迷宫
+  url: https://wwwtyro.github.io/Astray/
+  icon: /assets/games/astray.png
+  letter: 宫
+  bg: "#6c5ce7"
+- name: ZombsRoyale 大逃杀
+  url: https://zombsroyale.io/
+  icon: /assets/games/zombs.png
+  letter: 逃
+  bg: "#e74c3c"
+- name: Wings 飞机大战
+  url: https://wings.io/
+  icon: /assets/games/wings.png
+  letter: 翼
+  bg: "#16a085"
+- name: 汉兜 · 成语猜猜
+  url: https://handle.antfu.me/
+  icon: /assets/games/handle.png
+  letter: 汉
+  bg: "#10b981"
+- name: Flappy Bird
+  url: https://flappybird.io/
+  icon: /assets/games/flappyio.png
+  letter: 飞
+  bg: "#e67e22"
+- name: Untrusted 编程解谜
+  url: https://untrustedgame.com/
+  icon: /assets/games/untrusted.png
+  letter: 码
+  bg: "#16a085"
+- name: Venge.io 枪战
+  url: https://venge.io/
+  icon: /assets/games/venge.png
+  letter: 枪
+  bg: "#8e44ad"
+- name: ev.io 战地
+  url: https://ev.io/
+  icon: /assets/games/ev.png
+  letter: 战
+  bg: "#2c3e50"
+- name: Warbot.io 机甲团战
+  url: https://warbot.io/
+  icon: /assets/games/warbot.png
+  letter: 甲
+  bg: "#e74c3c"
+- name: Starblast 团队星战
+  url: https://starblast.io/
+  icon: /assets/games/starblast.png
+  letter: 星
+  bg: "#3498db"
+- name: Territorial 领土战略
+  url: https://territorial.io/
+  icon: /assets/games/terr_fav.png
+  letter: 领
+  bg: "#27ae60"
+- name: Taming 宠物对战
+  url: https://taming.io/
+  icon: /assets/games/taming.png
+  letter: 宠
+  bg: "#9b59b6"
+- name: 宝可梦对战
+  url: https://play.pokemonshowdown.com/
+  icon: /assets/games/showdown.png
+  letter: 宝
+  bg: "#e67e22"

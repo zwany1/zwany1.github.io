@@ -1,0 +1,13 @@
+{% comment %} 文末公众号引流卡片：仅在 post 布局、且二维码开启时显示 {% endcomment %}
+{% if site.components.qrcode.enabled != false %}
+<div class="qrcode-promo">
+    <div class="qrcode-promo__text">
+        <div class="qrcode-promo__title">感谢读完 ✍️</div>
+        <div class="qrcode-promo__desc">
+            我是朱，在这里记录技术与生活。<br>
+            更多写作与思考，欢迎关注公众号<b>「朱猪写作」</b>。
+        </div>
+    </div>
+    <img class="qrcode-promo__img" src="/assets/images/qrcode.jpg" alt="公众号：朱猪写作" loading="lazy">
+</div>
+{% endif %}

@@ -1,0 +1,62 @@
+{% comment %}
+  文章目录卡片：扫描文章页 h2/h3 生成两级目录，无依赖。
+  仅在 post 布局页被 aside.html 引用；标题不足时自动隐藏整卡。
+{% endcomment %}
+<div class="card-widget card-toc" id="card-toc">
+    <div class="item-headline"><i class="fas fa-stream"></i><span>文章目录</span></div>
+    <div class="card-toc-body" id="card-toc-body"></div>
+</div>
+<script>
+(function () {
+    var article = document.getElementById('article-container');
+    var body = document.getElementById('card-toc-body');
+    var card = document.getElementById('card-toc');
+    if (!article || !body || !card) return;
+
+    var headings = article.querySelectorAll('h2[id], h3[id]');
+    if (headings.length < 2) { card.style.display = 'none'; return; }
+
+    var html = '<ul class="toc-list">';
+    var level = 2;
+    headings.forEach(function (h) {
+        var l = Number(h.tagName.substring(1));
+        if (l > level) html += '<ul class="toc-list toc-sub">';
+        if (l < level) html += '</ul></li>';
+        if (l !== level) level = l;
+        html += '<li class="toc-item toc-level-' + l + '"><a href="#' + h.id + '">' + h.textContent + '</a></li>';
+    });
+    html += '</ul>';
+    body.innerHTML = html;
+
+    // 平滑滚动到对应标题
+    body.addEventListener('click', function (e) {
+        var a = e.target.closest('a');
+        if (!a) return;
+        e.preventDefault();
+        var target = document.getElementById(decodeURIComponent(a.getAttribute('href').slice(1)));
+        if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        history.replaceState(null, '', a.getAttribute('href'));
+    });
+
+    // 滚动高亮：当前阅读位置对应的目录项加 active
+    var links = body.querySelectorAll('a');
+    var offsets = [];
+    var refresh = function () {
+        offsets = Array.prototype.map.call(links, function (a) {
+            var t = document.getElementById(decodeURIComponent(a.getAttribute('href').slice(1)));
+            return t ? t.getBoundingClientRect().top + window.scrollY : Infinity;
+        });
+    };
+    var spy = function () {
+        var pos = window.scrollY + 120, current = -1;
+        for (var i = 0; i < offsets.length; i++) {
+            if (offsets[i] <= pos) current = i; else break;
+        }
+        links.forEach(function (a, i) { a.classList.toggle('active', i === current); });
+    };
+    refresh();
+    spy();
+    window.addEventListener('scroll', spy, { passive: true });
+    window.addEventListener('resize', function () { refresh(); spy(); }, { passive: true });
+})();
+</script>

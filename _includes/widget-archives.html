@@ -1,0 +1,24 @@
+<div class="card-widget card-archives">
+    <div class="item-headline"><i class="fas fa-archive"></i><span>Archives</span></div>
+    <ul class="card-archive-list">
+        {% assign seen = "" %}
+        {% for post in site.posts limit: 60 %}
+        {% assign ym = post.date | date: "%Y-%m" %}
+        {% assign token = ym | prepend: "|" | append: "|" %}
+        {% unless seen contains token %}
+        {% assign count = 0 %}
+        {% for p in site.posts %}
+        {% assign pym = p.date | date: "%Y-%m" %}
+        {% if pym == ym %}{% assign count = count | plus: 1 %}{% endif %}
+        {% endfor %}
+        <li class="card-archive-list-item">
+            <a class="card-archive-list-link" href="/archives/">
+                <span class="card-archive-list-date">{{ post.date | date: "%B %Y" }}</span>
+                <span class="card-archive-list-count">{{ count }}</span>
+            </a>
+        </li>
+        {% assign seen = seen | append: token %}
+        {% endunless %}
+        {% endfor %}
+    </ul>
+</div>

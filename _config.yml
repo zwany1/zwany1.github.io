@@ -1,0 +1,221 @@
+# ---------------- #
+#   Main Configs   #
+# ---------------- #
+baseurl:
+url: https://zwany1.github.io
+date_format: "ordinal"
+title: 朱的小屋
+subtitle: "公众号：朱猪写作"
+description: "朱的个人博客，公众号：朱猪写作"
+keywords: 朱, zwany1, 朱猪写作
+timezone: Asia/Shanghai
+encoding: "utf-8"
+# 排除构建依赖与仓库辅助文件，避免被当作站点内容扫描
+exclude:
+    - vendor
+    - Gemfile
+    - Gemfile.lock
+    - node_modules
+    - .github
+    - sync-siyuan.ps1
+    - sync-forum.ps1
+    - .siyuan-sync-map.json
+    - .forum-sync-map.json
+announcement: 文章由 Obsidian 笔记自动发布
+footer_text: Obsidian 笔记驱动
+# 页面左下角显示的年份
+since: 2025
+# 源码仓库，请替换成自己的
+repository: zwany1/zwany1.github.io
+# 对 css 和 js 资源的 cdn 加速配置
+cdn:
+    jsdelivr:
+        enabled: true
+# 可选组件配置
+components:
+    # 分享
+    # weibo,qq,wechat,douban,qzone,linkedin,facebook,twitter
+    share:
+        enabled: true
+        hide-platforms: qq,facebook
+    # 不蒜子访问统计
+    busuanzi:
+        enabled: true
+        start_date: 2026-08-28
+    # My Popular Repositories
+    side_bar_repo:
+        enabled: true
+        limit: 5
+    # 文章字数统计
+    word_count:
+        enabled: true
+    # 页面右上角，以及「关于」页面的二维码
+    # 修改图片请替换 assets/images/qrcode.jpg
+    qrcode:
+        enabled: true
+        image_alt: 朱猪写作
+    # 图片灯箱效果功能
+    fancybox:
+        enabled: false
+# 压缩页面内容
+compress_html:
+  clippings: all
+  comments: ["<!--", "-->"]
+# 代码高亮风格，支持的 theme 列表见 https://github.com/mzlogin/rouge-themes
+highlight_theme: github
+
+# ---------------- #
+#      Author      #
+# ---------------- #
+author: 朱
+organization: 
+organization_url: 
+github_username: zwany1
+location: China
+email: 
+
+# ---------------- #
+#    Navigation    #
+# ---------------- #
+navs:
+  -
+    href: /
+    label: 首页
+
+  -
+    href: /categories/
+    label: 分类
+
+  -
+    href: /pages/
+    label: 页面
+
+  -
+    href: /open-source/
+    label: 开源
+
+  -
+    href: /fragments/
+    label: 片段
+
+  -
+    href: /about/
+    label: 关于
+
+  -
+    href: /gallery/
+    label: 回忆录
+
+# ---------------- #
+#       RSS        #
+# ---------------- #
+subscribe_rss: /feed.xml
+
+# ---------------- #
+#      INDEX       #
+# ---------------- #
+index:
+    banner:
+        # 首页 banner 区文字颜色
+        color: "#7a6a4a"
+        # 首页导航栏文字颜色
+        nav-color: "rgba(122, 106, 74, .8)"
+        # 首页 banner 区背景颜色
+        background-color: "#f5f2e8"
+        # 首页 banner 区背景图片
+        # background-image: "/assets/images/octicons-bg.png"
+        # background-repeat: "no-repeat"
+        # background-size: "cover"
+
+# ---------------- #
+#      Jekyll      #
+# ---------------- #
+markdown: kramdown
+kramdown:
+    input: GFM
+highlighter: rouge
+paginate: 10
+lsi: false
+quiet: false
+excerpt_separator: "\n\n"
+permalink: /:year/:month/:day/:title/
+plugins:
+    - rouge
+#     - jekyll-html-pipeline
+    - jekyll-paginate
+    - jekyll-sitemap
+    - jekyll-feed
+    - jemoji
+
+# 禁用GitHub Metadata插件的API调用
+github:
+  enabled: false
+#     - jekyll-mentions
+collections:
+    fragments:
+        output: true
+        permalink: /fragment/:path/
+
+# ---------------- #
+#      Comments    #
+# ---------------- #
+# support provider: disqus, gitment, gitalk, utterances, beaudar, giscus
+comments_provider: utterances
+# !!!重要!!! 请修改下面这些信息为你自己申请的
+# !!!Important!!! Please modify infos below to yours
+# disqus 配置参考：https://disqus.com
+disqus:
+    username: 
+# gitment 配置参考：https://imsun.net/posts/gitment-introduction/
+gitment:
+    owner: zwany1
+    repo: zwany1.github.io
+    oauth:
+        client_id: 
+        client_secret: 
+# gitalk 配置参考：https://github.com/gitalk/gitalk#install
+gitalk:
+    owner: zwany1
+    repo: zwany1.github.io
+    clientID: 
+    clientSecret: 
+# utterances 配置参考：https://utteranc.es/
+utterances:
+    repo: zwany1/zwany1.github.io
+# beaudar 配置参考：https://beaudar.lipk.org/
+beaudar:
+    repo: zwany1/zwany1.github.io
+# giscus 配置参考：https://giscus.app/zh-CN
+# 启用步骤：① 仓库 Settings → General → Features 勾选 Discussions
+#          ② 安装 giscus App：https://github.com/apps/giscus
+#          ③ 打开 https://giscus.app/zh-CN ，输入仓库，选择分类（建议 Announcements），
+#             把页面生成的 data-repo-id 和 data-category-id 填到下面，评论即可显示
+giscus:
+    repo: zwany1/zwany1.github.io
+    repo-id: 
+    category: Announcements
+    category-id: 
+# 在使用其它评论组件时可点击显示 Disqus
+lazy_load_disqus : false
+
+# ---------------- #
+#      Search      #
+# ---------------- #
+simple_jekyll_search:
+    # 是否支持全文搜索
+    fulltext: false
+    # 最多显示多少条搜索结果
+    limit: 10
+
+# ---------------- #
+#      Google      #
+# ---------------- #
+google:
+    analytics_id: # G-20FLEG5Q2W
+    adsense:
+        enabled: true
+        footer: true
+        sidebar: true
+        sidebar-detail: true
+        content_header: false
+        content_footer: false

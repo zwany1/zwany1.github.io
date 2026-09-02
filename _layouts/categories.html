@@ -1,0 +1,81 @@
+---
+layout: default
+---
+
+{% assign assets_base_url = site.url %}
+{% if site.cdn.jsdelivr.enabled %}
+{% assign assets_base_url = "https://fastly.jsdelivr.net/gh/" | append: site.repository | append: '@master' %}
+{% endif %}
+<section class="collection-head small geopattern" data-pattern-id="{{ page.title | truncate: 15, ''}}">
+    <div class="container">
+        <div class="columns">
+            <div class="column two-thirds">
+                <div class="collection-title">
+                    <h1 class="collection-header">{{ page.title }}</h1>
+                </div>
+            </div>
+            <div class="column one-third mobile-hidden">
+              {% include sidebar-qrcode.html %}
+            </div>
+        </div>
+    </div>
+</section>
+<!-- / .banner -->
+<section class="container content">
+    <div class="columns">
+        <div class="column two-thirds" >
+            <article class="article-content markdown-body">
+                <style>
+                /* 分类标签样式 */
+                .category-tags {
+                    text-align: center;
+                    margin: 30px 0;
+                }
+                
+                .category-tag {
+                    display: inline-block;
+                    padding: 10px 20px;
+                    margin: 5px;
+                    background-color: #f5f5f5;
+                    color: #333;
+                    text-decoration: none;
+                    border-radius: 5px;
+                    transition: all 0.3s ease;
+                    font-size: 16px;
+                }
+                
+                .category-tag:hover {
+                    background-color: #4183c4;
+                    color: white;
+                    text-decoration: none;
+                    transform: translateY(-2px);
+                    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+                }
+                </style>
+                
+                <!-- 分类标签展示 -->
+                <div class="category-tags">
+                    {% for category in site.categories %}
+                    <a href="#{{ category[0] }}" class="category-tag">
+                        {{ category[0] }} ({{ category[1].size }})
+                    </a>
+                    {% endfor %}
+                </div>
+                
+                {{ content }}
+            </article>
+            <div class="share">
+                {% include sns-share.html %}
+            </div>
+            <div class="comment">
+                {% include comments.html %}
+            </div>
+        </div>
+        <div class="column one-third">
+            {% include sidebar-search.html %}
+            {% include sidebar-categories-nav.html %}
+            {% include sidebar-ad.html %}
+        </div>
+    </div>
+</section>
+<!-- /section.content -->

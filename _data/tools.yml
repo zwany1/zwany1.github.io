@@ -1,0 +1,50 @@
+# 首页 iOS 桌面「工具箱」清单
+# 全部为本地小工具（除二维码用 qrserver 免费生图 API），点击组件弹窗内原地打开
+- name: 计算器
+  tool: calc
+  icon: fas fa-calculator
+  bg: "#ff9f0a"
+- name: 便签
+  tool: note
+  icon: fas fa-note-sticky
+  bg: "#ffd60a"
+- name: 二维码
+  tool: qr
+  icon: fas fa-qrcode
+  bg: "#5856d6"
+- name: 时间戳
+  tool: ts
+  icon: far fa-clock
+  bg: "#30d158"
+- name: 文本统计
+  tool: stats
+  icon: fas fa-file-lines
+  bg: "#ff375f"
+- name: JSON 工具
+  tool: json
+  icon: fas fa-code
+  bg: "#64d2ff"
+- name: 单位换算
+  tool: unit
+  icon: fas fa-ruler-combined
+  bg: "#00c7be"
+- name: 进制转换
+  tool: base
+  icon: fas fa-hashtag
+  bg: "#bf5af2"
+- name: 颜色转换
+  tool: color
+  icon: fas fa-droplet
+  bg: "#0a84ff"
+- name: 正则测试
+  tool: re
+  icon: fas fa-asterisk
+  bg: "#ff453a"
+- name: Base64
+  tool: b64
+  icon: fas fa-key
+  bg: "#a2845e"
+- name: 番茄钟
+  tool: pomo
+  icon: fas fa-stopwatch
+  bg: "#ff6347"

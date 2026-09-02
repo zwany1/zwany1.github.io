@@ -1,0 +1,13 @@
+<div class="card-widget card-recent-post">
+    <div class="item-headline"><i class="fas fa-history"></i><span>Recent Posts</span></div>
+    <div class="aside-list">
+        {% for post in site.posts limit: 5 %}
+        <div class="aside-list-item no-cover">
+            <div class="content">
+                <a class="title" href="{{ post.url }}" title="{{ post.title }}">{{ post.title }}</a>
+                <time datetime="{{ post.date | date_to_xmlschema }}">{{ post.date | date: "%Y-%m-%d" }}</time>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>

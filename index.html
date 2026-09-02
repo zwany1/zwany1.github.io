@@ -1,0 +1,1269 @@
+---
+layout: default
+class: home
+comments: false
+---
+
+{% comment %}
+  首页第一屏：iOS 桌面风格入口（壁纸 + 小组件 + 图标网格 + Dock）
+  向下滚动第二屏为文章列表。图标数据在 _data/ios_apps.yml 维护。
+{% endcomment %}
+
+{% comment %} iOS 锁屏：每次会话首次进站显示，点按/上滑解锁（配合开机音效）。
+   自包含脚本放在页面最前面：即使后面任何脚本出错，锁屏也能正常解锁。 {% endcomment %}
+<div id="ios-lock">
+    <div class="ios-lock__inner">
+        <div class="ios-lock__brand">朱的小屋</div>
+        <div class="ios-lock__time" id="lock-time">--:--</div>
+        <div class="ios-lock__date" id="lock-date"></div>
+    </div>
+    <div class="ios-lock__hint"><i class="fas fa-chevron-up"></i> 点按或上滑解锁</div>
+</div>
+<script>
+    /* 锁屏：自包含逻辑（本会话解锁过则立即隐藏；document 捕获阶段兜底监听） */
+    (function () {
+        var lock = document.getElementById('ios-lock');
+        if (!lock) return;
+        var done = false;
+        try { done = sessionStorage.getItem('ios_lock_done') === '1'; } catch (e) {}
+        var t = document.getElementById('lock-time'), d = document.getElementById('lock-date');
+        function tick() {
+            var now = new Date();
+            var pad = function (n) { return n < 10 ? '0' + n : n };
+            if (t) t.textContent = pad(now.getHours()) + ':' + pad(now.getMinutes());
+            if (d) {
+                var w = ['日', '一', '二', '三', '四', '五', '六'][now.getDay()];
+                d.textContent = (now.getMonth() + 1) + '月' + now.getDate() + '日 星期' + w;
+            }
+        }
+        tick();
+        setInterval(tick, 10000);
+        window.iosChime = function () {
+            try {
+                if (localStorage.getItem('ios_sound') === '0') return;
+                var ac = new (window.AudioContext || window.webkitAudioContext)();
+                [[523.25, 0], [659.25, 0.12], [783.99, 0.24]].forEach(function (n) {
+                    var o = ac.createOscillator(), g = ac.createGain();
+                    o.connect(g); g.connect(ac.destination);
+                    o.type = 'sine'; o.frequency.value = n[0];
+                    g.gain.setValueAtTime(0.0001, ac.currentTime + n[1]);
+                    g.gain.exponentialRampToValueAtTime(0.16, ac.currentTime + n[1] + 0.02);
+                    g.gain.exponentialRampToValueAtTime(0.0001, ac.currentTime + n[1] + 0.5);
+                    o.start(ac.currentTime + n[1]); o.stop(ac.currentTime + n[1] + 0.55);
+                });
+            } catch (e) { /* 忽略 */ }
+        };
+        function unlock() {
+            if (done) return;
+            done = true;
+            try { sessionStorage.setItem('ios_lock_done', '1'); } catch (e) {}
+            lock.classList.add('unlocking');
+            window.iosChime();
+            setTimeout(function () { lock.hidden = true; }, 700);
+        }
+        /* 供控制中心「立即锁屏」调用 */
+        window.iosLock = {
+            lock: function () {
+                if (!lock) return;
+                try { sessionStorage.removeItem('ios_lock_done'); } catch (e) {}
+                done = false;
+                lock.classList.remove('unlocking');
+                lock.hidden = false;
+                tick();
+            }
+        };
+        function onEvt(e) {
+            if (lock.hidden) return;
+            if (e.target === lock || lock.contains(e.target)) unlock();
+        }
+        /* capture 阶段监听，最可靠：不依赖 lock 元素自身的监听器；hidden 时全部为空操作 */
+        document.addEventListener('click', onEvt, true);
+        document.addEventListener('wheel', function () { if (!lock.hidden) unlock(); }, { passive: true, capture: true });
+        document.addEventListener('touchmove', function () { if (!lock.hidden) unlock(); }, { passive: true, capture: true });
+        document.addEventListener('keydown', function () { if (!lock.hidden) unlock(); }, { capture: true });
+        /* 本会话已解锁过：隐藏锁屏（API 与监听器保持可用，供「立即锁屏」调用） */
+        if (done) lock.setAttribute('hidden', '');
+    })();
+</script>
+
+<section class="ios-desktop" id="ios-desktop">
+    {% comment %} 动态壁纸图层：js/ios-wallpaper.js 接 API 淡入，失败回退到内置静态壁纸 {% endcomment %}
+    <div class="ios-wallpaper" id="ios-wallpaper" aria-hidden="true"></div>
+    <div class="ios-statusbar">
+        <span id="ios-clock">--:--</span>
+        <span class="ios-statusbar__right">
+            <i class="fas fa-signal"></i>
+            <i class="fas fa-wifi"></i>
+            <i class="fas fa-battery-three-quarters"></i>
+            <button class="cc-trigger" id="cc-toggle" title="控制中心" type="button"><i class="fas fa-sliders"></i><span>控制中心</span></button>
+        </span>
+    </div>
+
+    <div class="ios-widgets">
+        <div class="ios-widget ios-widget--clock">
+            <div class="ios-widget__time" id="ios-widget-time">--:--</div>
+            <div class="ios-widget__date" id="ios-widget-date"></div>
+        </div>
+        <div class="ios-widget ios-widget--calendar" title="日历">
+            <div class="cal-head" id="cal-head">—</div>
+            <div class="cal-lunar" id="cal-lunar"></div>
+            <div class="cal-week"><span>日</span><span>一</span><span>二</span><span>三</span><span>四</span><span>五</span><span>六</span></div>
+            <div class="cal-days" id="cal-days"></div>
+        </div>
+        <div class="ios-widget ios-widget--greet">
+            <div class="ios-widget__hi" id="ios-greet"></div>
+            <div class="ios-widget__sub">朱的小屋 · 记录技术与生活</div>
+            <div class="ios-widget__quote" id="ios-quote"></div>
+        </div>
+        <div class="ios-widget ios-widget--weather" id="wx-widget" title="天气 · 点击尝试定位">
+            <div class="wx-main"><span class="wx-icon" id="wx-icon">🌤️</span><span class="wx-temp" id="wx-temp">--°</span></div>
+            <div class="wx-city" id="wx-city">加载中…</div>
+            <div class="wx-hours" id="wx-hours"></div>
+        </div>
+        <div class="ios-widget ios-widget--music">
+            <img class="music-cover" id="music-cover" src="/assets/images/avatar.jpg" alt="封面" loading="lazy">
+            <div class="music-info">
+                <div class="music-name" id="music-name">随机好歌</div>
+                <div class="music-artist" id="music-artist">点击播放键试试</div>
+                <div class="music-progress"><span id="music-bar"></span></div>
+            </div>
+            <div class="music-ctrl">
+                <button class="music-btn" id="music-toggle" title="播放/暂停"><i class="fas fa-play"></i></button>
+                <button class="music-btn" id="music-next" title="下一首"><i class="fas fa-forward-step"></i></button>
+            </div>
+        </div>
+        <div class="ios-widget ios-widget--games" id="games-widget" title="游戏中心">
+            <div class="games-preview">
+                {% comment %} 组件图标 = 游戏清单的最后四款 {% endcomment %}
+                {% assign gtotal = site.data.games | size %}
+                {% assign gstart = gtotal | minus: 4 %}
+                {% assign glast4 = site.data.games | slice: gstart, 4 %}
+                {% for g in glast4 %}
+                {% if g.icon %}
+                <span class="games-preview__app games-preview__app--img" style="background-image:url({{ g.icon }})"></span>
+                {% else %}
+                <span class="games-preview__app" style="background:{{ g.bg | default: '#49b1f5' }}">{{ g.letter | default: g.name | slice: 0, 1 }}</span>
+                {% endif %}
+                {% endfor %}
+            </div>
+            <div class="games-preview__label">游戏</div>
+        </div>
+        <div class="ios-widget ios-widget--wallpaper" id="wp-widget" title="更换壁纸">
+            <div class="wp-thumb" id="wp-thumb"></div>
+            <div class="wp-label" id="wp-name">壁纸</div>
+        </div>
+        <div class="ios-widget ios-widget--tools" id="tools-widget" title="工具箱">
+            <div class="tools-preview">
+                {% for t in site.data.tools limit: 4 %}{% comment %} 组件预览 = 工具清单前四个 {% endcomment %}
+                <span class="tools-preview__app" style="background:{{ t.bg }}"><i class="{{ t.icon }}"></i></span>
+                {% endfor %}
+            </div>
+            <div class="tools-preview__label">工具</div>
+        </div>
+    </div>
+
+    <div class="ios-grid">
+        {% for app in site.data.ios_apps %}
+        <a class="ios-app" href="{{ app.url }}"
+           {% if app.action %}data-action="{{ app.action }}"{% endif %}
+           {% if app.badge %}data-badge="{{ app.badge }}"{% endif %}
+           {% if app.external %}target="_blank" rel="noopener"{% endif %}>
+            <span class="ios-app__icon" style="background:{{ app.bg }}"><i class="{{ app.icon }}"></i></span>
+            <span class="ios-app__label">{{ app.name }}</span>
+        </a>
+        {% endfor %}
+    </div>
+
+    <div class="ios-dock">
+        <a class="ios-app" href="javascript:void(0)" data-action="search">
+            <span class="ios-app__icon"><i class="fas fa-magnifying-glass"></i></span>
+        </a>
+        <a class="ios-app" href="javascript:void(0)" data-action="music">
+            <span class="ios-app__icon ios-app__icon--music"><i class="fas fa-music"></i></span>
+        </a>
+        <a class="ios-app" href="javascript:void(0)" data-action="random">
+            <span class="ios-app__icon"><i class="fas fa-shuffle"></i></span>
+        </a>
+        <a class="ios-app" href="javascript:void(0)" data-action="qrcode">
+            <span class="ios-app__icon"><i class="fa-brands fa-weixin"></i></span>
+        </a>
+        <a class="ios-app" href="javascript:void(0)" id="dock-game" hidden>
+            <span class="ios-app__icon ios-app__icon--img"><img id="dock-game-icon" src="" alt=""><span class="ios-app__letter" id="dock-game-letter" hidden></span></span>
+            <span class="ios-app__label" id="dock-game-name">游戏</span>
+        </a>
+        <a class="ios-app" href="javascript:void(0)" id="dock-tool" hidden>
+            <span class="ios-app__icon" id="dock-tool-iconwrap"><i id="dock-tool-icon" class="fas fa-toolbox"></i></span>
+            <span class="ios-app__label" id="dock-tool-name">工具</span>
+        </a>
+        <a class="ios-app" href="javascript:void(0)" id="dock-photos" hidden>
+            <span class="ios-app__icon" style="background:linear-gradient(135deg,#a29bfe,#6c5ce7)"><i class="fas fa-images"></i></span>
+            <span class="ios-app__label" id="dock-photos-name">相册</span>
+        </a>
+        <a class="ios-app" href="#recent-posts">
+            <span class="ios-app__icon"><i class="fa-solid fa-list"></i></span>
+        </a>
+    </div>
+
+    <a class="ios-scroll-hint" href="#recent-posts" aria-label="向下滚动"><i class="fas fa-chevron-down"></i></a>
+</section>
+
+{% comment %} 音乐 App 弹窗：仿 macOS 音乐应用，歌单来自免费 Meting API（网易云官方榜单） {% endcomment %}
+<div class="music-app" id="music-app" hidden>
+    <div class="music-app__mask" id="music-app-mask"></div>
+    <div class="music-app__window">
+        <div class="music-app__lights"><span class="l-red" id="music-app-close"></span><span class="l-yellow"></span><span class="l-green"></span></div>
+        <div class="music-app__body">
+            <aside class="music-side">
+                <div class="music-side__brand"><i class="fas fa-compact-disc"></i> 音乐</div>
+                <ul class="music-nav" id="music-nav">
+                    <li data-view="discover" class="active"><i class="fas fa-compass fa-fw"></i> 发现</li>
+                    <li data-view="recent"><i class="far fa-clock fa-fw"></i> 最近播放</li>
+                    <li data-view="favs"><i class="far fa-heart fa-fw"></i> 我喜欢的音乐</li>
+                </ul>
+                <div class="music-side__foot">网易云榜单 · 每天更新</div>
+            </aside>
+            <main class="music-main">
+                <div class="music-view" id="mview-discover">
+                    <div class="music-banner" id="music-banner">
+                        <div class="music-banner__text">
+                            <b>云音乐热歌榜</b>
+                            <span>每天更新 · 随机好歌陪你逛博客</span>
+                        </div>
+                        <button class="music-banner__play" id="music-banner-play" title="随机播放"><i class="fas fa-play"></i></button>
+                    </div>
+                    <div class="music-sec-title">推荐歌单</div>
+                    <div class="playlist-grid" id="music-chart-grid"></div>
+                </div>
+                <div class="music-view" id="mview-chart" hidden>
+                    <div class="music-back" id="music-back"><i class="fas fa-chevron-left"></i> 发现</div>
+                    <div class="music-main__title" id="music-list-title">榜单</div>
+                    <ul class="music-songs" id="music-songs"></ul>
+                </div>
+                <div class="music-view" id="mview-recent" hidden>
+                    <div class="music-main__title">最近播放</div>
+                    <ul class="music-songs" id="music-recent-songs"></ul>
+                </div>
+                <div class="music-view" id="mview-favs" hidden>
+                    <div class="music-main__title">我喜欢的音乐</div>
+                    <ul class="music-songs" id="music-fav-songs"></ul>
+                </div>
+            </main>
+        </div>
+        <div class="music-player">
+            <button class="music-heart" id="mp-fav" title="喜欢"><i class="far fa-heart"></i></button>
+            <img class="music-player__cover" id="mp-cover" src="/assets/images/avatar.jpg" alt="封面">
+            <div class="music-player__info">
+                <b id="mp-name">未在播放</b>
+                <span id="mp-artist">从发现页选一首歌开始欣赏</span>
+                <div class="music-progress music-progress--dark" id="mp-progress"><span id="mp-bar"></span></div>
+            </div>
+            <span class="music-player__time" id="mp-time">00:00 / 00:00</span>
+            <div class="music-player__ctrl">
+                <button id="mp-lyric" title="歌词"><i class="fas fa-closed-captioning"></i></button>
+                <button id="mp-prev" title="上一首"><i class="fas fa-backward-step"></i></button>
+                <button id="mp-play" class="is-play" title="播放/暂停"><i class="fas fa-play"></i></button>
+                <button id="mp-next" title="下一首"><i class="fas fa-forward-step"></i></button>
+            </div>
+        </div>
+        <div class="music-lyrics" id="music-lyrics" hidden>
+            <div class="music-lyrics__head">
+                <span id="lyric-song">—</span>
+                <button id="lyric-close" title="收起歌词"><i class="fas fa-chevron-down"></i></button>
+            </div>
+            <div class="music-lyrics__list" id="lyric-list"><div class="music-loading">点播放条上的「字幕」按钮看滚动歌词</div></div>
+        </div>
+    </div>
+</div>
+
+{% comment %} 游戏：4399 热门 H5 游戏，点击图标在原窗口直接游玩 {% endcomment %}
+<div class="games-pop" id="games-app" hidden>
+    <div class="music-app__mask" id="games-app-mask"></div>
+    <div class="games-pop__window">
+        <button class="games-pop__close" id="games-app-close" title="关闭"><i class="fas fa-xmark"></i></button>
+        <div class="games-pop__title" id="games-pop-title">游戏</div>
+        <div class="games-pop__grid" id="games-grid">
+            {% for g in site.data.games %}
+            <a class="games-pop__app" data-url="{{ g.url }}" data-name="{{ g.name }}" data-icon="{{ g.icon | default: '' }}" data-letter="{{ g.letter | default: g.name | slice: 0, 1 }}" data-bg="{{ g.bg | default: '#49b1f5' }}">
+                {% if g.icon %}
+                <img src="{{ g.icon }}" alt="{{ g.name }}" loading="lazy" onerror="this.outerHTML='<span class=&quot;games-pop__letter&quot; style=&quot;background:{{ g.bg | default: '#49b1f5' }}&quot;>{{ g.letter | default: g.name | slice: 0, 1 }}</span>'">
+                {% else %}
+                <span class="games-pop__letter" style="background:{{ g.bg | default: '#49b1f5' }}">{{ g.letter | default: g.name | slice: 0, 1 }}</span>
+                {% endif %}
+                <span>{{ g.name }}</span>
+            </a>
+            {% endfor %}
+        </div>
+        <div class="games-pop__stage" id="games-stage" hidden>
+            <button class="games-pop__back" id="games-back" title="返回游戏列表"><i class="fas fa-chevron-left"></i></button>
+            <iframe id="games-frame" allow="autoplay; fullscreen; gamepad" referrerpolicy="no-referrer"></iframe>
+        </div>
+    </div>
+</div>
+
+{% comment %} 壁纸弹窗：必应近 7 天每日一图 + 随机风景/二次元 + 恢复默认，全部免费公开 API {% endcomment %}
+<div class="games-pop" id="wp-pop" hidden>
+    <div class="music-app__mask" id="wp-pop-mask"></div>
+    <div class="games-pop__window wp-pop__window">
+        <button class="games-pop__close" id="wp-pop-close" title="关闭"><i class="fas fa-xmark"></i></button>
+        <div class="games-pop__title">更换壁纸</div>
+        <div class="wp-pop__body">
+            <div class="wp-pop__sec"><i class="fas fa-image"></i> 必应每日一图 · 最近 7 天</div>
+            <div class="wp-bing-grid" id="wp-bing-grid"><div class="wp-pop__hint">加载中...</div></div>
+            <div class="wp-pop__sec"><i class="fas fa-wand-magic-sparkles"></i> 随机换一张</div>
+            <div class="wp-rand-row">
+                <button class="wp-rand-btn" data-mode="scenic" type="button"><i class="fas fa-mountain-sun"></i> 随机风景</button>
+                <button class="wp-rand-btn" data-mode="acg" type="button"><i class="fas fa-palette"></i> 随机二次元</button>
+                <button class="wp-rand-btn wp-rand-btn--ghost" data-mode="static" type="button"><i class="fas fa-rotate-left"></i> 恢复默认</button>
+            </div>
+            <div class="wp-pop__sec"><i class="fas fa-film"></i> 视频壁纸</div>
+            <div class="wp-rand-row" id="wp-video-list"></div>
+            <div class="wp-rand-row" style="margin-top:8px">
+                <button class="wp-rand-btn wp-rand-btn--ghost" id="wp-video-upload-btn" type="button"><i class="fas fa-upload"></i> 上传本地视频（本次会话）</button>
+                <button class="wp-rand-btn" id="wp-img-upload-btn" type="button"><i class="fas fa-image"></i> 上传自定义图片</button>
+            </div>
+            <input type="file" id="wp-file-img" accept="image/*" hidden>
+            <input type="file" id="wp-file-video" accept="video/*" hidden>
+            <div class="wp-pop__sec"><i class="fas fa-droplet"></i> 组件透明度</div>
+            <div class="wp-op-row">
+                <input type="range" id="wp-op" min="0" max="100" step="5" value="100">
+                <span class="wp-op-val" id="wp-op-val">100%</span>
+                <button class="wp-rand-btn wp-rand-btn--ghost" id="wp-op-reset" type="button">重置</button>
+            </div>
+            <div class="wp-pop__hint">0% 完全隐藏桌面组件只显示壁纸 · 控制中心与已打开的应用不受影响</div>
+            <div class="wp-pop__sec"><i class="fas fa-clock-rotate-left"></i> 自动更换</div>
+            <label class="wp-auto"><input type="checkbox" id="wp-auto"> 每天自动换一张壁纸（必应跟随每日更新，随机模式每日自动换新）</label>
+            <div class="wp-pop__hint">壁纸每日自动更新 · 随机壁纸点击即换</div>
+        </div>
+    </div>
+</div>
+
+{% comment %} 控制中心：状态栏下拉快捷面板，含多任务（正在运行的应用） {% endcomment %}
+<div class="control-center" id="control-center" hidden>
+    <div class="cc-head"><b><i class="fas fa-sliders"></i> 控制中心</b><button id="cc-close" title="关闭" type="button"><i class="fas fa-xmark"></i></button></div>
+    <div class="cc-tiles">
+        <button class="cc-tile" id="cc-dark" type="button"><i class="fas fa-circle-half-stroke"></i><span>深浅：跟随系统</span></button>
+        <button class="cc-tile" id="cc-sound" type="button"><i class="fas fa-volume-high"></i><span>解锁音效</span></button>
+        <button class="cc-tile" id="cc-lock" type="button"><i class="fas fa-lock"></i><span>立即锁屏</span></button>
+        <button class="cc-tile" id="cc-wp" type="button"><i class="fas fa-image"></i><span>更换壁纸</span></button>
+    </div>
+    <div class="cc-sec">壁纸</div>
+    <div class="cc-row">
+        <button class="cc-btn" data-wp="scenic" type="button"><i class="fas fa-mountain-sun"></i> 随机风景</button>
+        <button class="cc-btn" data-wp="acg" type="button"><i class="fas fa-palette"></i> 随机二次元</button>
+        <button class="cc-btn" data-wp="static" type="button"><i class="fas fa-rotate-left"></i> 默认</button>
+    </div>
+    <div class="cc-sec">快捷方式</div>
+    <div class="cc-row">
+        <button class="cc-btn" id="cc-game" type="button"><i class="fas fa-gamepad"></i> 随机游戏</button>
+        <button class="cc-btn" id="cc-post" type="button"><i class="fas fa-shuffle"></i> 随机文章</button>
+        <a class="cc-btn" href="#recent-posts"><i class="fas fa-list"></i> 文章列表</a>
+    </div>
+    <div class="cc-sec">正在运行 · 多任务</div>
+    <div class="cc-running" id="cc-running"><span class="cc-empty">还没有打开的应用</span></div>
+    <div class="cc-sec cc-guide-toggle" id="cc-guide-toggle" type="button"><i class="fas fa-book-open"></i> 功能指南 <i class="fas fa-chevron-down cc-guide-arrow"></i></div>
+    <div class="cc-guide" id="cc-guide">
+        <div class="cc-g"><i class="fas fa-lock fa-fw"></i><div><b>锁屏</b><span>每个会话首次进站出现，点按 / 滑动 / 按任意键解锁</span></div></div>
+        <div class="cc-g"><i class="fas fa-cloud-sun fa-fw"></i><div><b>天气 / 日历</b><span>天气组件点一下可尝试定位；日历红点标注今天</span></div></div>
+        <div class="cc-g"><i class="fas fa-image fa-fw"></i><div><b>换壁纸</b><span>壁纸组件 / 桌面右键 / 上方按钮；支持必应每日、随机风景/二次元、视频壁纸、本机自定义图片</span></div></div>
+        <div class="cc-g"><i class="fas fa-music fa-fw"></i><div><b>音乐</b><span>点组件或 Dock 打开；翻页不停歌（右下角 mini 播放条）；「字幕」按钮看滚动歌词，点歌词跳播</span></div></div>
+        <div class="cc-g"><i class="fas fa-gamepad fa-fw"></i><div><b>游戏中心</b><span>点游戏组件直接开玩；运行中钉在 Dock，右键 Dock 图标可关闭</span></div></div>
+        <div class="cc-g"><i class="fas fa-toolbox fa-fw"></i><div><b>工具箱</b><span>12 个小工具：计算器 / 便签 / 二维码 / 时间戳 / 正则 / 番茄钟等</span></div></div>
+        <div class="cc-g"><i class="fas fa-layer-group fa-fw"></i><div><b>多任务</b><span>「正在运行」区可切换或关闭打开过的应用</span></div></div>
+        <div class="cc-g"><i class="fas fa-magnifying-glass fa-fw"></i><div><b>搜索 / 随机</b><span>Ctrl+K 唤起搜索；Dock 骰子图标随机跳一篇文章</span></div></div>
+        <div class="cc-g"><i class="fas fa-bell fa-fw"></i><div><b>新文章角标</b><span>「文章」图标红点数字 = 上次来访后的新文章数，点一下清除</span></div></div>
+        <div class="cc-g"><i class="fas fa-wand-magic-sparkles fa-fw"></i><div><b>彩蛋</b><span>依次按 ↑↑↓↓←→←→BA 放彩带；切走标签页标题会卖萌</span></div></div>
+        <div class="cc-g"><i class="fas fa-book fa-fw"></i><div><b>更多页面</b><span><a href="/books/">书影清单</a> · <a href="/friends/">友链朋友圈</a> · <a href="/gallery/">回忆录</a></span></div></div>
+    </div>
+</div>
+
+{% comment %} 工具箱弹窗：计算器/便签/二维码/时间戳/文本统计/JSON，纯本地实现，弹窗内原地打开 {% endcomment %}
+<div class="games-pop" id="tools-pop" hidden>
+    <div class="music-app__mask" id="tools-pop-mask"></div>
+    <div class="games-pop__window">
+        <button class="games-pop__close" id="tools-pop-close" title="关闭"><i class="fas fa-xmark"></i></button>
+        <div class="games-pop__title" id="tools-pop-title">工具箱</div>
+        <div class="tools-grid" id="tools-grid">
+            {% for t in site.data.tools %}
+            <a class="tools-pop__app" data-tool="{{ t.tool }}" data-name="{{ t.name }}" data-icon="{{ t.icon }}" data-bg="{{ t.bg }}">
+                <span class="tools-pop__icon" style="background:{{ t.bg }}"><i class="{{ t.icon }}"></i></span>
+                <span>{{ t.name }}</span>
+            </a>
+            {% endfor %}
+        </div>
+        <div class="tools-stage" id="tools-stage" hidden>
+            <button class="games-pop__back" id="tools-back" title="返回工具列表"><i class="fas fa-chevron-left"></i></button>
+            <div class="tool-pane" id="tool-calc" hidden>
+                <div class="calc">
+                    <div class="calc-display" id="calc-display">0</div>
+                    <div class="calc-grid" id="calc-grid">
+                        <button class="calc-btn calc-btn--fn" data-k="c" type="button">C</button>
+                        <button class="calc-btn calc-btn--fn" data-k="neg" type="button">±</button>
+                        <button class="calc-btn calc-btn--fn" data-k="pct" type="button">%</button>
+                        <button class="calc-btn calc-btn--op" data-k="op:÷" type="button">÷</button>
+                        <button class="calc-btn" data-k="d:7" type="button">7</button>
+                        <button class="calc-btn" data-k="d:8" type="button">8</button>
+                        <button class="calc-btn" data-k="d:9" type="button">9</button>
+                        <button class="calc-btn calc-btn--op" data-k="op:×" type="button">×</button>
+                        <button class="calc-btn" data-k="d:4" type="button">4</button>
+                        <button class="calc-btn" data-k="d:5" type="button">5</button>
+                        <button class="calc-btn" data-k="d:6" type="button">6</button>
+                        <button class="calc-btn calc-btn--op" data-k="op:−" type="button">−</button>
+                        <button class="calc-btn" data-k="d:1" type="button">1</button>
+                        <button class="calc-btn" data-k="d:2" type="button">2</button>
+                        <button class="calc-btn" data-k="d:3" type="button">3</button>
+                        <button class="calc-btn calc-btn--op" data-k="op:+" type="button">+</button>
+                        <button class="calc-btn calc-btn--zero" data-k="d:0" type="button">0</button>
+                        <button class="calc-btn" data-k="d:." type="button">.</button>
+                        <button class="calc-btn calc-btn--op" data-k="eq" type="button">=</button>
+                    </div>
+                </div>
+            </div>
+            <div class="tool-pane" id="tool-note" hidden>
+                <textarea class="tool-input tool-note" id="tool-note-text" placeholder="随手记点什么…自动保存在这台设备上"></textarea>
+                <div class="tool-row"><span class="tool-hint" id="tool-note-status">—</span></div>
+            </div>
+            <div class="tool-pane" id="tool-qr" hidden>
+                <div class="tool-row">
+                    <input class="tool-input" id="tool-qr-text" style="flex:1" placeholder="输入文字或链接，生成二维码">
+                    <button class="tool-btn" id="tool-qr-btn" type="button">生成</button>
+                </div>
+                <div class="tool-qr-wrap" id="tool-qr-imgwrap"><span class="tool-hint">生成的二维码会显示在这里</span></div>
+            </div>
+            <div class="tool-pane" id="tool-ts" hidden>
+                <div class="tool-row"><button class="tool-btn tool-btn--ghost" id="tool-ts-now" type="button"><i class="far fa-clock"></i> 取当前时间</button></div>
+                <div class="tool-row"><span class="tool-label">时间戳</span><input class="tool-input" id="tool-ts-in" style="flex:1" placeholder="秒或毫秒，如 1693392000"></div>
+                <div class="tool-row"><span class="tool-label">对应日期</span><span class="tool-hint" id="tool-ts-out">—</span></div>
+                <div class="tool-row"><span class="tool-label">日期时间</span><input class="tool-input" id="tool-ts-date" style="flex:1" type="datetime-local"></div>
+                <div class="tool-row"><span class="tool-label">对应戳</span><span class="tool-hint" id="tool-ts-out2">—</span></div>
+            </div>
+            <div class="tool-pane" id="tool-stats" hidden>
+                <textarea class="tool-input tool-note" id="tool-stats-text" style="height:150px" placeholder="粘贴文本，实时统计"></textarea>
+                <div class="tool-stat">
+                    <div class="tool-stat__item"><b id="st-chars">0</b><span>总字符</span></div>
+                    <div class="tool-stat__item"><b id="st-nospace">0</b><span>不含空格</span></div>
+                    <div class="tool-stat__item"><b id="st-words">0</b><span>英文单词</span></div>
+                    <div class="tool-stat__item"><b id="st-cjk">0</b><span>中文汉字</span></div>
+                    <div class="tool-stat__item"><b id="st-lines">1</b><span>行数</span></div>
+                    <div class="tool-stat__item"><b id="st-bytes">0</b><span>UTF-8 字节</span></div>
+                </div>
+            </div>
+            <div class="tool-pane" id="tool-json" hidden>
+                <textarea class="tool-input tool-note" id="tool-json-text" style="height:140px" placeholder='粘贴 JSON，如 {"a":1}'></textarea>
+                <div class="tool-row">
+                    <button class="tool-btn" id="tool-json-fmt" type="button">格式化</button>
+                    <button class="tool-btn tool-btn--ghost" id="tool-json-min" type="button">压缩</button>
+                    <button class="tool-btn tool-btn--ghost" id="tool-json-copy" type="button">复制结果</button>
+                </div>
+                <pre class="tool-out" id="tool-json-out">结果会显示在这里</pre>
+            </div>
+            <div class="tool-pane" id="tool-unit" hidden>
+                <div class="tool-row"><select class="tool-input" id="unit-cat" style="flex:1"></select></div>
+                <div class="tool-row">
+                    <input class="tool-input" id="unit-in" style="flex:1" type="number" value="1" step="any">
+                    <select class="tool-input" id="unit-from" style="flex:1"></select>
+                </div>
+                <div class="tool-row">
+                    <span class="tool-label">结果</span>
+                    <input class="tool-input" id="unit-out" style="flex:1" readonly>
+                    <select class="tool-input" id="unit-to" style="flex:1"></select>
+                </div>
+                <div class="tool-row"><span class="tool-hint">支持长度 / 重量 / 温度 / 数据大小</span></div>
+            </div>
+            <div class="tool-pane" id="tool-base" hidden>
+                <div class="tool-row">
+                    <select class="tool-input" id="base-from" style="width:118px">
+                        <option value="2">二进制</option>
+                        <option value="8">八进制</option>
+                        <option value="10" selected>十进制</option>
+                        <option value="16">十六进制</option>
+                    </select>
+                    <input class="tool-input" id="base-in" style="flex:1" placeholder="输入整数，如 255">
+                </div>
+                <div class="tool-stat">
+                    <div class="tool-stat__item"><b id="base-2">—</b><span>二进制</span></div>
+                    <div class="tool-stat__item"><b id="base-8">—</b><span>八进制</span></div>
+                    <div class="tool-stat__item"><b id="base-10">—</b><span>十进制</span></div>
+                    <div class="tool-stat__item"><b id="base-16">—</b><span>十六进制</span></div>
+                </div>
+                <div class="tool-row"><span class="tool-hint">仅支持整数，支持负数（- 前缀）</span></div>
+            </div>
+            <div class="tool-pane" id="tool-color" hidden>
+                <div class="tool-row">
+                    <input class="tool-input" id="color-in" style="flex:1" placeholder="#49b1f5 或 rgb(73,177,245)">
+                    <span class="color-swatch" id="color-swatch"></span>
+                </div>
+                <div class="tool-stat">
+                    <div class="tool-stat__item"><b id="color-hex">—</b><span>HEX</span></div>
+                    <div class="tool-stat__item"><b id="color-rgb">—</b><span>RGB</span></div>
+                    <div class="tool-stat__item"><b id="color-hsl">—</b><span>HSL</span></div>
+                </div>
+                <div class="tool-row"><span class="tool-hint">支持 #abc / #aabbcc / rgb() / rgba()，点击结果复制</span></div>
+            </div>
+            <div class="tool-pane" id="tool-re" hidden>
+                <div class="tool-row">
+                    <input class="tool-input" id="re-pat" style="flex:1" placeholder="正则表达式，如 \d+">
+                    <input class="tool-input" id="re-flags" style="width:76px" value="g" placeholder="标志">
+                </div>
+                <textarea class="tool-input tool-note" id="re-text" style="height:110px" placeholder="粘贴测试文本"></textarea>
+                <div class="tool-row"><span class="tool-hint" id="re-count">—</span></div>
+                <pre class="tool-out" id="re-hl">匹配结果高亮显示在这里</pre>
+            </div>
+            <div class="tool-pane" id="tool-b64" hidden>
+                <textarea class="tool-input tool-note" id="b64-in" style="height:104px" placeholder="输入要编码的文本，或要解码的 Base64"></textarea>
+                <div class="tool-row">
+                    <button class="tool-btn" id="b64-enc" type="button">编码 →</button>
+                    <button class="tool-btn" id="b64-dec" type="button">← 解码</button>
+                    <button class="tool-btn tool-btn--ghost" id="b64-copy" type="button">复制结果</button>
+                </div>
+                <textarea class="tool-input tool-note" id="b64-out" style="height:104px" readonly placeholder="结果"></textarea>
+            </div>
+            <div class="tool-pane" id="tool-pomo" hidden>
+                <div class="pomo">
+                    <div class="pomo-time" id="pomo-time">25:00</div>
+                    <div class="tool-hint" id="pomo-mode">专注 25 分钟，开始后别分心</div>
+                    <div class="tool-row" style="justify-content:center">
+                        <button class="tool-btn tool-btn--ghost" data-min="25" type="button">专注 25</button>
+                        <button class="tool-btn tool-btn--ghost" data-min="5" type="button">休息 5</button>
+                        <button class="tool-btn tool-btn--ghost" data-min="10" type="button">10 分钟</button>
+                        <button class="tool-btn tool-btn--ghost" data-min="1" type="button">1 分钟</button>
+                    </div>
+                    <div class="tool-row" style="justify-content:center">
+                        <button class="tool-btn" id="pomo-start" type="button">开始</button>
+                        <button class="tool-btn tool-btn--ghost" id="pomo-reset" type="button">重置</button>
+                    </div>
+                    <div class="tool-hint" id="pomo-done">今天已完成 0 个番茄 🍅</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% comment %} 相册组件：回忆录重构，数据在 _data/photos.yml，网格 + 灯箱大图/视频 {% endcomment %}
+<div class="games-pop" id="photos-pop" hidden>
+    <div class="music-app__mask" id="photos-pop-mask"></div>
+    <div class="games-pop__window">
+        <button class="games-pop__close" id="photos-pop-close" title="关闭"><i class="fas fa-xmark"></i></button>
+        <div class="games-pop__title" id="photos-pop-title">相册</div>
+        <div class="photos-home" id="photos-home">
+            {% for sec in site.data.photos %}
+            <div class="photos-sec">{{ sec.section }}</div>
+            <div class="photos-grid">
+                {% for p in sec.items %}
+                <a class="photo-card" data-title="{{ p.title }}" data-src="{{ p.src }}" data-type="{{ p.type | default: 'photo' }}">
+                    <img src="{{ p.img }}" alt="{{ p.title }}" loading="lazy">
+                    {% if p.type == 'video' %}<span class="photo-card__play"><i class="fas fa-play"></i></span>{% endif %}
+                    <span class="photo-card__name">{{ p.title }}</span>
+                </a>
+                {% endfor %}
+            </div>
+            {% endfor %}
+        </div>
+        <div class="photos-stage" id="photos-stage" hidden>
+            <button class="games-pop__back" id="photos-back" title="返回相册"><i class="fas fa-chevron-left"></i></button>
+            <button class="photos-nav photos-nav--prev" id="photos-prev" title="上一个" type="button"><i class="fas fa-chevron-left"></i></button>
+            <div class="photos-viewer" id="photos-viewer"></div>
+            <button class="photos-nav photos-nav--next" id="photos-next" title="下一个" type="button"><i class="fas fa-chevron-right"></i></button>
+            <a class="photos-dl" id="photos-dl" title="下载原文件" download><i class="fas fa-download"></i></a>
+            <div class="photos-caption" id="photos-caption"></div>
+        </div>
+    </div>
+</div>
+
+<div id="recent-posts" class="recent-posts nc">
+    <div class="recent-post-items">
+        {% for post in paginator.posts %}
+        {% assign post_cover = post.cover | default: '/assets/covers/default.svg' %}
+        <div class="recent-post-item has-cover{% cycle ' cover-left', ' cover-right' %}">
+            <a class="post-cover" href="{{ post.url }}" title="{{ post.title }}" aria-hidden="true">
+                {% if post.cover_video %}
+                <video class="cover-img" src="{{ post.cover_video }}" poster="{{ post_cover }}" muted loop playsinline preload="metadata"></video>
+                {% else %}
+                <img class="cover-img" src="{{ post_cover }}" alt="{{ post.title | escape }}" loading="lazy">
+                {% endif %}
+            </a>
+            <div class="recent-post-info">
+                <a class="article-title" href="{{ post.url }}" title="{{ post.title }}">{{ post.title }}</a>
+                <div class="article-meta-wrap">
+                    <span class="post-meta-date"><i class="far fa-calendar-alt"></i><span class="article-meta-label">Created</span><time datetime="{{ post.date | date_to_xmlschema }}" title="Created {{ post.date | date: '%Y-%m-%d %H:%M:%S' }}">{{ post.date | date: "%Y-%m-%d" }}</time></span>
+                    {% for cat in post.categories %}
+                    <span class="article-meta"><span class="article-meta-separator">|</span><i class="fas fa-inbox"></i><a class="article-meta__categories" href="/categories/#{{ cat }}">{{ cat }}</a></span>
+                    {% endfor %}
+                </div>
+                <div class="content">{{ post.excerpt | strip_html | strip | truncate: 120 }}</div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% include pagination.html %}
+</div>
+<script>
+    // 时钟 / 问候 / 桌面动作
+    (function () {
+        var pad = function (n) { return n < 10 ? '0' + n : n };
+        var clockEl = document.getElementById('ios-clock');
+        var timeEl = document.getElementById('ios-widget-time');
+        var dateEl = document.getElementById('ios-widget-date');
+        var tick = function () {
+            var now = new Date();
+            var hm = pad(now.getHours()) + ':' + pad(now.getMinutes());
+            if (clockEl) clockEl.textContent = hm;
+            if (timeEl) timeEl.textContent = hm;
+            if (dateEl) {
+                var weeks = ['日', '一', '二', '三', '四', '五', '六'];
+                dateEl.textContent = (now.getMonth() + 1) + '月' + now.getDate() + '日 星期' + weeks[now.getDay()];
+            }
+        };
+        tick();
+        setInterval(tick, 15000);
+
+        var h = new Date().getHours();
+        var greet = h < 6 ? '夜深了，注意休息 🌙'
+            : h < 11 ? '早上好呀，今天也要元气满满 ☀️'
+            : h < 14 ? '中午好，休息一下吧 🌤️'
+            : h < 18 ? '下午好，来杯下午茶 🍵'
+            : '晚上好，慢慢逛 🌆';
+        var greetEl = document.getElementById('ios-greet');
+        if (greetEl) greetEl.textContent = greet;
+
+        var postUrls = {{ site.posts | map: "url" | jsonify }};
+
+        document.querySelectorAll('.ios-app[data-action]').forEach(function (el) {
+            el.addEventListener('click', function (e) {
+                var action = el.getAttribute('data-action');
+                if (action === 'music') return; // 音乐图标由音乐脚本处理
+                if (action === 'photos') return; // 相册图标由相册脚本处理
+                e.preventDefault();
+                if (action === 'search') {
+                    var btn = document.querySelector('#search-button .search');
+                    if (btn) btn.click();
+                } else if (action === 'random') {
+                    if (!postUrls.length) return;
+                    var pick;
+                    do { pick = postUrls[Math.floor(Math.random() * postUrls.length)]; } while (postUrls.length > 1 && pick === location.pathname);
+                    location.href = pick;
+                } else if (action === 'qrcode') {
+                    if (window.showImage) window.showImage('/assets/images/qrcode.jpg');
+                }
+            });
+        });
+    })();
+</script>
+<script>
+    // ---------- 每日一言组件 ----------
+    (function () {
+        var el = document.getElementById('ios-quote');
+        if (!el) return;
+        var LOCAL = [
+            { t: '保持热爱，奔赴山海。', s: '— 朱的小屋' },
+            { t: '代码改变世界，写作记录人生。', s: '— 朱的小屋' },
+            { t: '生活明朗，万物可爱。', s: '' },
+            { t: '慢慢来，比较快。', s: '' },
+            { t: '愿你走出半生，归来仍是少年。', s: '' },
+            { t: '每一段路，都是一种领悟。', s: '' },
+            { t: '把今天过好，不让遗憾来打扰。', s: '' },
+            { t: '读书使人充实，思考使人深邃。', s: '' }
+        ];
+        function paint(t, s) {
+            el.innerHTML = '<span class="ios-quote__text">' + t + '</span>' + (s ? '<span class="ios-quote__src">' + s + '</span>' : '');
+        }
+        try {
+            var c = JSON.parse(localStorage.getItem('quote_cache_v1') || 'null');
+            if (c && c.d === new Date().toDateString()) { paint(c.t, c.s); return; }
+        } catch (e) {}
+        var done = false;
+        fetch('https://v1.hitokoto.cn/?c=d&c=i&c=k&encode=json')
+            .then(function (r) { return r.ok ? r.json() : Promise.reject(); })
+            .then(function (d) {
+                done = true;
+                if (!d || !d.hitokoto) throw 0;
+                var t = d.hitokoto, s = d.from ? '— ' + d.from + (d.from_who ? ' · ' + d.from_who : '') : '';
+                paint(t, s);
+                try { localStorage.setItem('quote_cache_v1', JSON.stringify({ d: new Date().toDateString(), t: t, s: s })); } catch (e2) {}
+            })
+            .catch(function () {
+                if (done) return;
+                var i = Math.floor(Math.random() * LOCAL.length);
+                paint(LOCAL[i].t, LOCAL[i].s);
+            });
+    })();
+</script>
+<script>
+    // ---------- App 启动动效：弹窗从被点击图标处放大弹出 ----------
+    (function () {
+        var last = null;
+        document.addEventListener('click', function (e) {
+            var t = e.target && e.target.closest ? e.target.closest('.ios-widget, .ios-app') : null;
+            if (t) last = t;
+        }, true);
+        function animate(el) {
+            if (el.classList.contains('is-launching')) return;
+            if (last) {
+                var r = last.getBoundingClientRect();
+                if (r && r.width) {
+                    el.style.transformOrigin = ((r.left + r.width / 2) / window.innerWidth * 100) + '% ' + ((r.top + r.height / 2) / window.innerHeight * 100) + '%';
+                }
+            }
+            el.classList.remove('is-launching');
+            void el.offsetWidth;
+            el.classList.add('is-launching');
+        }
+        if ('MutationObserver' in window) {
+            var mo = new MutationObserver(function (muts) {
+                muts.forEach(function (m) {
+                    if (m.type === 'attributes' && m.attributeName === 'hidden' && !m.target.hidden) {
+                        if (m.target.matches && m.target.matches('.music-app, .games-pop')) animate(m.target);
+                    }
+                });
+            });
+            document.querySelectorAll('.music-app, .games-pop').forEach(function (el) {
+                mo.observe(el, { attributes: true, attributeFilter: ['hidden'] });
+            });
+        }
+    })();
+</script>
+<script>
+    // Dock 右键菜单：运行中的应用可右键关闭（音乐/游戏/工具共用）
+    (function () {
+        var menu = null;
+        function hide() { if (menu) { menu.remove(); menu = null; } }
+        function show(e, title, items) {
+            e.preventDefault();
+            e.stopPropagation();
+            hide();
+            menu = document.createElement('div');
+            menu.className = 'dock-menu';
+            var h = document.createElement('div');
+            h.className = 'dock-menu__title';
+            h.textContent = title;
+            menu.appendChild(h);
+            items.forEach(function (it) {
+                var b = document.createElement('button');
+                b.type = 'button';
+                b.textContent = it.label;
+                if (it.danger) b.className = 'is-danger';
+                b.addEventListener('click', function () { hide(); it.fn(); });
+                menu.appendChild(b);
+            });
+            document.body.appendChild(menu);
+            menu.addEventListener('contextmenu', function (ev) { ev.preventDefault(); });
+            var r = menu.getBoundingClientRect();
+            menu.style.left = Math.min(e.clientX, Math.max(8, window.innerWidth - r.width - 8)) + 'px';
+            menu.style.top = Math.min(e.clientY, Math.max(8, window.innerHeight - r.height - 8)) + 'px';
+        }
+        document.addEventListener('click', hide);
+        window.addEventListener('blur', hide);
+        document.addEventListener('keydown', function (e) { if (e.key === 'Escape') hide(); });
+        document.addEventListener('contextmenu', function (e) {
+            if (menu && !e.target.closest('.dock-menu')) hide();
+        }, true);
+        window.dockMenu = { show: show };
+    })();
+</script>
+<script>
+    // 移动端长按 Dock 图标唤起右键菜单（模拟 contextmenu；500ms 且未滑动）
+    (function () {
+        var timer = null, sx = 0, sy = 0, suppressClick = false;
+        function cancel() { if (timer) { clearTimeout(timer); timer = null; } }
+        document.addEventListener('touchstart', function (e) {
+            var t = e.touches[0], el = t && e.target;
+            if (!t || !el || !el.closest) return;
+            el = el.closest('.ios-dock .ios-app');
+            if (!el) return;
+            sx = t.clientX; sy = t.clientY;
+            timer = setTimeout(function () {
+                timer = null;
+                suppressClick = true;
+                setTimeout(function () { suppressClick = false; }, 700);
+                el.dispatchEvent(new MouseEvent('contextmenu', {
+                    bubbles: true, cancelable: true, view: window, clientX: sx, clientY: sy
+                }));
+            }, 500);
+        }, { passive: true });
+        document.addEventListener('touchmove', function (e) {
+            var t = e.touches[0];
+            if (t && (Math.abs(t.clientX - sx) > 10 || Math.abs(t.clientY - sy) > 10)) cancel();
+        }, { passive: true });
+        document.addEventListener('touchend', cancel);
+        document.addEventListener('touchcancel', cancel);
+        /* 长按后立即触发的原生 click 会误开关应用，这里拦截掉 */
+        document.addEventListener('click', function (e) {
+            if (suppressClick) {
+                e.preventDefault();
+                e.stopPropagation();
+                suppressClick = false;
+            }
+        }, true);
+    })();
+</script>
+
+<script>
+    // 游戏：4399 热门 H5 游戏，点击图标在弹窗内直接游玩；打开后出现在任务栏
+    (function () {
+        var $ = function (id) { return document.getElementById(id) };
+        var pop = $('games-app'), mask = $('games-app-mask'), closeBtn = $('games-app-close');
+        var title = $('games-pop-title'), grid = $('games-grid'), stage = $('games-stage');
+        var frame = $('games-frame'), back = $('games-back');
+        var dock = $('dock-game'), dockIcon = $('dock-game-icon'), dockName = $('dock-game-name');
+        var dockLetter = $('dock-game-letter');
+        var current = null, lastLetter = '', lastBg = '#49b1f5';
+
+        function setDockIcon(icon, letter, bg) {
+            if (icon) { dockIcon.src = icon; dockIcon.style.display = ''; dockLetter.hidden = true; return }
+            dockIcon.style.display = 'none';
+            dockLetter.hidden = false;
+            dockLetter.textContent = letter;
+            dockLetter.style.background = bg;
+        }
+        function rememberMeta(el) {
+            lastLetter = el.getAttribute('data-letter') || (el.getAttribute('data-name') || '游').slice(0, 1);
+            lastBg = el.getAttribute('data-bg') || '#49b1f5';
+        }
+
+        function openPop() { pop.hidden = false }
+        function closePop() { window.__closePop(pop) }
+        function showGrid() {
+            title.textContent = '游戏';
+            grid.hidden = false;
+            stage.hidden = true;
+            frame.src = 'about:blank';
+            current = null;
+            dock.hidden = true;
+            if (window.iosOpenApps) delete window.iosOpenApps.games;
+        }
+        function openGame(el) {
+            current = { url: el.getAttribute('data-url'), name: el.getAttribute('data-name'), icon: el.getAttribute('data-icon') };
+            title.textContent = current.name;
+            grid.hidden = true;
+            stage.hidden = false;
+            frame.src = current.url;
+            dock.hidden = false;
+            setDockIcon(current.icon, lastLetter, lastBg);
+            dockName.textContent = current.name.length > 5 ? current.name.slice(0, 5) : current.name;
+            window.iosOpenApps = window.iosOpenApps || {};
+            window.iosOpenApps.games = {
+                name: '游戏 · ' + current.name, icon: 'fas fa-gamepad', color: '#6c5ce7',
+                focus: function () { openPop(); showGame(); },
+                close: function () { closePop(); showGrid(); }
+            };
+        }
+        grid.addEventListener('click', function (e) {
+            var a = e.target.closest('.games-pop__app');
+            if (a) { rememberMeta(a); openGame(a); }
+        });
+        mask.addEventListener('click', closePop);
+        closeBtn.addEventListener('click', closePop);
+        back.addEventListener('click', showGrid);
+        dock.addEventListener('click', function (e) {
+            e.preventDefault();
+            if (pop.hidden && current) { openPop(); showGame(); }
+            else if (pop.hidden) openPop();
+            else if (stage.hidden && current) showGame();
+            else showGrid();
+        });
+        dock.addEventListener('contextmenu', function (e) {
+            window.dockMenu.show(e, current ? current.name : '游戏', [
+                { label: '关闭游戏', danger: true, fn: function () { closePop(); showGrid(); } }
+            ]);
+        });
+        function showGame() {
+            title.textContent = current.name;
+            grid.hidden = true;
+            stage.hidden = false;
+            frame.src = current.url;
+        }
+        document.addEventListener('keydown', function (e) {
+            if (e.key === 'Escape' && !pop.hidden) closePop();
+        });
+        var widget = document.getElementById('games-widget');
+        if (widget) widget.addEventListener('click', openPop);
+    })();
+</script>
+<script>
+    // ---------- 日历小组件（含农历 + 节日） ----------
+    (function () {
+        var head = document.getElementById('cal-head'), days = document.getElementById('cal-days');
+        var lunarEl = document.getElementById('cal-lunar');
+        if (!head || !days) return;
+
+        // 农历信息表（1900-2100），每项编码当年大小月与闰月
+        var lunarInfo = [
+            0x04bd8,0x04ae0,0x0a570,0x054d5,0x0d260,0x0d950,0x16554,0x056a0,0x09ad0,0x055d2,
+            0x04ae0,0x0a5b6,0x0a4d0,0x0d250,0x1d255,0x0b540,0x0d6a0,0x0ada2,0x095b0,0x14977,
+            0x04970,0x0a4b0,0x0b4b5,0x06a50,0x06d40,0x1ab54,0x02b60,0x09570,0x052f2,0x04970,
+            0x06566,0x0d4a0,0x0ea50,0x06e95,0x05ad0,0x02b60,0x186e3,0x092e0,0x1c8d7,0x0c950,
+            0x0d4a0,0x1d8a6,0x0b550,0x056a0,0x1a5b4,0x025d0,0x092d0,0x0d2b2,0x0a950,0x0b557,
+            0x06ca0,0x0b550,0x15355,0x04da0,0x0a5b0,0x14573,0x052b0,0x0a9a8,0x0e950,0x06aa0,
+            0x0aea6,0x0ab50,0x04b60,0x0aae4,0x0a570,0x05260,0x0f263,0x0d950,0x05b57,0x056a0,
+            0x096d0,0x04dd5,0x04ad0,0x0a4d0,0x0d4d4,0x0d250,0x0d558,0x0b540,0x0b6a0,0x195a6,
+            0x095b0,0x049b0,0x0a974,0x0a4b0,0x0b27a,0x06a50,0x06d40,0x0af46,0x0ab60,0x09570,
+            0x04af5,0x04970,0x064b0,0x074a3,0x0ea50,0x06b58,0x05ac0,0x0ab60,0x096d5,0x092e0,
+            0x0c960,0x0d954,0x0d4a0,0x0da50,0x07552,0x056a0,0x0abb7,0x025d0,0x092d0,0x0cab5,
+            0x0a950,0x0b4a0,0x0baa4,0x0ad50,0x055d9,0x04ba0,0x0a5b0,0x15176,0x052b0,0x0a930,
+            0x07954,0x06aa0,0x0ad50,0x05b52,0x04b60,0x0a6e6,0x0a4e0,0x0d260,0x0ea65,0x0d530,
+            0x05aa0,0x076a3,0x096d0,0x04afb,0x04ad0,0x0a4d0,0x1d0b6,0x0d250,0x0d520,0x0dd45,
+            0x0b5a0,0x056d0,0x055b2,0x049b0,0x0a577,0x0a4b0,0x0aa50,0x1b255,0x06d20,0x0ada0,
+            0x14b63,0x09370,0x049f8,0x04970,0x064b0,0x168a6,0x0ea50,0x06b20,0x1a6c4,0x0aae0,
+            0x0a2e0,0x0d2e3,0x0c960,0x0d557,0x0d4a0,0x0da50,0x05d55,0x056a0,0x0a6d0,0x055d4,
+            0x052d0,0x0a9b8,0x0a950,0x0b4a0,0x0b6a6,0x0ad50,0x055a0,0x0aba4,0x0a5b0,0x052b0,
+            0x0b273,0x06930,0x07337,0x06aa0,0x0ad50,0x14b55,0x04b60,0x0a570,0x054e4,0x0d160,
+            0x0e968,0x0d520,0x0daa0,0x16aa6,0x056d0,0x04ae0,0x0a9d4,0x0a2d0,0x0d150,0x0f252,
+            0x0d520
+        ];
+        var LM = ['正', '二', '三', '四', '五', '六', '七', '八', '九', '十', '冬', '腊'];
+        var LD = ['', '一', '二', '三', '四', '五', '六', '七', '八', '九', '十'];
+        var SOLAR_FEST = { '1-1': '元旦', '2-14': '情人节', '3-8': '妇女节', '3-12': '植树节', '4-1': '愚人节', '5-1': '劳动节', '5-4': '青年节', '6-1': '儿童节', '7-1': '建党节', '8-1': '建军节', '9-10': '教师节', '10-1': '国庆节', '12-24': '平安夜', '12-25': '圣诞节' };
+        var LUNAR_FEST = { '1-1': '春节', '1-15': '元宵节', '2-2': '龙抬头', '5-5': '端午节', '7-7': '七夕', '7-15': '中元节', '8-15': '中秋节', '9-9': '重阳节', '12-8': '腊八节' };
+
+        function leapMonth(y) { return lunarInfo[y - 1900] & 0xf; }
+        function leapDays(y) { return leapMonth(y) ? ((lunarInfo[y - 1900] & 0x10000) ? 30 : 29) : 0; }
+        function monthDays(y, m) { return (lunarInfo[y - 1900] & (0x10000 >> m)) ? 30 : 29; }
+        function lYearDays(y) {
+            var i, sum = 348;
+            for (i = 0x8000; i > 0x8; i >>= 1) sum += (lunarInfo[y - 1900] & i) ? 1 : 0;
+            return sum + leapDays(y);
+        }
+        function solar2lunar(y, m, d) {
+            var offset = Math.floor((new Date(y, m - 1, d) - new Date(1900, 0, 31)) / 86400000);
+            var temp = 0, i;
+            for (i = 1900; i < 2101 && offset > 0; i++) { temp = lYearDays(i); offset -= temp; }
+            if (offset < 0) { offset += temp; i--; }
+            var year = i, leap = leapMonth(i), isLeap = false;
+            for (i = 1; i < 13 && offset > 0; i++) {
+                if (leap > 0 && i === leap + 1 && isLeap === false) { --i; isLeap = true; temp = leapDays(year); }
+                else { temp = monthDays(year, i); }
+                if (isLeap === true && i === leap + 1) isLeap = false;
+                offset -= temp;
+            }
+            if (offset === 0 && leap > 0 && i === leap + 1) {
+                if (isLeap) { isLeap = false; } else { isLeap = true; --i; }
+            }
+            if (offset < 0) { offset += temp; --i; }
+            return { month: i, day: offset + 1, isLeap: isLeap };
+        }
+        function lDayName(d) {
+            if (d < 11) return '初' + LD[d];
+            if (d < 20) return '十' + LD[d - 10];
+            if (d === 20) return '二十';
+            if (d < 30) return '廿' + LD[d - 20];
+            return '三十';
+        }
+        function lMonthName(m, leap) { return (leap ? '闰' : '') + LM[m - 1] + '月'; }
+        function festOf(y, m, d) {
+            var sf = SOLAR_FEST[m + '-' + d];
+            if (sf) return sf;
+            var l = solar2lunar(y, m, d);
+            if (l.isLeap) return '';
+            var lf = LUNAR_FEST[l.month + '-' + l.day];
+            if (lf) return lf;
+            var n = new Date(y, m - 1, d + 1);
+            var ln = solar2lunar(n.getFullYear(), n.getMonth() + 1, n.getDate());
+            return (ln.month === 1 && ln.day === 1) ? '除夕' : '';
+        }
+
+        var now = new Date(), y = now.getFullYear(), m = now.getMonth();
+        head.innerHTML = '<b>' + (m + 1) + '月</b><span>' + y + '</span>';
+        var todayL = solar2lunar(y, m + 1, now.getDate());
+        var todayF = festOf(y, m + 1, now.getDate());
+        if (lunarEl) {
+            lunarEl.textContent = lMonthName(todayL.month, todayL.isLeap) + lDayName(todayL.day) + (todayF ? ' · ' + todayF : '');
+        }
+        var first = new Date(y, m, 1).getDay();
+        var total = new Date(y, m + 1, 0).getDate();
+        var html = '';
+        for (var i = 0; i < first; i++) html += '<span></span>';
+        for (var d = 1; d <= total; d++) {
+            var f = festOf(y, m + 1, d);
+            var cls = [];
+            if (d === now.getDate()) cls.push('today');
+            if (f) cls.push('fest');
+            html += '<span' + (cls.length ? ' class="' + cls.join(' ') + '"' : '') + (f ? ' title="' + f + '"' : '') + '>' + d + '</span>';
+        }
+        days.innerHTML = html;
+    })();
+
+    // ---------- 天气小组件（Open-Meteo 免费接口） ----------
+    (function () {
+        var box = document.getElementById('wx-widget');
+        if (!box) return;
+        var ICON = { 0: '☀️', 1: '🌤️', 2: '⛅', 3: '☁️', 45: '🌫️', 48: '🌫️', 51: '🌦️', 53: '🌦️', 55: '🌦️', 56: '🌧️', 57: '🌧️', 61: '🌧️', 63: '🌧️', 65: '🌧️', 66: '🌧️', 67: '🌧️', 71: '🌨️', 73: '🌨️', 75: '❄️', 77: '🌨️', 80: '🌦️', 81: '🌦️', 82: '🌧️', 85: '🌨️', 86: '🌨️', 95: '⛈️', 96: '⛈️', 99: '⛈️' };
+        var DEFAULT_CITY = { name: '杭州', lat: 30.2741, lon: 120.1551 };
+        var KEY = 'wx_cache_v1';
+        var el = {
+            icon: document.getElementById('wx-icon'), temp: document.getElementById('wx-temp'),
+            city: document.getElementById('wx-city'), hours: document.getElementById('wx-hours')
+        };
+        function paint(c) {
+            var cur = c.current;
+            el.icon.textContent = ICON[cur.weather_code] || '🌤️';
+            el.temp.textContent = Math.round(cur.temperature_2m) + '°';
+            el.city.textContent = c.cityName || '天气';
+            var h = '';
+            for (var i = 1; i <= 4 && i < c.hourly.time.length; i++) {
+                var hh = c.hourly.time[i].slice(11, 13);
+                h += '<span><b>' + hh + '时</b><em>' + (ICON[c.hourly.weather_code[i]] || '') + ' ' + Math.round(c.hourly.temperature_2m[i]) + '°</em></span>';
+            }
+            el.hours.innerHTML = h;
+        }
+        function load(loc) {
+            var cache = null;
+            try { cache = JSON.parse(localStorage.getItem(KEY) || 'null'); } catch (e) {}
+            if (cache && cache.q === (loc.lat + ',' + loc.lon) && Date.now() - cache.t < 30 * 60000) { paint(cache); return; }
+            el.city.textContent = '加载中…';
+            var url = 'https://api.open-meteo.com/v1/forecast?latitude=' + loc.lat + '&longitude=' + loc.lon
+                + '&current=temperature_2m,weather_code&hourly=temperature_2m,weather_code&forecast_hours=6&timezone=auto';
+            fetch(url).then(function (r) { return r.ok ? r.json() : Promise.reject(0); }).then(function (d) {
+                var data = { q: loc.lat + ',' + loc.lon, t: Date.now(), cityName: loc.name, current: d.current, hourly: d.hourly };
+                try { localStorage.setItem(KEY, JSON.stringify(data)); } catch (e) {}
+                paint(data);
+            }).catch(function () { el.city.textContent = '天气加载失败'; });
+        }
+        load(DEFAULT_CITY);
+        box.addEventListener('click', function () {
+            if (!navigator.geolocation) return;
+            el.city.textContent = '定位中…';
+            navigator.geolocation.getCurrentPosition(
+                function (pos) { load({ name: '我的位置', lat: pos.coords.latitude.toFixed(3), lon: pos.coords.longitude.toFixed(3) }); },
+                function () { load(DEFAULT_CITY); },
+                { timeout: 6000 }
+            );
+        });
+    })();
+
+    // ---------- 新文章角标（文章图标红点 = 上次来访后的新文章数） ----------
+    (function () {
+        var appEl = document.querySelector('.ios-app[data-badge="posts"]');
+        var postsMeta = [{% for p in site.posts %}{"u":{{ p.url | jsonify }},"t":{{ p.date | date: '%s' }}}{% unless forloop.last %},{% endunless %}{% endfor %}];
+        if (!appEl || !postsMeta.length) return;
+        var KEY = 'ios_posts_seen_v1';
+        var seen = null;
+        try { seen = Number(localStorage.getItem(KEY)); } catch (e) {}
+        var latest = postsMeta[0].t; // site.posts 按时间倒序
+        if (!seen) {
+            try { localStorage.setItem(KEY, latest); } catch (e) {}
+            return; // 首次来访不显示角标
+        }
+        var n = postsMeta.filter(function (p) { return p.t > seen; }).length;
+        if (!n) return;
+        var dot = document.createElement('span');
+        dot.className = 'ios-badge';
+        dot.textContent = n > 99 ? '99+' : n;
+        appEl.querySelector('.ios-app__icon').appendChild(dot);
+        appEl.addEventListener('click', function () {
+            try { localStorage.setItem(KEY, latest); } catch (e) {}
+            dot.remove();
+        }, { once: true });
+    })();
+
+    // ---------- 控制中心（含多任务） ----------
+    (function () {
+        var $ = function (id) { return document.getElementById(id) };
+        var cc = $('control-center'), trigger = $('cc-toggle');
+        if (!cc || !trigger) return;
+        function renderRunning() {
+            var box = $('cc-running'), reg = window.iosOpenApps || {};
+            var ids = Object.keys(reg);
+            if (!ids.length) { box.innerHTML = '<span class="cc-empty">还没有打开的应用</span>'; return; }
+            box.innerHTML = '';
+            ids.forEach(function (id) {
+                var a = reg[id];
+                var row = document.createElement('div');
+                row.className = 'cc-app';
+                row.innerHTML = '<span class="cc-app__icon" style="background:' + (a.color || '#49b1f5') + '"><i class="' + (a.icon || 'fas fa-window-maximize') + '"></i></span>'
+                    + '<b>' + a.name + '</b>';
+                var focus = document.createElement('button');
+                focus.type = 'button'; focus.textContent = '切换';
+                focus.addEventListener('click', function () { cc.hidden = true; a.focus(); });
+                var exit = document.createElement('button');
+                exit.type = 'button'; exit.textContent = '关闭'; exit.className = 'is-danger';
+                exit.addEventListener('click', function () { cc.hidden = true; a.close(); });
+                row.appendChild(focus); row.appendChild(exit);
+                box.appendChild(row);
+            });
+        }
+        function syncTiles() {
+            var MODES = { auto: '跟随系统', light: '浅色', dark: '深色' };
+            var ICONS = { auto: 'fas fa-circle-half-stroke', light: 'fas fa-sun', dark: 'fas fa-moon' };
+            var mode = localStorage.getItem('theme_mode_v1') || 'auto';
+            var dark = document.documentElement.getAttribute('data-theme') === 'dark';
+            $('cc-dark').classList.toggle('on', mode === 'dark' || (mode === 'auto' && dark));
+            $('cc-dark').querySelector('i').className = ICONS[mode];
+            $('cc-dark').querySelector('span').textContent = '深浅：' + MODES[mode];
+            var sound = localStorage.getItem('ios_sound') !== '0';
+            $('cc-sound').classList.toggle('on', sound);
+            $('cc-sound').querySelector('i').className = sound ? 'fas fa-volume-high' : 'fas fa-volume-xmark';
+        }
+        function open() { syncTiles(); renderRunning(); cc.hidden = false; }
+        trigger.addEventListener('click', function (e) {
+            e.stopPropagation();
+            cc.hidden ? open() : (cc.hidden = true);
+        });
+        // Dock 上的控制中心图标
+        var dockCc = document.querySelector('.ios-app[data-action="cc"]');
+        if (dockCc) dockCc.addEventListener('click', function (e) { e.preventDefault(); cc.hidden ? open() : (cc.hidden = true); });
+        // 功能指南折叠
+        var guideToggle = $('cc-guide-toggle'), guide = $('cc-guide');
+        if (guideToggle && guide) guideToggle.addEventListener('click', function () {
+            guide.hidden = !guide.hidden;
+            guideToggle.querySelector('.cc-guide-arrow').style.transform = guide.hidden ? 'rotate(-90deg)' : '';
+        });
+        $('cc-close').addEventListener('click', function () { cc.hidden = true; });
+        document.addEventListener('click', function (e) {
+            if (!cc.hidden && !e.target.closest('.control-center') && e.target !== trigger) cc.hidden = true;
+        });
+        document.addEventListener('keydown', function (e) { if (e.key === 'Escape') cc.hidden = true; });
+        $('cc-dark').addEventListener('click', function () {
+            var ORDER = ['auto', 'light', 'dark'];
+            var cur = localStorage.getItem('theme_mode_v1') || 'auto';
+            var next = ORDER[(ORDER.indexOf(cur) + 1) % ORDER.length];
+            try { localStorage.setItem('theme_mode_v1', next); } catch (e) {}
+            if (next === 'auto') {
+                document.documentElement.setAttribute('data-theme', window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+            } else {
+                document.documentElement.setAttribute('data-theme', next);
+            }
+            syncTiles();
+        });
+        $('cc-lock').addEventListener('click', function () {
+            cc.hidden = true;
+            if (window.iosLock) window.iosLock.lock();
+        });
+        $('cc-wp').addEventListener('click', function () {
+            cc.hidden = true;
+            if (window.iosWallpaper) window.iosWallpaper.openPicker();
+        });
+        $('cc-sound').addEventListener('click', function () {
+            var on = localStorage.getItem('ios_sound') !== '0';
+            try { localStorage.setItem('ios_sound', on ? '0' : '1'); } catch (e) {}
+            syncTiles();
+        });
+        Array.prototype.forEach.call(cc.querySelectorAll('[data-wp]'), function (b) {
+            b.addEventListener('click', function () {
+                var wp = window.iosWallpaper;
+                if (!wp) return;
+                var m = b.getAttribute('data-wp');
+                if (m === 'static') wp.static();
+                else wp.random(m, false);
+                cc.hidden = true;
+            });
+        });
+        $('cc-game').addEventListener('click', function () {
+            cc.hidden = true;
+            var gw = document.getElementById('games-widget');
+            if (gw) gw.click();
+        });
+        $('cc-post').addEventListener('click', function () {
+            cc.hidden = true;
+            var urls = {{ site.posts | map: "url" | jsonify }};
+            if (!urls.length) return;
+            var pick;
+            do { pick = urls[Math.floor(Math.random() * urls.length)]; } while (urls.length > 1 && pick === location.pathname);
+            location.href = pick;
+        });
+    })();
+
+    // ---------- 桌面空白处右键菜单 ----------
+    (function () {
+        var desk = document.getElementById('ios-desktop');
+        if (!desk) return;
+        desk.addEventListener('contextmenu', function (e) {
+            if (e.target.closest('.ios-widget, .ios-app, .ios-search, a, button, input, iframe')) return;
+            window.dockMenu.show(e, '桌面', [
+                { label: '控制中心…', fn: function () { var t = document.getElementById('cc-toggle'); if (t) t.click(); } },
+                { label: '更换壁纸…', fn: function () { var w = document.getElementById('wp-widget'); if (w) w.click(); } },
+                { label: '随机风景壁纸', fn: function () { if (window.iosWallpaper) window.iosWallpaper.random('scenic', false); } },
+                { label: '随机二次元壁纸', fn: function () { if (window.iosWallpaper) window.iosWallpaper.random('acg', false); } },
+                { label: '恢复默认壁纸', fn: function () { if (window.iosWallpaper) window.iosWallpaper.static(); } },
+                { label: '深浅色切换', fn: function () {
+                    var root = document.documentElement;
+                    root.setAttribute('data-theme', root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark');
+                } },
+                { label: '前往文章列表', fn: function () { location.hash = '#recent-posts'; } }
+            ]);
+        });
+    })();
+</script>
+<script src="/js/ios-wallpaper.js?v={{ site.time | date: '%s' }}" defer></script>
+<script src="/js/ios-tools.js?v={{ site.time | date: '%s' }}" defer></script>
+<script>
+    // ---------- 相册组件：网格 + 灯箱（大图/视频）+ 左右切换 + Dock 钉图标 ----------
+    (function () {
+        var $ = function (id) { return document.getElementById(id) };
+        var pop = $('photos-pop'), mask = $('photos-pop-mask'), closeBtn = $('photos-pop-close');
+        var home = $('photos-home'), stage = $('photos-stage'), viewer = $('photos-viewer');
+        var title = $('photos-pop-title'), back = $('photos-back');
+        var prevBtn = $('photos-prev'), nextBtn = $('photos-next'), caption = $('photos-caption');
+        var dl = $('photos-dl');
+        var dock = $('dock-photos'), dockName = $('dock-photos-name');
+        var widget = document.querySelector('.ios-app[data-action="photos"]');
+        if (!pop || !widget) return;
+        var items = Array.prototype.slice.call(document.querySelectorAll('#photos-home .photo-card'));
+        var cur = -1;
+
+        function openPop() { pop.hidden = false }
+        function closePop() { window.__closePop(pop) }
+        function stopMedia() { viewer.innerHTML = '' }
+        function showHome() {
+            title.textContent = '相册';
+            home.hidden = false;
+            stage.hidden = true;
+            stopMedia();
+            dock.hidden = true;
+            cur = -1;
+            if (window.iosOpenApps) delete window.iosOpenApps.photos;
+        }
+        function show(i) {
+            cur = (i + items.length) % items.length;
+            var el = items[cur];
+            var type = el.getAttribute('data-type');
+            var src = el.getAttribute('data-src');
+            var name = el.getAttribute('data-title') || '相册';
+            stopMedia();
+            viewer.innerHTML = type === 'video'
+                ? '<video src="' + src + '" controls autoplay playsinline></video>'
+                : '<img src="' + src + '" alt="">';
+            caption.textContent = name + '（' + (cur + 1) + '/' + items.length + '）';
+            if (dl) {
+                dl.href = src;
+                dl.setAttribute('download', name + (type === 'video' ? '.mp4' : src.replace(/^.*\.([a-zA-Z0-9]+)$/, '.$1')));
+            }
+            title.textContent = name;
+            home.hidden = true;
+            stage.hidden = false;
+            dock.hidden = false;
+            dockName.textContent = name.length > 5 ? name.slice(0, 5) : name;
+            window.iosOpenApps = window.iosOpenApps || {};
+            window.iosOpenApps.photos = {
+                name: '相册 · ' + name, icon: 'fas fa-images', color: 'linear-gradient(135deg,#a29bfe,#6c5ce7)',
+                focus: function () { openPop(); show(cur) },
+                close: function () { closePop(); showHome() }
+            };
+        }
+        widget.addEventListener('click', function (e) { e.preventDefault(); openPop() });
+        home.addEventListener('click', function (e) {
+            var card = e.target.closest('.photo-card');
+            if (card) show(items.indexOf(card));
+        });
+        mask.addEventListener('click', closePop);
+        closeBtn.addEventListener('click', closePop);
+        back.addEventListener('click', showHome);
+        prevBtn.addEventListener('click', function () { show(cur - 1) });
+        nextBtn.addEventListener('click', function () { show(cur + 1) });
+        dock.addEventListener('click', function (e) {
+            e.preventDefault();
+            if (pop.hidden) { openPop(); if (cur >= 0) show(cur) }
+            else if (stage.hidden && cur >= 0) show(cur);
+            else showHome();
+        });
+        dock.addEventListener('contextmenu', function (e) {
+            window.dockMenu.show(e, '相册', [
+                { label: '关闭相册', danger: true, fn: function () { closePop(); showHome() } }
+            ]);
+        });
+        document.addEventListener('keydown', function (e) {
+            if (pop.hidden) return;
+            if (e.key === 'Escape') closePop();
+            else if (!stage.hidden && e.key === 'ArrowLeft') show(cur - 1);
+            else if (!stage.hidden && e.key === 'ArrowRight') show(cur + 1);
+        });
+    })();
+</script>

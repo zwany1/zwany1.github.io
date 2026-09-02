@@ -1,0 +1,132 @@
+#post-directory-module {
+    z-index: 999;
+}
+
+.post-directory {
+    font-size: 14px;
+    background: rgba(245, 242, 232, 0.95);
+    overflow: hidden;
+    width: 300px;
+    padding-bottom: 1em;
+    border: 1px solid #c8b593;
+    color: #5a4a3a;
+}
+
+.post-directory ul,
+.post-directory ol {
+    padding-left: 1.5em;
+    list-style: none;
+}
+
+.post-directory strong {
+    border-left: 5px solid #c8b593;
+    padding: 2px 5px 2px 15px;
+    color: #5a4a3a;
+    font-weight: 600;
+}
+
+.post-directory a {
+    text-decoration: none;
+    color: #7a6a4a;
+    transition: all 0.3s ease;
+}
+
+.post-directory a:hover,
+.post-directory a:active,
+.post-directory a.on {
+    color: #8b6f47;
+    text-decoration: underline;
+}
+
+.posts-list {
+    line-height: 2;
+    color: #5a4a3a;
+    list-style-type:disc;
+}
+
+.posts-list::before {
+/*    content: " ";*/
+    position: absolute;
+    left: 0;
+    top: 12px;
+    width: 6px;
+    height: 6px;
+    margin-left: -4px;
+    background: #c8b593;
+    border-radius: 50%;
+    border: 1px solid #c8b593;
+    transition-duration: 0.2s;
+    transition-timing-function: ease-in-out;
+    transition-delay: 0s;
+    transition-property: background;
+}
+
+.posts-list-item {
+    border-bottom: 1px dashed #c8b593;
+    margin: 10px;
+    padding: 0;
+}
+
+.posts-list-item a {
+    font-size: 16px;
+    font-weight: normal;
+    font-family: Lato, "PingFang SC", "Microsoft YaHei", sans-serif;
+    line-height: inherit;
+    color: #5a4a3a;
+    transition: all 0.3s ease;
+}
+
+.posts-list-meta {
+    font-size: 12px;
+    font-family: Lato, "PingFang SC", "Microsoft YaHei", sans-serif;
+    line-height: 2;
+    color: #7a6a4a;
+    background: rgba(245, 242, 232, 0.95);
+}
+
+.list-group {
+    padding-left: 0;
+    margin-bottom: 20px;
+}
+
+.list-group-item {
+    position: relative;
+    display: block;
+    padding: 10px 15px;
+    margin-bottom: -1px;
+    background-color: rgba(245, 242, 232, 0.95);
+    border: 1px solid #c8b593;
+    color: #5a4a3a;
+    transition: all 0.3s ease;
+}
+
+
+.list-group-item:first-child {
+    border-top-left-radius: 4px;
+    border-top-right-radius: 4px;
+}
+
+.list-group-item:last-child {
+    margin-bottom: 0;
+    border-bottom-right-radius: 4px;
+    border-bottom-left-radius: 4px;
+}
+
+.list-group-item>.badge {
+    float: right;
+}
+
+.badge {
+    display: inline-block;
+    min-width: 10px;
+    padding: 3px 7px;
+    font-size: 12px;
+    font-weight: 700;
+    line-height: 1;
+    color: #5a4a3a;
+    text-align: center;
+    white-space: nowrap;
+    vertical-align: middle;
+    background-color: #c8b593;
+    border-radius: 10px;
+}

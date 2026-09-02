@@ -1,0 +1,29 @@
+{% comment %} 相关文章：优先同分类，其次同标签，最多 3 篇 {% endcomment %}
+{% assign related = '' | split: '' %}
+{% for p in site.posts %}
+    {% if p.url == page.url %}{% continue %}{% endif %}
+    {% assign shared = false %}
+    {% for c in p.categories %}
+        {% if page.categories contains c %}{% assign shared = true %}{% endif %}
+    {% endfor %}
+    {% unless shared %}
+        {% for t in p.tags %}
+            {% if page.tags contains t %}{% assign shared = true %}{% endif %}
+        {% endfor %}
+    {% endunless %}
+    {% if shared %}{% assign related = related | push: p %}{% endif %}
+{% endfor %}
+
+{% if related.size > 0 %}
+<section class="related-posts">
+    <div class="related-posts__title"><i class="fas fa-book-open fa-fw"></i> 延伸阅读</div>
+    <div class="related-posts__list">
+        {% for p in related limit: 3 %}
+        <a class="related-post" href="{{ p.url }}">
+            <span class="related-post__title">{{ p.title }}</span>
+            <span class="related-post__meta">{{ p.date | date: "%Y-%m-%d" }}{% if p.categories.first %} · {{ p.categories.first }}{% endif %}</span>
+        </a>
+        {% endfor %}
+    </div>
+</section>
+{% endif %}

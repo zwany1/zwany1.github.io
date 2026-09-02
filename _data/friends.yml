@@ -1,0 +1,10 @@
+# 友链配置：按格式添加新朋友即可，页面自动渲染
+# avatar 建议用对方站点的头像或 favicon 链接
+- name: KeysQiu
+  url: https://keysqiu.github.io/
+  desc: 朋友 · 博客
+  avatar: https://github.com/keysqiu.png
+- name: 月明星稀
+  url: https://blog.leguans.cn
+  desc: Leguan的个人博客。
+  avatar: https://blog.leguans.cn/images/avatar.webp

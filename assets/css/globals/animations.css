@@ -1,0 +1,329 @@
+/* 微交互动效样式 */
+/* 滚动进度指示器 */
+.scroll-progress {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 0%;
+    height: 3px;
+    background: linear-gradient(90deg, #c8b593, #8b6f47);
+    z-index: 9999;
+    transition: width 0.1s ease;
+}
+
+/* 按钮悬停效果 */
+a, button {
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+a:hover, button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(122, 106, 74, 0.3);
+}
+
+a:active, button:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 6px rgba(122, 106, 74, 0.3);
+}
+
+/* 卡片悬停效果 */
+.boxed-group, .repo-card, .post-item {
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.boxed-group:hover, .repo-card:hover, .post-item:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 24px rgba(122, 106, 74, 0.2);
+    background-color: rgba(255, 255, 255, 0.95);
+}
+
+/* 滚动动画 */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+/* 更多进入视口动画 */
+@keyframes slideInLeft {
+    from {
+        opacity: 0;
+        transform: translateX(-50px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+@keyframes slideInRight {
+    from {
+        opacity: 0;
+        transform: translateX(50px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+@keyframes zoomIn {
+    from {
+        opacity: 0;
+        transform: scale(0.9);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+@keyframes rotateIn {
+    from {
+        opacity: 0;
+        transform: rotate(-10deg);
+    }
+    to {
+        opacity: 1;
+        transform: rotate(0);
+    }
+}
+
+@keyframes bounceIn {
+    0% {
+        opacity: 0;
+        transform: scale(0.3);
+    }
+    50% {
+        opacity: 0.9;
+        transform: scale(1.05);
+    }
+    70% {
+        opacity: 1;
+        transform: scale(0.9);
+    }
+    100% {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+/* 元素进入视口时的动画 */
+.fade-in {
+    animation: fadeIn 0.6s ease forwards;
+    opacity: 0;
+}
+
+.fade-in-up {
+    animation: fadeInUp 0.6s ease forwards;
+    opacity: 0;
+}
+
+.slide-in-left {
+    animation: slideInLeft 0.6s ease forwards;
+    opacity: 0;
+}
+
+.slide-in-right {
+    animation: slideInRight 0.6s ease forwards;
+    opacity: 0;
+}
+
+.zoom-in {
+    animation: zoomIn 0.5s ease forwards;
+    opacity: 0;
+}
+
+.rotate-in {
+    animation: rotateIn 0.5s ease forwards;
+    opacity: 0;
+}
+
+.bounce-in {
+    animation: bounceIn 0.6s ease forwards;
+    opacity: 0;
+}
+
+/* 滚动触发动画的元素 */
+.animate-on-scroll {
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+/* 延迟动画 */
+.delay-100 { animation-delay: 0.1s; }
+.delay-200 { animation-delay: 0.2s; }
+.delay-300 { animation-delay: 0.3s; }
+.delay-400 { animation-delay: 0.4s; }
+.delay-500 { animation-delay: 0.5s; }
+
+/* 加载动画 */
+@keyframes pulse {
+    0%, 100% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0.5;
+    }
+}
+
+.pulse {
+    animation: pulse 2s infinite;
+}
+
+/* 悬停时的背景光效 */
+.glow-effect {
+    position: relative;
+}
+
+.glow-effect::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: radial-gradient(circle at center, rgba(200, 181, 147, 0.3) 0%, transparent 70%);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    z-index: -1;
+}
+
+.glow-effect:hover::before {
+    opacity: 1;
+}
+
+/* 平滑滚动 */
+html {
+    scroll-behavior: smooth;
+}
+
+/* 滚动时导航栏样式变化 */
+.site-header {
+    transition: all 0.3s ease;
+}
+
+.site-header.scrolled {
+    background-color: rgba(245, 242, 232, 0.95);
+    box-shadow: 0 2px 10px rgba(122, 106, 74, 0.2);
+    padding-top: 10px;
+    padding-bottom: 10px;
+}
+
+/* 输入框聚焦效果 */
+input, textarea {
+    transition: all 0.3s ease;
+    border: 1px solid #c8b593;
+    background-color: rgba(255, 255, 255, 0.95);
+    color: #7a6a4a;
+}
+
+input:focus, textarea:focus {
+    outline: none;
+    border-color: #8b6f47;
+    box-shadow: 0 0 0 2px rgba(139, 111, 71, 0.2);
+    transform: scale(1.02);
+}
+
+/* 鼠标悬停时的指针变化 */
+.clickable {
+    cursor: pointer;
+}
+
+/* 图标旋转效果 */
+.rotate-on-hover {
+    transition: transform 0.3s ease;
+}
+
+.rotate-on-hover:hover {
+    transform: rotate(180deg);
+}
+
+/* 渐变边框效果 */
+.gradient-border {
+    position: relative;
+    border-radius: 4px;
+}
+
+.gradient-border::before {
+    content: '';
+    position: absolute;
+    top: -2px;
+    left: -2px;
+    right: -2px;
+    bottom: -2px;
+    background: linear-gradient(45deg, #c8b593, #e8e3d8, #f5f2e8);
+    border-radius: 6px;
+    z-index: -1;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.gradient-border:hover::before {
+    opacity: 1;
+}
+
+/* 回到顶部按钮动画 */
+.gotop {
+    transition: all 0.3s ease;
+    transform: scale(0);
+}
+
+.gotop.visible {
+    transform: scale(1);
+}
+
+/* 页面加载动画 */
+@keyframes pageLoad {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+body {
+    animation: pageLoad 0.8s ease forwards;
+}
+
+/* 滚动视差效果 */
+.parallax {
+    background-attachment: fixed;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+    transition: transform 0.1s ease;
+}
+
+/* 元素离开视口时的淡出效果 */
+.fade-out-on-scroll {
+    transition: opacity 0.5s ease, transform 0.5s ease;
+}
+
+/* 滚动时的模糊效果 */
+.blur-on-scroll {
+    transition: filter 0.3s ease;
+}
+
+.blur-on-scroll.scrolled {
+    filter: blur(2px);
+}

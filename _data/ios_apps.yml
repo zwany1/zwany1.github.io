@@ -1,0 +1,43 @@
+# 首页 iOS 桌面的应用图标配置
+# bg 为图标背景渐变（CSS background 值），icon 为 Font Awesome 图标类
+# 注意：值必须加引号，否则 # 会被 YAML 当成注释
+- name: 文章
+  url: /archives/
+  badge: posts
+  icon: fa-solid fa-book
+  bg: "linear-gradient(135deg, #49b1f5, #2b7fd4)"
+- name: 分类
+  url: /categories/
+  icon: fa-solid fa-folder-open
+  bg: "linear-gradient(135deg, #ffb86b, #f0932b)"
+- name: 标签
+  url: /tags/
+  icon: fa-solid fa-tags
+  bg: "linear-gradient(135deg, #43d9c0, #22a6b3)"
+- name: 友链
+  url: /links/
+  icon: fa-solid fa-link
+  bg: "linear-gradient(135deg, #fd79a8, #e84393)"
+- name: 项目
+  url: /projects/
+  icon: fa-solid fa-rocket
+  bg: "linear-gradient(135deg, #a29bfe, #6c5ce7)"
+- name: 相册
+  url: javascript:void(0)
+  action: photos
+  icon: fa-solid fa-images
+  bg: "linear-gradient(135deg, #7f8ff0, #5b6bd6)"
+- name: 关于
+  url: /about/
+  icon: fa-solid fa-user
+  bg: "linear-gradient(135deg, #95a5a6, #576574)"
+- name: 公众号
+  url: javascript:void(0)
+  action: qrcode
+  icon: fa-brands fa-weixin
+  bg: "linear-gradient(135deg, #2ed573, #1aa34a)"
+- name: GitHub
+  url: https://github.com/zwany1
+  external: true
+  icon: fa-brands fa-github
+  bg: "linear-gradient(135deg, #4a4a4a, #17181c)"

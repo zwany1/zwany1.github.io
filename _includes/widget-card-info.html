@@ -1,0 +1,16 @@
+<div class="card-widget card-info text-center">
+    <div class="avatar-img">
+        <img src="/assets/images/avatar.jpg" alt="avatar" onerror="this.onerror=null;this.src='https://github.com/{{ site.github_username }}.png'"/>
+    </div>
+    <div class="author-info-name">{{ site.author }}</div>
+    <div class="author-info-description">{{ site.subtitle }}</div>
+    <div class="site-data">
+        <a href="/archives/"><div class="headline">Articles</div><div class="length-num">{{ site.posts | size }}</div></a>
+        <a href="/tags/"><div class="headline">Tags</div><div class="length-num">{{ site.tags | size }}</div></a>
+        <a href="/categories/"><div class="headline">Categories</div><div class="length-num">{{ site.categories | size }}</div></a>
+    </div>
+    <a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/{{ site.github_username }}"><i class="fab fa-github"></i><span> Follow Me</span></a>
+    <div class="card-info-social-icons">
+        <a class="social-icon" href="https://github.com/{{ site.github_username }}" target="_blank" title="GitHub"><i class="fab fa-github" style="color:#24292e;"></i></a>
+    </div>
+</div>

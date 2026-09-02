@@ -1,0 +1,26 @@
+# 书影清单（手动维护）
+# status: reading(在读) / done(读过) / wish(想读)
+# rating: 1-5 星，可不填
+- title: 计算机程序的构造和解释
+  author: Harold Abelson
+  status: reading
+  rating: 5
+  note: SICP，慢慢啃
+  link: https://book.douban.com/subject/1148282/
+- title: 代码大全
+  author: Steve McConnell
+  status: done
+  rating: 5
+  note: 构建软件的百科全书
+  link: https://book.douban.com/subject/1477390/
+- title: 三体
+  author: 刘慈欣
+  status: done
+  rating: 5
+  note: 给岁月以文明
+  link: https://book.douban.com/subject/2567698/
+- title: 设计数据密集型应用
+  author: Martin Kleppmann
+  status: wish
+  note: DDIA，传说中的神书
+  link: https://book.douban.com/subject/30329536/

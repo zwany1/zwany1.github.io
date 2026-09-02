@@ -1,0 +1,78 @@
+# 回忆录 / 相册数据（桌面「相册」组件与 /gallery/ 页共用）
+# type 省略为照片；type: video 为视频（img 为封面图）
+- section: 📌 置顶
+  items:
+    - title: yhs
+      img: /images/gallery/yhs.jpg
+      src: /images/gallery/yhs.jpg
+    - title: 质检网红球员
+      img: /images/gallery/11.png
+      src: /images/gallery/8be4fe5f439369750f6022b7d9254839.mp4
+      type: video
+- section: 🎬 视频
+  items:
+    - title: kissqiu
+      img: /images/gallery/22.png
+      src: /images/gallery/1d219a323cedb70b129d3317acbcc63d.mp4
+      type: video
+    - title: 大雾漫天
+      img: /images/gallery/大雾封面_压缩后.jpg
+      src: /images/gallery/大雾.mp4
+      type: video
+    - title: 好自为之
+      img: /images/gallery/hzwz封面.png
+      src: /images/gallery/hzwz.mp4
+      type: video
+- section: 📷 照片
+  items:
+    - title: 躺🐕
+      img: /images/gallery/05ac7d8484417f2f4301215889fc5988.jpg
+      src: /images/gallery/05ac7d8484417f2f4301215889fc5988.jpg
+    - title: 认祖归宗
+      img: /images/gallery/363ce57e51d78927fbbb05fc3228bd97.jpg
+      src: /images/gallery/363ce57e51d78927fbbb05fc3228bd97.jpg
+    - title: 毕业季
+      img: /images/gallery/3bb276100b2b9c40a2225f124345ba64.jpg
+      src: /images/gallery/3bb276100b2b9c40a2225f124345ba64.jpg
+    - title: 甜蜜合照
+      img: /images/gallery/53637bb52ad51ba0e928c36671927e37.jpg
+      src: /images/gallery/53637bb52ad51ba0e928c36671927e37.jpg
+    - title: 陆川游玩
+      img: /images/gallery/8335bbd5b1ad82bddd33e43d4915910f.jpg
+      src: /images/gallery/8335bbd5b1ad82bddd33e43d4915910f.jpg
+    - title: 甜蜜合照2
+      img: /images/gallery/aed3c79064681fca2429e02c2b7f3a57.jpg
+      src: /images/gallery/aed3c79064681fca2429e02c2b7f3a57.jpg
+    - title: 第一次聚餐
+      img: /images/gallery/bbc73ac8d8e75ddbbdfbbf92ced1784f.jpg
+      src: /images/gallery/bbc73ac8d8e75ddbbdfbbf92ced1784f.jpg
+    - title: 毕业合照
+      img: /images/gallery/c10125d5c8833567c705a01bb8d73107.jpg
+      src: /images/gallery/c10125d5c8833567c705a01bb8d73107.jpg
+    - title: 国宝
+      img: /images/gallery/dc490ba6283e64e224aa1313640e49f8.jpg
+      src: /images/gallery/dc490ba6283e64e224aa1313640e49f8.jpg
+    - title: 南宁游玩
+      img: /images/gallery/e90d8f8520a6bd67631c805850fe723f.jpg
+      src: /images/gallery/e90d8f8520a6bd67631c805850fe723f.jpg
+    - title: 学校
+      img: /images/gallery/学校.jpg
+      src: /images/gallery/学校.jpg
+    - title: b学
+      img: /images/gallery/b学.jpg
+      src: /images/gallery/b学.jpg
+    - title: 帅比
+      img: /images/gallery/帅比.jpg
+      src: /images/gallery/帅比.jpg
+    - title: 柳州
+      img: /images/gallery/柳州.jpg
+      src: /images/gallery/柳州.jpg
+    - title: 高p
+      img: /images/gallery/高p.jpg
+      src: /images/gallery/高p.jpg
+    - title: 进厂日记
+      img: /images/gallery/进厂日记.jpg
+      src: /images/gallery/进厂日记.jpg
+    - title: 陆川二中
+      img: /images/gallery/陆川二中.jpg
+      src: /images/gallery/陆川二中.jpg

@@ -1,0 +1,79 @@
+---
+layout: default
+---
+
+<div id="reading-progress"></div>
+<div id="post">
+    <div class="post-extras-bar">
+        <button id="pe-tts" type="button" title="浏览器本地朗读全文"><i class="fas fa-volume-high"></i> 听全文</button>
+        <button id="pe-poster" type="button" title="生成分享海报图片"><i class="fas fa-image"></i> 分享图</button>
+        <button id="pe-like" type="button" title="点赞这篇文章"><i class="fas fa-heart"></i> <span id="pe-like-count">—</span></button>
+        <span class="pe-font">
+            <button id="pe-font-minus" type="button" title="减小字号">A-</button>
+            <button id="pe-font-plus" type="button" title="增大字号">A+</button>
+        </span>
+    </div>
+    <article class="container post-content" id="article-container">
+    {{ content }}
+    </article>
+    <div class="post-copyright">
+        <div class="post-copyright__author">
+            <span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>Author: </span>
+            <span class="post-copyright-info"><a href="{{ site.url }}">{{ site.author }}</a></span>
+        </div>
+        <div class="post-copyright__type">
+            <span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>Link: </span>
+            <span class="post-copyright-info"><a href="{{ page.url }}">{{ page.url }}</a></span>
+        </div>
+        <div class="post-copyright__notice">
+            <span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>Copyright Notice: </span>
+            <span class="post-copyright-info">All articles on this blog are licensed under <a target="_blank" rel="noopener" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a> unless otherwise stated.</span>
+        </div>
+    </div>
+    <div class="tag_share">
+        <div class="post-meta__tag-list">
+            {% for tag in page.tags %}<a class="post-meta__tags" href="/tags/#{{ tag }}"><i class="fas fa-tag fa-fw"></i>{{ tag }}</a>{% endfor %}
+        </div>
+        {% if site.components.share.enabled %}
+        <div class="post-share">
+            <div class="social-share" data-image="{% if page.cover %}{{ site.url }}{{ page.cover }}{% else %}{{ site.url }}/assets/images/avatar.jpg{% endif %}" data-sites="facebook,x,wechat,weibo,qq"></div>
+            <link rel="stylesheet" href="/assets/vendor/sharejs/css/share.min.css" media="print" onload="this.media='all'">
+            <script src="/assets/vendor/sharejs/js/social-share.min.js" defer></script>
+        </div>
+        {% endif %}
+    </div>
+    {% include qrcode-promo.html %}
+    {% include related-posts.html %}
+    {% if page.next or page.previous %}
+    <nav class="pagination-post" id="pagination">
+        {% if page.next %}
+        <a class="pagination-related" href="{{ page.next.url }}" title="{{ page.next.title }}">
+            <div class="cover" style="background: var(--default-bg-color)"></div>
+            <div class="info">
+                <div class="info-1">
+                    <div class="info-item-1">Previous</div>
+                    <div class="info-item-2">{{ page.next.title }}</div>
+                </div>
+                <div class="info-2"><div class="info-item-1">{{ page.next.excerpt | strip_html | strip | truncate: 120 }}</div></div>
+            </div>
+        </a>
+        {% endif %}
+        {% if page.previous %}
+        <a class="pagination-related next-post" href="{{ page.previous.url }}" title="{{ page.previous.title }}">
+            <div class="cover" style="background: var(--default-bg-color)"></div>
+            <div class="info">
+                <div class="info-1">
+                    <div class="info-item-1">Next</div>
+                    <div class="info-item-2">{{ page.previous.title }}</div>
+                </div>
+                <div class="info-2"><div class="info-item-1">{{ page.previous.excerpt | strip_html | strip | truncate: 120 }}</div></div>
+            </div>
+        </a>
+        {% endif %}
+    </nav>
+    {% endif %}
+    <div class="post-comment">
+    {% include comments.html %}
+    </div>
+</div>
+<script src="/js/post-extras.js?v={{ site.time | date: '%s' }}" defer></script>

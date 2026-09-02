@@ -1,0 +1,13 @@
+---
+layout: none
+---
+<?xml version="1.0" encoding="UTF-8"?>
+<search>{% for post in site.posts %}
+<entry>
+<title>{{ post.title | strip_html | strip | xml_escape }}</title>
+<content>{{ post.content | strip_html | strip_newlines | escape | truncate: 5000 }}</content>
+<url>{{ post.url }}</url>
+<date>{{ post.date | date: "%Y-%m-%d" }}</date>
+<category>{{ post.categories.first | default: '' | xml_escape }}</category>
+</entry>{% endfor %}
+</search>

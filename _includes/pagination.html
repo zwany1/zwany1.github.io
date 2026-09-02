@@ -1,0 +1,48 @@
+<nav id="pagination"><div class="pagination">
+    {% assign totalPages = paginator.total_pages %}
+    {% if totalPages == 0 %}{% assign totalPages = 1 %}{% endif %}
+    {% if paginator.previous_page %}
+    {% if paginator.previous_page == 1 %}
+    <a class="extend prev" rel="prev" href="/#content-inner"><i class="fas fa-chevron-left fa-fw"></i></a>
+    {% else %}
+    <a class="extend prev" rel="prev" href="/page{{ paginator.previous_page }}/#content-inner"><i class="fas fa-chevron-left fa-fw"></i></a>
+    {% endif %}
+    {% endif %}
+
+    {% if paginator.page == 1 %}
+    <span class="page-number current">1</span>
+    {% else %}
+    <a class="page-number" href="/#content-inner">1</a>
+    {% endif %}
+
+    {% if totalPages > 1 %}
+    {% assign aroundSize = 2 %}
+    {% assign midStartPage = paginator.page | minus: aroundSize %}
+    {% if 2 > midStartPage %}{% assign midStartPage = 2 %}{% endif %}
+    {% assign midEndPage = paginator.page | plus: aroundSize %}
+    {% if midEndPage >= totalPages %}{% assign midEndPage = totalPages | minus: 1 %}{% endif %}
+    {% assign tmpPage = aroundSize | plus: 2 %}
+    {% if paginator.page > tmpPage %}<span class="space">...</span>{% endif %}
+
+    {% for count in (midStartPage..midEndPage) %}
+    {% if count == paginator.page %}
+    <span class="page-number current">{{ count }}</span>
+    {% else %}
+    <a class="page-number" href="/page{{ count }}/#content-inner">{{ count }}</a>
+    {% endif %}
+    {% endfor %}
+
+    {% assign tmpPage = paginator.page | plus: aroundSize | plus: 1 %}
+    {% if totalPages > tmpPage %}<span class="space">...</span>{% endif %}
+
+    {% if paginator.page == totalPages %}
+    <span class="page-number current">{{ totalPages }}</span>
+    {% else %}
+    <a class="page-number" href="/page{{ totalPages }}/#content-inner">{{ totalPages }}</a>
+    {% endif %}
+    {% endif %}
+
+    {% if paginator.next_page %}
+    <a class="extend next" rel="next" href="/page{{ paginator.next_page }}/#content-inner"><i class="fas fa-chevron-right fa-fw"></i></a>
+    {% endif %}
+</div></nav>

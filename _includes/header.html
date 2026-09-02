@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="zh-cmn-Hans" data-theme="light">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>{% if page.title %}{{ page.title }} - {% endif %}{{ site.title }}</title>
+    <meta name="author" content="{{ site.author }}">
+    <meta name="copyright" content="{{ site.author }}">
+    <meta name="format-detection" content="telephone=no">
+    <meta name="theme-color" content="#ffffff">
+    <meta name="description" content="{% if page.description %}{{ page.description }}{% elsif page.excerpt %}{{ page.excerpt | strip_html | strip_newlines }}{% else %}{{ site.description }}{% endif %}">
+    {% if page.keywords %}<meta name="keywords" content="{{ page.keywords | strip_html | strip_newlines }}">{% else %}<meta name="keywords" content="{{ site.keywords }}">{% endif %}
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="{% if page.title %}{{ page.title }}{% else %}{{ site.title }}{% endif %}">
+    <meta property="og:url" content="{{ site.url }}{{ page.url }}">
+    <meta property="og:site_name" content="{{ site.title }}">
+    <meta property="og:description" content="{% if page.description %}{{ page.description }}{% else %}{{ site.description }}{% endif %}">
+    <meta property="og:image" content="{% if page.cover %}{{ site.url }}{{ page.cover }}{% else %}{{ site.url }}/assets/images/avatar.jpg{% endif %}">
+    <link rel="icon" href="/assets/images/site-icon.ico">
+    <link rel="shortcut icon" href="/assets/images/site-icon.ico">
+    <link rel="canonical" href="{{ site.url }}{{ page.url | remove_first: 'index.html' }}">
+    <link rel="alternate" type="application/atom+xml" title="{{ site.title }}" href="{{ site.url }}{{ site.subscribe_rss }}">
+    <link rel="preconnect" href="//cdn.jsdelivr.net">
+    <link rel="preconnect" href="//busuanzi.ibruce.info">
+    <link rel="stylesheet" href="/assets/vendor/fontawesome/css/all.min.css">
+    <link rel="stylesheet" href="/assets/css/butterfly.css">
+    <link rel="stylesheet" href="/css/header-glow.css?v={{ site.time | date: '%s' }}">
+    <link rel="stylesheet" href="/css/time-greeting.css?v={{ site.time | date: '%s' }}">
+    <link rel="stylesheet" href="/css/gh-projects.css?v={{ site.time | date: '%s' }}">
+    <link rel="stylesheet" href="/css/custom.css?v={{ site.time | date: '%s' }}">
+    <link rel="manifest" href="/manifest.webmanifest">
+    <link rel="stylesheet" href="/assets/vendor/fancybox/fancybox.min.css" media="print" onload="this.media='all'">
+    {% assign highlight_base_url = 'https://fastly.jsdelivr.net/gh/mzlogin/rouge-themes@master/dist' %}
+    <link rel="stylesheet" href="{{ highlight_base_url }}/{{ site.highlight_theme }}.css">
+    <script>
+    (() => {
+      const saveToLocal = {
+        set: (key, value, ttl) => { const data = { value }; if (ttl != null) data.expiry = Date.now() + ttl * 86400000; localStorage.setItem(key, JSON.stringify(data)); },
+        get: key => { const itemStr = localStorage.getItem(key); if (!itemStr) return; try { const data = JSON.parse(itemStr); if (data.expiry && Date.now() > data.expiry) { localStorage.removeItem(key); return; } return data.value; } catch { localStorage.removeItem(key); } }
+      };
+      const scriptCache = new Map();
+      const cssCache = new Map();
+      window.btf = {
+        saveToLocal,
+        getScript: (url, attr = {}) => { if (scriptCache.has(url)) return scriptCache.get(url); const promise = new Promise((resolve, reject) => { const script = document.createElement('script'); script.src = url; script.async = true; for (const key in attr) script.setAttribute(key, attr[key]); script.onload = resolve; script.onerror = reject; document.head.appendChild(script); }); scriptCache.set(url, promise); return promise; },
+        getCSS: (url, id) => { if (cssCache.has(url)) return cssCache.get(url); const promise = new Promise((resolve, reject) => { const link = document.createElement('link'); link.rel = 'stylesheet'; link.href = url; if (id) link.id = id; link.onload = resolve; link.onerror = reject; document.head.appendChild(link); }); cssCache.set(url, promise); return promise; },
+        addGlobalFn: (key, fn, name = false, parent = window) => { if (!false && key.startsWith('pjax')) return; const globalFn = parent.globalFn || {}; globalFn[key] = globalFn[key] || {}; globalFn[key][name || Object.keys(globalFn[key]).length] = fn; parent.globalFn = globalFn; }
+      };
+      const metaThemeColor = document.querySelector('meta[name="theme-color"]');
+      const activateDarkMode = () => { document.documentElement.dataset.theme = 'dark'; if (metaThemeColor !== null) metaThemeColor.setAttribute('content', '#0d0d0d'); };
+      const activateLightMode = () => { document.documentElement.dataset.theme = 'light'; if (metaThemeColor !== null) metaThemeColor.setAttribute('content', '#ffffff'); };
+      btf.activateDarkMode = activateDarkMode;
+      btf.activateLightMode = activateLightMode;
+      const theme = saveToLocal.get('theme');
+      theme === 'dark' ? activateDarkMode() : theme === 'light' ? activateLightMode() : null;
+      const asideStatus = saveToLocal.get('aside-status');
+      if (asideStatus !== undefined) document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide');
+      const detectApple = () => { if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) document.documentElement.classList.add('apple'); };
+      detectApple();
+    })();
+    window.GLOBAL_CONFIG = {
+      root: '/',
+      algolia: undefined,
+      localSearch: { "path": "/search.xml?v={{ site.time | date: '%s' }}", "preload": false, "top_n_per_article": 1, "unescape": false, "pagination": { "enable": false, "hitsPerPage": 8 }, "languages": { "hits_empty": "未找到包含 ${query} 的文章", "hits_stats": "找到 ${hits} 篇文章" } },
+      translate: undefined,
+      highlight: { "plugin": "highlight.js", "highlightCopy": true, "highlightLang": true, "highlightHeightLimit": false, "highlightFullpage": false, "highlightMacStyle": false },
+      copy: { success: '复制成功', error: '复制失败', noSupport: '浏览器不支持' },
+      relativeDate: { homepage: false, post: false },
+      runtime: '',
+      dateSuffix: { just: '刚刚', min: '分钟前', hour: '小时前', day: '天前', month: '个月前' },
+      copyright: undefined,
+      lightbox: 'fancybox',
+      Snackbar: undefined,
+      infinitegrid: { js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid@4.13.0/dist/infinitegrid.min.js', buttonText: '加载更多' },
+      isPhotoFigcaption: false,
+      islazyloadPlugin: true,
+      isAnchor: false,
+      percent: { toc: true, rightside: false },
+      autoDarkmode: true
+    };
+    window.GLOBAL_CONFIG_SITE = {
+      title: '{% if page.title %}{{ page.title }}{% else %}{{ site.title }}{% endif %}',
+      isHighlightShrink: false,
+      isToc: false,
+      pageType: '{% if page.class == "home" %}home{% else %}page{% endif %}'
+    };
+    </script>
+</head>
+<body class="{% if page.class == 'home' %}home{% endif %} type-{{ page.layout }}">
+<div id="web_bg"></div>
+<div id="sidebar">
+    <div id="menu-mask"></div>
+    <div id="sidebar-menus">
+        <div class="avatar-img text-center">
+            <img src="/assets/images/avatar.jpg" alt="avatar" onerror="this.onerror=null;this.src='https://github.com/{{ site.github_username }}.png'"/>
+        </div>
+        <div class="site-data text-center">
+            <a href="/archives/"><div class="headline">Articles</div><div class="length-num">{{ site.posts | size }}</div></a>
+            <a href="/tags/"><div class="headline">Tags</div><div class="length-num">{{ site.tags | size }}</div></a>
+            <a href="/categories/"><div class="headline">Categories</div><div class="length-num">{{ site.categories | size }}</div></a>
+        </div>
+        <div class="menus_items">
+            <div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div>
+            <div class="menus_item"><a class="site-page" href="/projects/"><i class="fa-fw fas fa-rocket"></i><span> 项目</span></a></div>
+            <div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></div>
+            <div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div>
+            <div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div>
+            <div class="menus_item"><a class="site-page" href="/links/"><i class="fa-fw fas fa-link"></i><span> 友链</span></a></div>
+            <div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-user"></i><span> 关于</span></a></div>
+        </div>
+    </div>
+</div>
+<div class="page" id="body-wrap">
+    <header class="{% if page.class == 'home' %}full_page{% elsif page.layout == 'post' %}post-bg{% else %}not-home-page{% endif %}" id="page-header" style="background: linear-gradient(135deg, #4c8bf5 0%, #9a6cf5 50%, #f56ec6 100%);">
+        <nav id="nav">
+            <span id="blog-info">
+                <a class="nav-site-title" href="/"><span class="site-name">{{ site.title }}</span></a>
+            </span>
+            <div id="menus">
+                <div id="search-button">
+                    <span class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> Search</span></span>
+                </div>
+                <div class="menus_items">
+                    <div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div>
+                    <div class="menus_item"><a class="site-page" href="/projects/"><i class="fa-fw fas fa-rocket"></i><span> 项目</span></a></div>
+                    <div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></div>
+                    <div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div>
+                    <div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div>
+                    <div class="menus_item"><a class="site-page" href="/links/"><i class="fa-fw fas fa-link"></i><span> 友链</span></a></div>
+                    <div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-user"></i><span> 关于</span></a></div>
+                </div>
+                <div id="toggle-menu">
+                    <span class="site-page"><i class="fas fa-bars fa-fw"></i></span>
+                </div>
+            </div>
+        </nav>
+        {% if page.class == 'home' %}
+        <div id="site-info">
+            <h1 id="site-title">{{ site.title }}</h1>
+            <div id="site-subtitle"><span id="subtitle"></span></div>
+            <div id="site_social_icons">
+                <a class="social-icon" href="https://github.com/{{ site.github_username }}" target="_blank" title="GitHub"><i class="fab fa-github" style="color: #24292e;"></i></a>
+            </div>
+        </div>
+        <div id="scroll-down"><i class="fas fa-angle-down scroll-down-effects"></i></div>
+        {% elsif page.layout == 'post' %}
+        <div id="post-info">
+            <h1 class="post-title">{{ page.title }}</h1>
+            <div id="post-meta">
+                <div class="meta-firstline">
+                    <span class="post-meta-date">
+                        <i class="far fa-calendar-alt fa-fw post-meta-icon"></i>
+                        <span class="post-meta-label">Created</span>
+                        <time class="post-meta-date-created" datetime="{{ page.date | date_to_xmlschema }}" title="Created {{ page.date | date: '%Y-%m-%d %H:%M:%S' }}">{{ page.date | date: "%Y-%m-%d" }}</time>
+                    </span>
+                    {% if page.categories and page.categories.size > 0 %}
+                    <span class="post-meta-categories">
+                        <span class="post-meta-separator">|</span>
+                        <i class="fas fa-inbox fa-fw post-meta-icon"></i>
+                        {% for cat in page.categories %}<a class="post-meta-categories" href="/categories/#{{ cat }}">{{ cat }}</a>{% endfor %}
+                    </span>
+                    {% endif %}
+                    <span class="post-meta-separator">|</span>
+                    <span class="post-meta-readtime"><i class="far fa-clock fa-fw post-meta-icon"></i>约 {{ page.content | strip_html | strip_newlines | size | divided_by: 400 | at_least: 1 }} 分钟</span>
+                </div>
+                <div class="meta-secondline">
+                    <span class="post-meta-separator">|</span>
+                    <span class="post-meta-pv-cv" data-flag-title="{{ page.title }}">
+                        <i class="far fa-eye fa-fw post-meta-icon"></i>
+                        <span class="post-meta-label">Post Views:</span>
+                        <span id="page_views_value"><i class="fa-solid fa-spinner fa-spin"></i></span>
+                    </span>
+                </div>
+            </div>
+        </div>
+        {% else %}
+        <div id="page-site-info">
+            <h1 id="site-title">{{ page.title }}</h1>
+        </div>
+        {% endif %}
+    </header>
+    <main class="layout{% if page.aside == false %} hide-aside{% endif %}" id="content-inner">

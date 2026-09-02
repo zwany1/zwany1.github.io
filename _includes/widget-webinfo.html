@@ -1,0 +1,10 @@
+<div class="card-widget card-webinfo">
+    <div class="item-headline"><i class="fas fa-chart-line"></i><span>Website Info</span></div>
+    <div class="webinfo">
+        <div class="webinfo-item"><div class="item-name">Article Count :</div><div class="item-count">{{ site.posts | size }}</div></div>
+        <div class="webinfo-item"><div class="item-name">运行时间 :</div><div class="item-count" id="site-uptime">—</div></div>
+        <div class="webinfo-item"><div class="item-name">Unique Visitors :</div><div class="item-count" id="busuanzi_value_site_uv"><i class="fa-solid fa-spinner fa-spin"></i></div></div>
+        <div class="webinfo-item"><div class="item-name">Page Views :</div><div class="item-count" id="busuanzi_value_site_pv"><i class="fa-solid fa-spinner fa-spin"></i></div></div>
+        <div class="webinfo-item"><div class="item-name">Last Update :</div><div class="item-count" id="last-push-date" data-lastPushDate="{{ site.time | date_to_xmlschema }}"><i class="fa-solid fa-spinner fa-spin"></i></div></div>
+    </div>
+</div>

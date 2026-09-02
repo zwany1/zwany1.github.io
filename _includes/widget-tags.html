@@ -1,0 +1,11 @@
+<div class="card-widget card-tags">
+    <div class="item-headline"><i class="fas fa-tags"></i><span>Tags</span></div>
+    <div class="card-tag-cloud">
+        {% for tag in site.tags %}
+        {% assign c = tag[1].size %}
+        {% assign fs = c | times: 0.06 | plus: 0.85 %}
+        {% if fs > 1.5 %}{% assign fs = 1.5 %}{% endif %}
+        <a href="/tags/#{{ tag[0] }}" style="font-size: {{ fs }}em; color: #999a9c;">{{ tag[0] }}</a>
+        {% endfor %}
+    </div>
+</div>
