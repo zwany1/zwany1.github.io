@@ -2,35 +2,35 @@
   {
     "title": "这几天我一直在失败",
     "link": "https://blog.leguans.cn/posts/three-days-of-failed-experiments/",
-    "date": "2026-08-31T09:19:57.109Z",
+    "date": "2026-09-02T02:30:50.521Z",
     "friend": "月明星稀",
     "friendSite": "https://blog.leguans.cn"
   },
   {
-    "title": "Swift：iOS 控制中心媒体播放状态与软件内不同步的解决办法和排查思路",
-    "link": "https://blog.leguans.cn/posts/ios-nowplaying-pause-button-stuck-fix/",
-    "date": "2026-08-31T09:19:57.109Z",
+    "title": "从一页 HTML 到一个 Hexo 主题：这个博客是豆包帮我做的",
+    "link": "https://blog.leguans.cn/posts/how-i-built-this-blog/",
+    "date": "2026-09-02T02:30:50.520Z",
     "friend": "月明星稀",
     "friendSite": "https://blog.leguans.cn"
   },
   {
     "title": "App Store 一直提示“二进制文件无效”，从本地乱改到 Xcode Cloud 终于过了",
     "link": "https://blog.leguans.cn/posts/app-store-invalid-binary-xcode-cloud/",
-    "date": "2026-08-31T09:19:57.108Z",
+    "date": "2026-09-02T02:30:50.520Z",
+    "friend": "月明星稀",
+    "friendSite": "https://blog.leguans.cn"
+  },
+  {
+    "title": "Swift：iOS 控制中心媒体播放状态与软件内不同步的解决办法和排查思路",
+    "link": "https://blog.leguans.cn/posts/ios-nowplaying-pause-button-stuck-fix/",
+    "date": "2026-09-02T02:30:50.520Z",
     "friend": "月明星稀",
     "friendSite": "https://blog.leguans.cn"
   },
   {
     "title": "Flutter/iOS 后台自动切歌与通知栏手动“下一首”稳定实现方法",
     "link": "https://blog.leguans.cn/posts/Flutter-iOS-skipToNext-fix/",
-    "date": "2026-08-31T09:19:57.108Z",
-    "friend": "月明星稀",
-    "friendSite": "https://blog.leguans.cn"
-  },
-  {
-    "title": "我的音乐App-SollinPlayer，被Apple审核员判“涉黄”了",
-    "link": "https://blog.leguans.cn/posts/SollinPlayerYellow/",
-    "date": "2026-08-31T09:19:57.108Z",
+    "date": "2026-09-02T02:30:50.520Z",
     "friend": "月明星稀",
     "friendSite": "https://blog.leguans.cn"
   }
