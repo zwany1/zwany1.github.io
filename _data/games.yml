@@ -105,3 +105,8 @@
   icon: /assets/games/showdown.png
   letter: 宝
   bg: "#e67e22"
+- name: 地铁跑酷
+  url: https://subwaysurfersonline.io/play
+  icon: /assets/games/subwaysurfers.png
+  letter: 跑
+  bg: "#f39c12"
