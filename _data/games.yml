@@ -1,15 +1,5 @@
 # 游戏中心：全部为免登录、打开即玩的 H5 游戏直链
 # 图标已本地化到 assets/games/
-- name: 召唤神龙
-  url: https://arcxingye.github.io/zhsl/
-  icon: /assets/games/zhsl.png
-  letter: 龙
-  bg: "#e6194b"
-- name: 无尽驾驶
-  url: https://topograph.io/
-  icon: /assets/games/topograph.png
-  letter: 驾
-  bg: "#22a6b3"
 - name: Flappy 小鸟
   url: https://ellisonleao.github.io/clumsy-bird/
   icon: /assets/games/bird.png
@@ -85,28 +75,18 @@
   icon: /assets/games/warbot.png
   letter: 甲
   bg: "#e74c3c"
-- name: Starblast 团队星战
-  url: https://starblast.io/
-  icon: /assets/games/starblast.png
-  letter: 星
-  bg: "#3498db"
 - name: Territorial 领土战略
   url: https://territorial.io/
   icon: /assets/games/terr_fav.png
   letter: 领
   bg: "#27ae60"
-- name: Taming 宠物对战
-  url: https://taming.io/
-  icon: /assets/games/taming.png
-  letter: 宠
-  bg: "#9b59b6"
-- name: 宝可梦对战
-  url: https://play.pokemonshowdown.com/
-  icon: /assets/games/showdown.png
-  letter: 宝
-  bg: "#e67e22"
 - name: 地铁跑酷
   url: https://subwaysurfersonline.io/play
   icon: /assets/games/subwaysurfers.png
   letter: 跑
   bg: "#f39c12"
+- name: 植物大战僵尸
+  url: https://jiangnangame.github.io/New-Plants-vs-Zombies-JavaScript/
+  icon: /assets/games/pvz.png
+  letter: 植
+  bg: "#27ae60"
