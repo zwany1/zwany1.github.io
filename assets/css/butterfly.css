@@ -347,7 +347,7 @@ html.hide-aside .layout>.aside-content{display:none}
   #nav #menus .menus_items{display:none}
   #nav #toggle-menu{display:inline-block}
   .layout{flex-direction:column}
-  .recent-posts{width:100%}
+  .recent-posts,#post,#page,#archive{width:100%}
   .aside-content,#aside-content{width:100%;padding-left:0}
   .sticky_layout{position:static}
 }

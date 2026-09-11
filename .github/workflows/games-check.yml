@@ -1,0 +1,38 @@
+name: games-link-check
+
+on:
+  schedule:
+    - cron: '23 1 * * 0' # 每周一北京时间 09:23
+  workflow_dispatch:
+
+permissions:
+  issues: write
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Check game links
+        id: check
+        continue-on-error: true
+        run: node scripts/check-games.mjs
+
+      - name: Report via issue
+        if: steps.check.outcome == 'failure'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+        run: |
+          TITLE="游戏链接巡检：发现失效游戏链接"
+          NUM=$(gh issue list --repo "$REPO" --state open --json number,title --jq ".[] | select(.title == \"$TITLE\") | .number")
+          if [ -n "$NUM" ]; then
+            echo "已存在巡检 issue #$NUM，追加最新结果"
+            gh issue comment "$NUM" --repo "$REPO" --body-file games-check-report.md
+          else
+            gh issue create --repo "$REPO" --title "$TITLE" --body-file games-check-report.md
+          fi
