@@ -160,14 +160,6 @@ comments: false
             </div>
             <div class="tools-preview__label">工具</div>
         </div>
-        <div class="ios-widget ios-widget--chat" id="chat-widget" title="聊天室">
-            <div class="chat-preview">
-                <span class="chat-preview__bubble"><i class="fas fa-comment"></i></span>
-                <span class="chat-preview__bubble chat-preview__bubble--alt"><i class="fas fa-comment-dots"></i></span>
-                <span class="chat-preview__bubble"><i class="fas fa-comment"></i></span>
-            </div>
-            <div class="chat-preview__label">聊天室</div>
-        </div>
     </div>
 
     <div class="ios-grid">
@@ -180,6 +172,12 @@ comments: false
             <span class="ios-app__label">{{ app.name }}</span>
         </a>
         {% endfor %}
+        {% comment %} 聊天室排在 GitHub 右边：单个 app 图标，点击原地弹层（js/chat-pop.js 拦截），
+        JS 失效时退化为普通链接跳 /chat/ 全屏页 {% endcomment %}
+        <a class="ios-app" href="/chat/" title="聊天室">
+            <span class="ios-app__icon" style="background:linear-gradient(135deg,#4f6ef7,#3b55d9)"><i class="fas fa-comments"></i></span>
+            <span class="ios-app__label">聊天室</span>
+        </a>
     </div>
 
     <div class="ios-dock">
@@ -204,7 +202,7 @@ comments: false
             <span class="ios-app__label" id="dock-tool-name">工具</span>
         </a>
         <a class="ios-app" href="javascript:void(0)" id="dock-chat" hidden>
-            <span class="ios-app__icon" style="background:#4f6ef7"><i class="fas fa-comments"></i></span>
+            <span class="ios-app__icon" style="background:linear-gradient(135deg,#4f6ef7,#3b55d9)"><i class="fas fa-comments"></i></span>
             <span class="ios-app__label" id="dock-chat-name">聊天室</span>
         </a>
         <a class="ios-app" href="javascript:void(0)" id="dock-photos" hidden>

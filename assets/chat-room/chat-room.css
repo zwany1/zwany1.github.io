@@ -89,7 +89,7 @@
     width: 38px;
     height: 38px;
     border-radius: 12px;
-    background: #4f6ef7;
+    background: linear-gradient(135deg, #4f6ef7, #3b55d9);
     color: #fff;
     display: flex;
     align-items: center;
@@ -661,7 +661,7 @@
     height: 54px;
     margin: 0 auto 16px;
     border-radius: 16px;
-    background: #4f6ef7;
+    background: linear-gradient(135deg, #4f6ef7, #3b55d9);
     color: #fff;
     display: flex;
     align-items: center;

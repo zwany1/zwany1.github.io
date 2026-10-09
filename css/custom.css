@@ -2306,37 +2306,10 @@ select.tool-input { appearance: auto; cursor: pointer; }
 .cal-days span.today.fest { color: #fff; }
 
 /* ==========================================================================
-   首页 iOS 桌面「聊天室」：组件图标 + 弹层
-   弹层比其它应用大很多，基本占满屏幕；点组件原地打开，不跳页。
+   首页 iOS 桌面「聊天室」：入口 = 图标区 GitHub 右边的单个 app 图标
+   （index.html 内联样式 linear-gradient(135deg,#4f6ef7,#3b55d9) + fa-comments），
+   点击原地弹层，不跳页；旧版顶部「三气泡」宽组件已移除。
    ========================================================================== */
-.ios-widget--chat {
-    flex-direction: column;
-    justify-content: center;
-    gap: 10px;
-    cursor: pointer;
-    flex: 0.9;
-}
-
-.chat-preview { display: flex; flex-direction: column; gap: 5px; align-items: flex-start; }
-
-.chat-preview__bubble {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 46px;
-    height: 18px;
-    border-radius: 9px;
-    background: #4f6ef7;
-    color: #fff;
-    font-size: .55rem;
-}
-
-.chat-preview__bubble--alt { margin-left: 17px; background: rgba(79, 110, 247, .5); }
-
-.chat-preview__label { font-size: .78rem; color: rgba(31, 45, 61, .7); }
-[data-theme=dark] .chat-preview__label { color: rgba(216, 226, 236, .7); }
-.ios-widget--chat:hover .chat-preview__bubble { transform: translateY(-2px); }
-.chat-preview__bubble { transition: transform .2s; }
 
 /* 弹层：尺寸放大到几乎整个屏幕 */
 .chat-pop .games-pop__window {

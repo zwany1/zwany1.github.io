@@ -1,6 +1,8 @@
 /* 首页 iOS 桌面「聊天室」
  * ---------------------------------------------------------------------------
- * 点桌面组件 → 在当前页弹出聊天室（不跳转页面），和工具箱 / 游戏中心一致。
+ * 入口是图标区里的单个 app 图标（a[href="/chat/"]，排在 GitHub 右边），
+ * 点击 → 在当前页弹出聊天室（不跳转页面），和工具箱 / 游戏中心一致。
+ * 顶部导航的「聊天室」链接同样被拦截为弹层；JS 失效时浏览器直接跳 /chat/ 全屏页。
  * 「首次打开才挂载」很重要：组件本身带 WebSocket，若在页面加载时就挂载，
  * 每个访客一进首页就会建立一条连接。
  * 关闭动效与 Esc 复用 footer.html 里的 window.__closePop（本弹层带 .games-pop 类）。
@@ -8,12 +10,12 @@
 (function () {
     var $ = function (id) { return document.getElementById(id); };
     var pop = $('chat-pop');
-    var widget = $('chat-widget');
-    if (!pop || !widget) { return; }
+    if (!pop) { return; }
 
     var mask = $('chat-pop-mask');
     var closeBtn = $('chat-pop-close');
     var dock = $('dock-chat');
+    var widget = $('chat-widget');           // 旧版顶部组件（已移除，保留兼容）
     var mounted = false;
 
     /** 首次打开时才挂载（组件脚本可能还没加载完，所以要重试） */
@@ -42,7 +44,7 @@
         else { pop.hidden = true; }
     }
 
-    widget.addEventListener('click', openPop);
+    if (widget) { widget.addEventListener('click', openPop); }
     if (dock) { dock.addEventListener('click', openPop); }
     if (mask) { mask.addEventListener('click', closePop); }
     if (closeBtn) { closeBtn.addEventListener('click', closePop); }
