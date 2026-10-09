@@ -25,10 +25,10 @@
     <link rel="preconnect" href="//busuanzi.ibruce.info">
     <link rel="stylesheet" href="/assets/vendor/fontawesome/css/all.min.css">
     <link rel="stylesheet" href="/assets/css/butterfly.css">
-    <link rel="stylesheet" href="/css/header-glow.css?v=1791535698">
-    <link rel="stylesheet" href="/css/time-greeting.css?v=1791535698">
-    <link rel="stylesheet" href="/css/gh-projects.css?v=1791535698">
-    <link rel="stylesheet" href="/css/custom.css?v=1791535698">
+    <link rel="stylesheet" href="/css/header-glow.css?v=1791539530">
+    <link rel="stylesheet" href="/css/time-greeting.css?v=1791539530">
+    <link rel="stylesheet" href="/css/gh-projects.css?v=1791539530">
+    <link rel="stylesheet" href="/css/custom.css?v=1791539530">
     <link rel="manifest" href="/manifest.webmanifest">
     <link rel="stylesheet" href="/assets/vendor/fancybox/fancybox.min.css" media="print" onload="this.media='all'">
     
@@ -62,7 +62,7 @@
     window.GLOBAL_CONFIG = {
       root: '/',
       algolia: undefined,
-      localSearch: { "path": "/search.xml?v=1791535698", "preload": false, "top_n_per_article": 1, "unescape": false, "pagination": { "enable": false, "hitsPerPage": 8 }, "languages": { "hits_empty": "未找到包含 ${query} 的文章", "hits_stats": "找到 ${hits} 篇文章" } },
+      localSearch: { "path": "/search.xml?v=1791539530", "preload": false, "top_n_per_article": 1, "unescape": false, "pagination": { "enable": false, "hitsPerPage": 8 }, "languages": { "hits_empty": "未找到包含 ${query} 的文章", "hits_stats": "找到 ${hits} 篇文章" } },
       translate: undefined,
       highlight: { "plugin": "highlight.js", "highlightCopy": true, "highlightLang": true, "highlightHeightLimit": false, "highlightFullpage": false, "highlightMacStyle": false },
       copy: { success: '复制成功', error: '复制失败', noSupport: '浏览器不支持' },
@@ -318,6 +318,14 @@
             </div>
             <div class="tools-preview__label">工具</div>
         </div>
+        <div class="ios-widget ios-widget--chat" id="chat-widget" title="聊天室">
+            <div class="chat-preview">
+                <span class="chat-preview__bubble"><i class="fas fa-comment"></i></span>
+                <span class="chat-preview__bubble chat-preview__bubble--alt"><i class="fas fa-comment-dots"></i></span>
+                <span class="chat-preview__bubble"><i class="fas fa-comment"></i></span>
+            </div>
+            <div class="chat-preview__label">聊天室</div>
+        </div>
     </div>
 
     <div class="ios-grid">
@@ -416,6 +424,10 @@
         <a class="ios-app" href="javascript:void(0)" id="dock-tool" hidden>
             <span class="ios-app__icon" id="dock-tool-iconwrap"><i id="dock-tool-icon" class="fas fa-toolbox"></i></span>
             <span class="ios-app__label" id="dock-tool-name">工具</span>
+        </a>
+        <a class="ios-app" href="javascript:void(0)" id="dock-chat" hidden>
+            <span class="ios-app__icon" style="background:#4f6ef7"><i class="fas fa-comments"></i></span>
+            <span class="ios-app__label" id="dock-chat-name">聊天室</span>
         </a>
         <a class="ios-app" href="javascript:void(0)" id="dock-photos" hidden>
             <span class="ios-app__icon" style="background:linear-gradient(135deg,#a29bfe,#6c5ce7)"><i class="fas fa-images"></i></span>
@@ -932,6 +944,164 @@
     </div>
 </div>
 
+
+<div class="games-pop chat-pop" id="chat-pop" hidden>
+    <div class="music-app__mask" id="chat-pop-mask"></div>
+    <div class="games-pop__window chat-pop__window">
+        <button class="games-pop__close" id="chat-pop-close" title="关闭"><i class="fas fa-xmark"></i></button>
+        <script>
+(function () {
+    if (document.documentElement.dataset.crAssets) { return; }
+    document.documentElement.dataset.crAssets = '1';
+    var base = '' || '';
+    var l = document.createElement('link');
+    l.rel = 'stylesheet';
+    l.href = base + '/assets/chat-room/chat-room.css';
+    document.head.appendChild(l);
+    var s = document.createElement('script');
+    s.src = base + '/assets/chat-room/chat-room.js';
+    s.defer = true;
+    document.head.appendChild(s);
+})();
+</script>
+
+<div class="chatroom"
+     
+     data-rooms="大厅|一起聊聊天，随便聊什么都行,技术|代码、踩坑与折腾记录,闲聊|无关紧要的日常,吐槽|有话直说"
+     data-station="朱的小屋 · 聊天室"
+     data-transport="ws"
+     data-broker="wss://broker.emqx.io:8084/mqtt"
+     data-ws="wss://chat.myzwy.qzz.io/ws"
+     data-key=""
+     data-limit="200"
+     data-notice=""
+     style="--cr-height: 620px;">
+
+    <!-- ── ① 应用栏 ─────────────────────────────────────────────── -->
+    <aside class="cr-rail">
+        <div class="cr-rail-logo" title="朱的小屋 · 聊天室">
+            <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path d="M12 2c1.6 3 4.5 4.6 4.5 8a4.5 4.5 0 0 1-9 0c0-1.3.4-2.4 1-3.4.9 1.6 2 2.2 2.9 2.2-1.3-2.4-.6-5 1.1-6.8Z" fill="currentColor"/></svg>
+        </div>
+        <div class="cr-rail-list" data-cr-rail></div>
+        <a class="cr-rail-add" href="/" title="返回博客首页">
+            <svg viewBox="0 0 24 24" width="17" height="17" aria-hidden="true"><path d="M12 3 2 12h3v9h6v-6h2v6h6v-9h3L12 3Z" fill="currentColor"/></svg>
+        </a>
+    </aside>
+
+    <!-- ── ② 频道栏 ─────────────────────────────────────────────── -->
+    <aside class="cr-side">
+        <header class="cr-side-head">
+            <span class="cr-station" data-cr-station>朱的小屋 · 聊天室</span>
+            <span class="cr-icon" title="新消息会在标题栏提示">
+                <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M12 3a6 6 0 0 0-6 6v4l-1.5 3h15L18 13V9a6 6 0 0 0-6-6Zm0 18a2.5 2.5 0 0 0 2.45-2h-4.9A2.5 2.5 0 0 0 12 21Z" fill="currentColor"/></svg>
+            </span>
+        </header>
+
+        <div class="cr-side-search">
+            <svg viewBox="0 0 24 24" width="13" height="13" aria-hidden="true"><path d="M10 4a6 6 0 1 0 3.7 10.7l4.3 4.3 1.4-1.4-4.3-4.3A6 6 0 0 0 10 4Zm0 2a4 4 0 1 1 0 8 4 4 0 0 1 0-8Z" fill="currentColor"/></svg>
+            <input class="cr-field" type="search" data-cr-roomsearch placeholder="搜索频道" autocomplete="off">
+        </div>
+
+        <nav class="cr-nav">
+            <div class="cr-group">文字频道</div>
+            <div class="cr-channels" data-cr-channels></div>
+            <div class="cr-group">房间信息</div>
+            <div class="cr-info" data-cr-info></div>
+        </nav>
+
+        <footer class="cr-me">
+            <span class="cr-avatar cr-avatar--sm" data-cr-meavatar>?</span>
+            <span class="cr-me-text">
+                <b data-cr-mename>未登录</b>
+                <i data-cr-mestatus>未连接</i>
+            </span>
+            <button class="cr-icon cr-icon--btn" type="button" data-cr-login title="用 GitHub 登录">
+                <svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true"><path d="M12 2a10 10 0 0 0-3.2 19.5c.5.1.7-.2.7-.5v-1.9c-2.8.6-3.4-1.3-3.4-1.3-.5-1.2-1.1-1.5-1.1-1.5-.9-.6.1-.6.1-.6 1 .1 1.5 1 1.5 1 .9 1.5 2.3 1.1 2.9.8.1-.6.3-1.1.6-1.4-2.2-.2-4.6-1.1-4.6-5 0-1.1.4-2 1-2.7-.1-.3-.4-1.3.1-2.7 0 0 .8-.3 2.7 1a9.4 9.4 0 0 1 5 0c1.9-1.3 2.7-1 2.7-1 .5 1.4.2 2.4.1 2.7.6.7 1 1.6 1 2.7 0 3.9-2.4 4.8-4.6 5 .4.3.7 1 .7 2v2.9c0 .3.2.6.7.5A10 10 0 0 0 12 2Z" fill="currentColor"/></svg>
+            </button>
+        </footer>
+    </aside>
+
+    <!-- ── ③ 消息区 ─────────────────────────────────────────────── -->
+    <main class="cr-main">
+        <header class="cr-main-head">
+            <span class="cr-hash">#</span>
+            <h3 class="cr-room" data-cr-title>大厅</h3>
+            <span class="cr-topic" data-cr-topic></span>
+            <div class="cr-search">
+                <svg viewBox="0 0 24 24" width="13" height="13" aria-hidden="true"><path d="M10 4a6 6 0 1 0 3.7 10.7l4.3 4.3 1.4-1.4-4.3-4.3A6 6 0 0 0 10 4Zm0 2a4 4 0 1 1 0 8 4 4 0 0 1 0-8Z" fill="currentColor"/></svg>
+                <input class="cr-field" type="search" data-cr-search placeholder="搜索消息" autocomplete="off">
+            </div>
+            <button class="cr-icon cr-icon--btn" type="button" data-cr-side-toggle hidden title="显示/隐藏成员">
+                <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M9 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8Zm7 1a3 3 0 1 0 0-6 3 3 0 0 0 0 6ZM2 20c0-3 3.1-5 7-5s7 2 7 5H2Zm15.5-5c2.6.3 4.5 1.6 4.5 3.5V20h-4.2c-.2-1.9-1.2-3.5-2.7-4.5.8-.4 1.6-.6 2.4-.7Z" fill="currentColor"/></svg>
+            </button>
+            <button class="cr-icon cr-icon--btn" type="button" data-cr-jump-top title="回到最新">
+                <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M12 4 5 11l1.4 1.4L11 7.8V20h2V7.8l4.6 4.6L19 11 12 4Z" fill="currentColor"/></svg>
+            </button>
+            <button class="cr-icon cr-icon--btn" type="button" data-cr-link title="复制本页链接">
+                <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M10 13a4 4 0 0 0 5.7 0l3-3A4 4 0 0 0 13 4.3l-1.3 1.3 1.4 1.4L14.4 6A2 2 0 0 1 17.3 9l-3 3a2 2 0 0 1-2.8 0L10 13Zm4 2.7-1.3 1.3A2 2 0 0 1 9.8 14l3-3a2 2 0 0 1 2.8 0l1.4 1.4A4 4 0 0 0 11.3 6.6l-3 3a4 4 0 0 0 0 5.7L4 19.6 5.4 21l4.3-4.3Z" fill="currentColor"/></svg>
+            </button>
+        </header>
+
+        <div class="cr-stream" data-cr-stream></div>
+
+        <div class="cr-hint" data-cr-hint>
+            <span class="cr-dots" hidden><i></i><i></i><i></i></span>
+            <span data-cr-hinttext></span>
+        </div>
+
+        <div class="cr-composer">
+            <div class="cr-composer-box">
+                <button class="cr-plus" type="button" data-cr-emoji-btn title="插入表情">
+                    <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M11 5h2v14h-2zM5 11h14v2H5z" fill="currentColor"/></svg>
+                </button>
+                <textarea class="cr-text" data-cr-input rows="1" maxlength="1000"
+                          placeholder="发送到 # 大厅"></textarea>
+                <button class="cr-icon cr-icon--btn" type="button" data-cr-emojis title="表情">
+                    <svg viewBox="0 0 24 24" width="17" height="17" aria-hidden="true"><path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20Zm-3.5 7a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3Zm7 0a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3ZM12 18c-2.2 0-4-1.3-4.7-3.2h9.4C16 16.7 14.2 18 12 18Z" fill="currentColor"/></svg>
+                </button>
+            </div>
+            <button class="cr-send" type="button" data-cr-send disabled>
+                <svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true"><path d="M3 20 21 12 3 4l3.5 8L3 20Zm3.6-6.6L5.4 12l1.2-1.4L14 12l-7.4 1.4Z" fill="currentColor"/></svg>
+                <span>发送</span>
+            </button>
+            <div class="cr-emoji-panel" data-cr-emoji hidden></div>
+            <span class="cr-count" data-cr-count>0/1000</span>
+        </div>
+    </main>
+
+    <!-- ── ④ 成员栏 ─────────────────────────────────────────────── -->
+    <aside class="cr-members" data-cr-memberpanel>
+        <div class="cr-members-body" data-cr-members></div>
+    </aside>
+
+    <!-- ── 登录门禁（未登录时盖住整块面板）──────────────────────── -->
+    <div class="cr-gate" data-cr-gate>
+        <div class="cr-gate-card">
+            <div class="cr-gate-logo">
+                <svg viewBox="0 0 24 24" width="26" height="26" aria-hidden="true"><path d="M12 2c1.6 3 4.5 4.6 4.5 8a4.5 4.5 0 0 1-9 0c0-1.3.4-2.4 1-3.4.9 1.6 2 2.2 2.9 2.2-1.3-2.4-.6-5 1.1-6.8Z" fill="currentColor"/></svg>
+            </div>
+            <h2 class="cr-gate-title">朱的小屋 · 聊天室</h2>
+            <div data-cr-gate-loginbox>
+                <p class="cr-gate-desc">用 GitHub 登录后即可加入聊天，昵称与头像直接取自你的账号。</p>
+                <button class="cr-gate-btn" type="button" data-cr-gate-login>
+                    <svg viewBox="0 0 24 24" width="17" height="17" aria-hidden="true"><path d="M12 2a10 10 0 0 0-3.2 19.5c.5.1.7-.2.7-.5v-1.9c-2.8.6-3.4-1.3-3.4-1.3-.5-1.2-1.1-1.5-1.1-1.5-.9-.6.1-.6.1-.6 1 .1 1.5 1 1.5 1 .9 1.5 2.3 1.1 2.9.8.1-.6.3-1.1.6-1.4-2.2-.2-4.6-1.1-4.6-5 0-1.1.4-2 1-2.7-.1-.3-.4-1.3.1-2.7 0 0 .8-.3 2.7 1a9.4 9.4 0 0 1 5 0c1.9-1.3 2.7-1 2.7-1 .5 1.4.2 2.4.1 2.7.6.7 1 1.6 1 2.7 0 3.9-2.4 4.8-4.6 5 .4.3.7 1 .7 2v2.9c0 .3.2.6.7.5A10 10 0 0 0 12 2Z" fill="currentColor"/></svg>
+                    <span>使用 GitHub 登录</span>
+                </button>
+                <p class="cr-gate-note">仅读取你的公开资料（昵称、头像），不会访问你的任何仓库。</p>
+            </div>
+            <div data-cr-gate-namebox hidden>
+                <p class="cr-gate-desc">这个通道没有账号体系，起个昵称就能进。</p>
+                <input class="cr-gate-input" data-cr-gate-name type="text" maxlength="16" placeholder="例如：路人甲">
+                <button class="cr-gate-btn" type="button" data-cr-gate-enter><span>进入聊天室</span></button>
+            </div>
+            <p class="cr-gate-err" data-cr-gate-err hidden></p>
+            <a class="cr-gate-back" href="/">← 返回博客</a>
+        </div>
+    </div>
+</div>
+
+    </div>
+</div>
 
 <div class="games-pop" id="photos-pop" hidden>
     <div class="music-app__mask" id="photos-pop-mask"></div>
@@ -1837,8 +2007,9 @@
         });
     })();
 </script>
-<script src="/js/ios-wallpaper.js?v=1791535698" defer></script>
-<script src="/js/ios-tools.js?v=1791535698" defer></script>
+<script src="/js/ios-wallpaper.js?v=1791539530" defer></script>
+<script src="/js/ios-tools.js?v=1791539530" defer></script>
+<script src="/js/chat-pop.js?v=1791539530" defer></script>
 <script>
     // ---------- 相册组件：网格 + 灯箱（大图/视频）+ 左右切换 + Dock 钉图标 ----------
     (function () {
@@ -2159,7 +2330,7 @@
         <div class="webinfo-item"><div class="item-name">运行时间 :</div><div class="item-count" id="site-uptime">—</div></div>
         <div class="webinfo-item"><div class="item-name">Unique Visitors :</div><div class="item-count" id="busuanzi_value_site_uv"><i class="fa-solid fa-spinner fa-spin"></i></div></div>
         <div class="webinfo-item"><div class="item-name">Page Views :</div><div class="item-count" id="busuanzi_value_site_pv"><i class="fa-solid fa-spinner fa-spin"></i></div></div>
-        <div class="webinfo-item"><div class="item-name">Last Update :</div><div class="item-count" id="last-push-date" data-lastPushDate="2026-10-09T16:48:18+08:00"><i class="fa-solid fa-spinner fa-spin"></i></div></div>
+        <div class="webinfo-item"><div class="item-name">Last Update :</div><div class="item-count" id="last-push-date" data-lastPushDate="2026-10-09T17:52:10+08:00"><i class="fa-solid fa-spinner fa-spin"></i></div></div>
     </div>
 </div>
 
@@ -2209,8 +2380,8 @@
 <div id="imageModal" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;z-index:1000;background-color:rgba(0,0,0,.8);cursor:pointer;">
     <img id="modalImage" style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);max-width:90vw;max-height:90vh;"/>
 </div>
-<script src="/js/utils.js?v=1791535698"></script>
-<script src="/js/main.js?v=1791535698"></script>
+<script src="/js/utils.js?v=1791539530"></script>
+<script src="/js/main.js?v=1791539530"></script>
 <script src="/assets/vendor/fancybox/fancybox.umd.min.js"></script>
 <script src="/assets/vendor/lazyload/lazyload.iife.min.js"></script>
 <div class="js-pjax"><script>
@@ -2239,8 +2410,8 @@ btf.addGlobalFn('pjaxSendOnce', () => { typed && typed.destroy(); }, 'typedDestr
 function subtitleType () { typedJSFn.processSubtitle(["打码改变世界","公众号：朱猪写作","保持热爱，奔赴山海"]); }
 typedJSFn.run(subtitleType);
 </script></div>
-<script src="/js/time-greeting.js?v=1791535698"></script>
-<script src="/js/header-glow.js?v=1791535698"></script>
+<script src="/js/time-greeting.js?v=1791539530"></script>
+<script src="/js/header-glow.js?v=1791539530"></script>
 <script async src="/assets/vendor/busuanzi/2.3/busuanzi.pure.mini.js"></script>
 <script>
 // Post Views（文章浏览次数）：
@@ -2346,8 +2517,8 @@ typedJSFn.run(subtitleType);
     }, 500);
 })();
 </script>
-<script src="/js/search/local-search.js?v=1791535698"></script>
-<script src="/js/global-music.js?v=1791535698" defer></script>
+<script src="/js/search/local-search.js?v=1791539530"></script>
+<script src="/js/global-music.js?v=1791539530" defer></script>
 <script>
 // 深浅色记忆：主题 JS 按 system 设置后，这里覆盖用户手动选择（跟随系统/浅色/深色）
 (function () {
@@ -2357,7 +2528,7 @@ typedJSFn.run(subtitleType);
     } catch (e) {}
 })();
 </script>
-<script src="/js/fun-extras.js?v=1791535698" defer></script>
+<script src="/js/fun-extras.js?v=1791539530" defer></script>
 <script>
 // 统一弹窗关闭动效 / Esc 关闭所有弹窗 / 离线提示 / 相对时间
 (function () {

@@ -1,153 +1,40 @@
 <!DOCTYPE html>
-<html lang="zh-cmn-Hans" data-theme="light">
+<html lang="zh-cmn-Hans">
 <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title>聊天室 - 朱的小屋</title>
     <meta name="author" content="朱">
-    <meta name="copyright" content="朱">
-    <meta name="format-detection" content="telephone=no">
-    <meta name="theme-color" content="#ffffff">
-    <meta name="description" content="打开就能一起聊的在线房间，手机、平板、电脑互通。">
+    <meta name="description" content="用 GitHub 登录即可加入的在线聊天室，手机、平板、电脑互通。">
     <meta name="keywords" content="聊天室,chat,在线聊天,实时聊天,群聊">
     <meta property="og:type" content="website">
     <meta property="og:title" content="聊天室">
     <meta property="og:url" content="https://zwany1.github.io/chat/">
     <meta property="og:site_name" content="朱的小屋">
-    <meta property="og:description" content="打开就能一起聊的在线房间，手机、平板、电脑互通。">
-    <meta property="og:image" content="https://zwany1.github.io/assets/images/avatar.jpg">
+    <meta property="og:description" content="用 GitHub 登录即可加入的在线聊天室，手机、平板、电脑互通。">
+    <!-- 深色应用面板，与组件主色一致 -->
+    <meta name="theme-color" content="#131316">
     <link rel="icon" href="/assets/images/site-icon.ico">
     <link rel="shortcut icon" href="/assets/images/site-icon.ico">
     <link rel="canonical" href="https://zwany1.github.io/chat/">
-    <link rel="alternate" type="application/atom+xml" title="朱的小屋" href="https://zwany1.github.io/feed.xml">
-    <link rel="preconnect" href="//cdn.jsdelivr.net">
-    <link rel="preconnect" href="//busuanzi.ibruce.info">
-    <link rel="stylesheet" href="/assets/vendor/fontawesome/css/all.min.css">
-    <link rel="stylesheet" href="/assets/css/butterfly.css">
-    <link rel="stylesheet" href="/css/header-glow.css?v=1791535698">
-    <link rel="stylesheet" href="/css/time-greeting.css?v=1791535698">
-    <link rel="stylesheet" href="/css/gh-projects.css?v=1791535698">
-    <link rel="stylesheet" href="/css/custom.css?v=1791535698">
-    <link rel="manifest" href="/manifest.webmanifest">
-    <link rel="stylesheet" href="/assets/vendor/fancybox/fancybox.min.css" media="print" onload="this.media='all'">
-    
-    <link rel="stylesheet" href="https://fastly.jsdelivr.net/gh/mzlogin/rouge-themes@master/dist/github.css">
-    <script>
-    (() => {
-      const saveToLocal = {
-        set: (key, value, ttl) => { const data = { value }; if (ttl != null) data.expiry = Date.now() + ttl * 86400000; localStorage.setItem(key, JSON.stringify(data)); },
-        get: key => { const itemStr = localStorage.getItem(key); if (!itemStr) return; try { const data = JSON.parse(itemStr); if (data.expiry && Date.now() > data.expiry) { localStorage.removeItem(key); return; } return data.value; } catch { localStorage.removeItem(key); } }
-      };
-      const scriptCache = new Map();
-      const cssCache = new Map();
-      window.btf = {
-        saveToLocal,
-        getScript: (url, attr = {}) => { if (scriptCache.has(url)) return scriptCache.get(url); const promise = new Promise((resolve, reject) => { const script = document.createElement('script'); script.src = url; script.async = true; for (const key in attr) script.setAttribute(key, attr[key]); script.onload = resolve; script.onerror = reject; document.head.appendChild(script); }); scriptCache.set(url, promise); return promise; },
-        getCSS: (url, id) => { if (cssCache.has(url)) return cssCache.get(url); const promise = new Promise((resolve, reject) => { const link = document.createElement('link'); link.rel = 'stylesheet'; link.href = url; if (id) link.id = id; link.onload = resolve; link.onerror = reject; document.head.appendChild(link); }); cssCache.set(url, promise); return promise; },
-        addGlobalFn: (key, fn, name = false, parent = window) => { if (!false && key.startsWith('pjax')) return; const globalFn = parent.globalFn || {}; globalFn[key] = globalFn[key] || {}; globalFn[key][name || Object.keys(globalFn[key]).length] = fn; parent.globalFn = globalFn; }
-      };
-      const metaThemeColor = document.querySelector('meta[name="theme-color"]');
-      const activateDarkMode = () => { document.documentElement.dataset.theme = 'dark'; if (metaThemeColor !== null) metaThemeColor.setAttribute('content', '#0d0d0d'); };
-      const activateLightMode = () => { document.documentElement.dataset.theme = 'light'; if (metaThemeColor !== null) metaThemeColor.setAttribute('content', '#ffffff'); };
-      btf.activateDarkMode = activateDarkMode;
-      btf.activateLightMode = activateLightMode;
-      const theme = saveToLocal.get('theme');
-      theme === 'dark' ? activateDarkMode() : theme === 'light' ? activateLightMode() : null;
-      const asideStatus = saveToLocal.get('aside-status');
-      if (asideStatus !== undefined) document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide');
-      const detectApple = () => { if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) document.documentElement.classList.add('apple'); };
-      detectApple();
-    })();
-    window.GLOBAL_CONFIG = {
-      root: '/',
-      algolia: undefined,
-      localSearch: { "path": "/search.xml?v=1791535698", "preload": false, "top_n_per_article": 1, "unescape": false, "pagination": { "enable": false, "hitsPerPage": 8 }, "languages": { "hits_empty": "未找到包含 ${query} 的文章", "hits_stats": "找到 ${hits} 篇文章" } },
-      translate: undefined,
-      highlight: { "plugin": "highlight.js", "highlightCopy": true, "highlightLang": true, "highlightHeightLimit": false, "highlightFullpage": false, "highlightMacStyle": false },
-      copy: { success: '复制成功', error: '复制失败', noSupport: '浏览器不支持' },
-      relativeDate: { homepage: false, post: false },
-      runtime: '',
-      dateSuffix: { just: '刚刚', min: '分钟前', hour: '小时前', day: '天前', month: '个月前' },
-      copyright: undefined,
-      lightbox: 'fancybox',
-      Snackbar: undefined,
-      infinitegrid: { js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid@4.13.0/dist/infinitegrid.min.js', buttonText: '加载更多' },
-      isPhotoFigcaption: false,
-      islazyloadPlugin: true,
-      isAnchor: false,
-      percent: { toc: true, rightside: false },
-      autoDarkmode: true
-    };
-    window.GLOBAL_CONFIG_SITE = {
-      title: '聊天室',
-      isHighlightShrink: false,
-      isToc: false,
-      pageType: 'page'
-    };
-    </script>
+    <style>
+        /* 全屏承载页：不引入博客样式，把整块屏幕交给聊天组件 */
+        html, body {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            background: #131316;
+            overflow: hidden;
+            -webkit-text-size-adjust: 100%;
+        }
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif; }
+        /* 组件自身自带全部样式，这里只负责铺满 */
+        .chatroom { margin: 0 !important; border-radius: 0 !important; }
+    </style>
 </head>
-<body class=" type-page">
-<div id="web_bg"></div>
-<div id="sidebar">
-    <div id="menu-mask"></div>
-    <div id="sidebar-menus">
-        <div class="avatar-img text-center">
-            <img src="/assets/images/avatar.jpg" alt="avatar" onerror="this.onerror=null;this.src='https://github.com/zwany1.png'"/>
-        </div>
-        <div class="site-data text-center">
-            <a href="/archives/"><div class="headline">Articles</div><div class="length-num">7</div></a>
-            <a href="/tags/"><div class="headline">Tags</div><div class="length-num">12</div></a>
-            <a href="/categories/"><div class="headline">Categories</div><div class="length-num">3</div></a>
-        </div>
-        <div class="menus_items">
-            <div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div>
-            <div class="menus_item"><a class="site-page" href="/projects/"><i class="fa-fw fas fa-rocket"></i><span> 项目</span></a></div>
-            <div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></div>
-            <div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div>
-            <div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div>
-            <div class="menus_item"><a class="site-page" href="/links/"><i class="fa-fw fas fa-link"></i><span> 友链</span></a></div>
-            <div class="menus_item"><a class="site-page" href="/chat/"><i class="fa-fw fas fa-comments"></i><span> 聊天室</span></a></div>
-            <div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-user"></i><span> 关于</span></a></div>
-        </div>
-    </div>
-</div>
-<div class="page" id="body-wrap">
-    <header class="not-home-page" id="page-header" style="background: linear-gradient(135deg, #4c8bf5 0%, #9a6cf5 50%, #f56ec6 100%);">
-        <nav id="nav">
-            <span id="blog-info">
-                <a class="nav-site-title" href="/"><span class="site-name">朱的小屋</span></a>
-            </span>
-            <div id="menus">
-                <div id="search-button">
-                    <span class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> Search</span></span>
-                </div>
-                <div class="menus_items">
-                    <div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div>
-                    <div class="menus_item"><a class="site-page" href="/projects/"><i class="fa-fw fas fa-rocket"></i><span> 项目</span></a></div>
-                    <div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></div>
-                    <div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div>
-                    <div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div>
-                    <div class="menus_item"><a class="site-page" href="/links/"><i class="fa-fw fas fa-link"></i><span> 友链</span></a></div>
-                    <div class="menus_item"><a class="site-page" href="/chat/"><i class="fa-fw fas fa-comments"></i><span> 聊天室</span></a></div>
-                    <div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-user"></i><span> 关于</span></a></div>
-                </div>
-                <div id="toggle-menu">
-                    <span class="site-page"><i class="fas fa-bars fa-fw"></i></span>
-                </div>
-            </div>
-        </nav>
-        
-        <div id="page-site-info">
-            <h1 id="site-title">聊天室</h1>
-        </div>
-        
-    </header>
-    <main class="layout hide-aside" id="content-inner">
-
-<div id="page">
-    <div class="container" id="article-container">
-    <script>
+<body>
+<script>
 (function () {
     if (document.documentElement.dataset.crAssets) { return; }
     document.documentElement.dataset.crAssets = '1';
@@ -163,7 +50,7 @@
 })();
 </script>
 
-<div class="chatroom" data-rooms="大厅|一起聊聊天，随便聊什么都行,技术|代码、踩坑与折腾记录,闲聊|无关紧要的日常,吐槽|有话直说" data-room="" data-station="朱的小屋 · 聊天室" data-transport="ws" data-broker="wss://broker.emqx.io:8084/mqtt" data-ws="wss://chat.myzwy.qzz.io/ws" data-key="" data-limit="200" data-notice="" style="--cr-height: 620px;">
+<div class="chatroom" data-full="1" data-rooms="大厅|一起聊聊天，随便聊什么都行,技术|代码、踩坑与折腾记录,闲聊|无关紧要的日常,吐槽|有话直说" data-room="" data-station="朱的小屋 · 聊天室" data-transport="ws" data-broker="wss://broker.emqx.io:8084/mqtt" data-ws="wss://chat.myzwy.qzz.io/ws" data-key="" data-limit="200" data-notice="" style="">
 
     <!-- ── ① 应用栏 ─────────────────────────────────────────────── -->
     <aside class="cr-rail">
@@ -171,7 +58,9 @@
             <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path d="M12 2c1.6 3 4.5 4.6 4.5 8a4.5 4.5 0 0 1-9 0c0-1.3.4-2.4 1-3.4.9 1.6 2 2.2 2.9 2.2-1.3-2.4-.6-5 1.1-6.8Z" fill="currentColor" /></svg>
         </div>
         <div class="cr-rail-list" data-cr-rail=""></div>
-        <a class="cr-rail-add" href="/chat/" title="房间列表">+</a>
+        <a class="cr-rail-add" href="/" title="返回博客首页">
+            <svg viewBox="0 0 24 24" width="17" height="17" aria-hidden="true"><path d="M12 3 2 12h3v9h6v-6h2v6h6v-9h3L12 3Z" fill="currentColor" /></svg>
+        </a>
     </aside>
 
     <!-- ── ② 频道栏 ─────────────────────────────────────────────── -->
@@ -191,7 +80,6 @@
         <nav class="cr-nav">
             <div class="cr-group">文字频道</div>
             <div class="cr-channels" data-cr-channels=""></div>
-
             <div class="cr-group">房间信息</div>
             <div class="cr-info" data-cr-info=""></div>
         </nav>
@@ -199,13 +87,10 @@
         <footer class="cr-me">
             <span class="cr-avatar cr-avatar--sm" data-cr-meavatar="">?</span>
             <span class="cr-me-text">
-                <b data-cr-mename="">未命名</b>
-                <i data-cr-mestatus="">离线</i>
+                <b data-cr-mename="">未登录</b>
+                <i data-cr-mestatus="">未连接</i>
             </span>
-            <button class="cr-icon cr-icon--btn" type="button" data-cr-rename="" title="修改昵称">
-                <svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true"><path d="M4 20h4l10-10-4-4L4 16v4Zm12.7-12.7 1.6-1.6a1 1 0 0 0 0-1.4l-2.6-2.6a1 1 0 0 0-1.4 0l-1.6 1.6 4 4Z" fill="currentColor" /></svg>
-            </button>
-            <button class="cr-icon cr-icon--btn" type="button" data-cr-login="" hidden="" title="用 GitHub 登录">
+            <button class="cr-icon cr-icon--btn" type="button" data-cr-login="" title="用 GitHub 登录">
                 <svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true"><path d="M12 2a10 10 0 0 0-3.2 19.5c.5.1.7-.2.7-.5v-1.9c-2.8.6-3.4-1.3-3.4-1.3-.5-1.2-1.1-1.5-1.1-1.5-.9-.6.1-.6.1-.6 1 .1 1.5 1 1.5 1 .9 1.5 2.3 1.1 2.9.8.1-.6.3-1.1.6-1.4-2.2-.2-4.6-1.1-4.6-5 0-1.1.4-2 1-2.7-.1-.3-.4-1.3.1-2.7 0 0 .8-.3 2.7 1a9.4 9.4 0 0 1 5 0c1.9-1.3 2.7-1 2.7-1 .5 1.4.2 2.4.1 2.7.6.7 1 1.6 1 2.7 0 3.9-2.4 4.8-4.6 5 .4.3.7 1 .7 2v2.9c0 .3.2.6.7.5A10 10 0 0 0 12 2Z" fill="currentColor" /></svg>
             </button>
         </footer>
@@ -263,452 +148,32 @@
         <div class="cr-members-body" data-cr-members=""></div>
     </aside>
 
-    <!-- 昵称弹层 -->
-    <div class="cr-mask" data-cr-mask="" hidden="">
-        <div class="cr-dialog">
-            <h4>起个昵称</h4>
-            <p data-cr-dialogtip="">昵称仅用于展示，无需注册</p>
-            <input class="cr-dialog-input" type="text" maxlength="16" placeholder="例如：路人甲" />
-            <button class="cr-dialog-ok" type="button">进入聊天室</button>
+    <!-- ── 登录门禁（未登录时盖住整块面板）──────────────────────── -->
+    <div class="cr-gate" data-cr-gate="">
+        <div class="cr-gate-card">
+            <div class="cr-gate-logo">
+                <svg viewBox="0 0 24 24" width="26" height="26" aria-hidden="true"><path d="M12 2c1.6 3 4.5 4.6 4.5 8a4.5 4.5 0 0 1-9 0c0-1.3.4-2.4 1-3.4.9 1.6 2 2.2 2.9 2.2-1.3-2.4-.6-5 1.1-6.8Z" fill="currentColor" /></svg>
+            </div>
+            <h2 class="cr-gate-title">朱的小屋 · 聊天室</h2>
+            <div data-cr-gate-loginbox="">
+                <p class="cr-gate-desc">用 GitHub 登录后即可加入聊天，昵称与头像直接取自你的账号。</p>
+                <button class="cr-gate-btn" type="button" data-cr-gate-login="">
+                    <svg viewBox="0 0 24 24" width="17" height="17" aria-hidden="true"><path d="M12 2a10 10 0 0 0-3.2 19.5c.5.1.7-.2.7-.5v-1.9c-2.8.6-3.4-1.3-3.4-1.3-.5-1.2-1.1-1.5-1.1-1.5-.9-.6.1-.6.1-.6 1 .1 1.5 1 1.5 1 .9 1.5 2.3 1.1 2.9.8.1-.6.3-1.1.6-1.4-2.2-.2-4.6-1.1-4.6-5 0-1.1.4-2 1-2.7-.1-.3-.4-1.3.1-2.7 0 0 .8-.3 2.7 1a9.4 9.4 0 0 1 5 0c1.9-1.3 2.7-1 2.7-1 .5 1.4.2 2.4.1 2.7.6.7 1 1.6 1 2.7 0 3.9-2.4 4.8-4.6 5 .4.3.7 1 .7 2v2.9c0 .3.2.6.7.5A10 10 0 0 0 12 2Z" fill="currentColor" /></svg>
+                    <span>使用 GitHub 登录</span>
+                </button>
+                <p class="cr-gate-note">仅读取你的公开资料（昵称、头像），不会访问你的任何仓库。</p>
+            </div>
+            <div data-cr-gate-namebox="" hidden="">
+                <p class="cr-gate-desc">这个通道没有账号体系，起个昵称就能进。</p>
+                <input class="cr-gate-input" data-cr-gate-name="" type="text" maxlength="16" placeholder="例如：路人甲" />
+                <button class="cr-gate-btn" type="button" data-cr-gate-enter=""><span>进入聊天室</span></button>
+            </div>
+            <p class="cr-gate-err" data-cr-gate-err="" hidden=""></p>
+            <a class="cr-gate-back" href="/">← 返回博客</a>
         </div>
     </div>
 </div>
-
-<h2 id="怎么用">怎么用</h2>
-
-<ol>
-  <li>手机 / 平板 / 电脑分别打开这个网址，各自起一个昵称。</li>
-  <li>左侧选一个房间（大厅 / 技术 / 闲聊 / 吐槽），消息实时互达。</li>
-  <li>后进来的人也能看到最近的聊天记录。</li>
-</ol>
-
-<p>鼠标移到消息上可以<strong>加表情回应</strong>，输入框里输入 <code class="language-plaintext highlighter-rouge">@昵称</code> 会渲染成高亮提及，
-消息内容是一条图片链接时会<strong>自动内嵌成图片</strong>。</p>
-
-<h2 id="这个聊天室是怎么跑起来的">这个聊天室是怎么跑起来的</h2>
-
-<p>页面本身是静态的（托管在 GitHub Pages），实时部分连的是<strong>自建后端</strong>：</p>
-
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>浏览器（GitHub Pages 静态页）
-   │  WebSocket / wss://chat.myzwy.qzz.io/ws?room=大厅
-   ▼
-Cloudflare Worker（入口 + 身份签发 + 人机校验）
-   ▼
-Durable Object「一个房间一个实例」（SQLite 存历史与表情回应）
-</code></pre></div></div>
-
-<p>服务端负责这些客户端做不了的事：</p>
-
-<ul>
-  <li><strong>消息历史持久化</strong>——换设备也能看到，不只存在浏览器里</li>
-  <li><strong>服务端时间戳</strong>——跨设备排序不受各人手机时钟影响</li>
-  <li><strong>服务端限流</strong>——消息与表情回应都在服务端计数</li>
-  <li><strong>服务端签发身份</strong>——<code class="language-plaintext highlighter-rouge">uid</code> 由服务端签名下发，客户端伪造无效</li>
-</ul>
-
-<h3 id="身份与登录">身份与登录</h3>
-
-<p>首次进入先过一次<strong>人机校验</strong>（Cloudflare Turnstile，隐形模式），通过后服务端签发一张
-<strong>匿名身份凭证</strong>存在本地；之后进入不再校验。点左下角的图标可以用 <strong>GitHub 登录</strong>，
-登录后换设备也是同一个身份。</p>
-
-<blockquote>
-  <p>目前仍不支持踢人 / 禁言——身份已经立起来了，但还没有管理入口。</p>
-</blockquote>
-
-<h2 id="复用到其他页面">复用到其他页面</h2>
-
-<div class="language-liquid highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">{%</span><span class="w"> </span><span class="nt">include</span><span class="w"> </span>chat-room.html<span class="w"> </span><span class="na">rooms</span><span class="o">=</span><span class="s2">"大厅|一起聊聊天,技术|代码与踩坑"</span><span class="w"> </span><span class="p">%}</span>
-</code></pre></div></div>
-
-<p>可用参数：</p>
-
-<table>
-  <thead>
-    <tr>
-      <th>参数</th>
-      <th>默认值</th>
-      <th>说明</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td><code class="language-plaintext highlighter-rouge">rooms</code></td>
-      <td><code class="language-plaintext highlighter-rouge">大厅</code></td>
-      <td>房间列表，逗号分隔；每项 <code class="language-plaintext highlighter-rouge">名称</code> 或 <code class="language-plaintext highlighter-rouge">名称\|主题</code></td>
-    </tr>
-    <tr>
-      <td><code class="language-plaintext highlighter-rouge">room</code></td>
-      <td>第一项</td>
-      <td>默认进入哪个房间</td>
-    </tr>
-    <tr>
-      <td><code class="language-plaintext highlighter-rouge">station</code></td>
-      <td><code class="language-plaintext highlighter-rouge">聊天室</code></td>
-      <td>左上角站点名</td>
-    </tr>
-    <tr>
-      <td><code class="language-plaintext highlighter-rouge">transport</code></td>
-      <td><code class="language-plaintext highlighter-rouge">ws</code></td>
-      <td>通道：<code class="language-plaintext highlighter-rouge">ws</code>(自建后端，功能最全) / <code class="language-plaintext highlighter-rouge">mqtt</code>(公共频道) / <code class="language-plaintext highlighter-rouge">local</code>(仅本机多标签)</td>
-    </tr>
-    <tr>
-      <td><code class="language-plaintext highlighter-rouge">ws</code></td>
-      <td>空</td>
-      <td>自建服务端地址（<code class="language-plaintext highlighter-rouge">transport="ws"</code> 时必填）</td>
-    </tr>
-    <tr>
-      <td><code class="language-plaintext highlighter-rouge">broker</code></td>
-      <td><code class="language-plaintext highlighter-rouge">wss://broker.emqx.io:8084/mqtt</code></td>
-      <td>公共频道地址（<code class="language-plaintext highlighter-rouge">transport="mqtt"</code> 时用）</td>
-    </tr>
-    <tr>
-      <td><code class="language-plaintext highlighter-rouge">key</code></td>
-      <td>空</td>
-      <td>公共频道的房间口令</td>
-    </tr>
-    <tr>
-      <td><code class="language-plaintext highlighter-rouge">limit</code></td>
-      <td><code class="language-plaintext highlighter-rouge">200</code></td>
-      <td>保留的历史条数</td>
-    </tr>
-    <tr>
-      <td><code class="language-plaintext highlighter-rouge">height</code></td>
-      <td><code class="language-plaintext highlighter-rouge">620</code></td>
-      <td>面板高度（px）</td>
-    </tr>
-    <tr>
-      <td><code class="language-plaintext highlighter-rouge">notice</code></td>
-      <td>自动</td>
-      <td>顶部提示文案；<code class="language-plaintext highlighter-rouge">notice="off"</code> 可关闭</td>
-    </tr>
-  </tbody>
-</table>
-
-<blockquote>
-  <p>表情回应目前只有 <code class="language-plaintext highlighter-rouge">transport="ws"</code>（自建后端）支持；用 <code class="language-plaintext highlighter-rouge">mqtt</code> / <code class="language-plaintext highlighter-rouge">local</code> 时不会显示回应按钮。</p>
-</blockquote>
-
-<p>组件自带样式与脚本（<code class="language-plaintext highlighter-rouge">assets/chat-room/</code>），引用时会自动注入一次，无需在页面里手动引入。
-服务端源码在仓库 <code class="language-plaintext highlighter-rouge">chat-worker/</code>，改动后用 <code class="language-plaintext highlighter-rouge">npx wrangler deploy</code> 发布。</p>
-
-    </div>
-    <hr class="custom-hr"/>
-    <div id="post-comment">
-    
-
-    </div>
-</div>
-
-
-    </main>
-    <footer id="footer">
-        <div class="footer-other">
-            <div class="footer-copyright">
-                <span class="copyright">&copy;&nbsp;2025 - 2026 By 朱</span>
-            </div>
-            <div class="footer_custom_text">
-                <a href="https://github.com/zwany1" target="_blank">GitHub</a> · Obsidian 笔记驱动
-            </div>
-        </div>
-    </footer>
-</div>
-<div id="reading-progress"></div>
-<div id="rightside">
-    <div id="rightside-config-hide">
-        <button id="darkmode" type="button" title="切换深色模式"><i class="fas fa-adjust"></i></button>
-        <button id="hide-aside-btn" type="button" title="切换单/双栏"><i class="fas fa-arrows-alt-h"></i></button>
-    </div>
-    <div id="rightside-config-show">
-        <button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button>
-        <button id="go-random" type="button" title="随机一读"><i class="fas fa-shuffle"></i></button>
-        <button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button>
-    </div>
-</div>
-<div id="local-search">
-    <div class="search-dialog">
-        <nav class="search-nav">
-            <span class="search-dialog-title">Search</span>
-            <i class="fas fa-spinner fa-pulse" id="loading-status" hidden></i>
-            <button class="search-close-button"><i class="fas fa-times"></i></button>
-        </nav>
-        <div class="text-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  Loading Database</span></div>
-        <div class="local-search-input"><input placeholder="搜索文章..." type="text"/></div>
-        <hr/>
-        <div id="local-search-results"></div>
-        <div class="ais-Pagination" id="local-search-pagination" style="display:none;"><ul class="ais-Pagination-list"></ul></div>
-        <div id="local-search-stats"></div>
-    </div>
-    <div id="search-mask"></div>
-</div>
-<div id="imageModal" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;z-index:1000;background-color:rgba(0,0,0,.8);cursor:pointer;">
-    <img id="modalImage" style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);max-width:90vw;max-height:90vh;"/>
-</div>
-<script src="/js/utils.js?v=1791535698"></script>
-<script src="/js/main.js?v=1791535698"></script>
-<script src="/assets/vendor/fancybox/fancybox.umd.min.js"></script>
-<script src="/assets/vendor/lazyload/lazyload.iife.min.js"></script>
-<div class="js-pjax"><script>
-window.typedJSFn = {
-  init: str => { window.typed = new Typed('#subtitle', Object.assign({ strings: str, startDelay: 300, typeSpeed: 150, loop: true, backSpeed: 50 }, null)); },
-  run: subtitleType => {
-    if (true) {
-      if (typeof Typed === 'function') { subtitleType(); }
-      else { btf.getScript('/assets/vendor/typed.js/typed.umd.min.js').then(subtitleType); }
-    } else { subtitleType(); }
-  },
-  processSubtitle: (content, extraContents = []) => {
-    if (true) {
-      const sub = ["打码改变世界","公众号：朱猪写作","保持热爱，奔赴山海"].slice();
-      if (extraContents.length > 0) sub.unshift(...extraContents);
-      if (typeof content === 'string') sub.unshift(content);
-      else if (Array.isArray(content)) sub.unshift(...content);
-      sub.length > 0 && typedJSFn.init(sub);
-    } else {
-      document.getElementById('subtitle').textContent = typeof content === 'string' ? content : (Array.isArray(content) && content.length > 0 ? content[0] : '');
-    }
-  }
-};
-btf.addGlobalFn('pjaxSendOnce', () => { typed && typed.destroy(); }, 'typedDestroy');
-</script><script>
-function subtitleType () { typedJSFn.processSubtitle(["打码改变世界","公众号：朱猪写作","保持热爱，奔赴山海"]); }
-typedJSFn.run(subtitleType);
-</script></div>
-<script src="/js/time-greeting.js?v=1791535698"></script>
-<script src="/js/header-glow.js?v=1791535698"></script>
-<script async src="/assets/vendor/busuanzi/2.3/busuanzi.pure.mini.js"></script>
-<script>
-// Post Views（文章浏览次数）：
-// 由 Abacus 计数服务按 URL 精确计数（每次访问 +1），不再依赖不稳定的 busuanzi；
-// localStorage 缓存上次数值，页面打开立即显示，服务无响应时用缓存兜底，该行始终可见。
-// 本地预览使用 zwany1-github-io-dev 命名空间独立计数，不影响线上数据。
-// 侧栏 Website Info 的本站访问量/访客数仍由不蒜子提供（本地环境隐藏）。
-(function () {
-    var PV_ID = 'page_views_value';
-    var CACHE_KEY = 'site_stats_cache_v1';
-    var TTL = 30 * 24 * 3600 * 1000; // 缓存有效期 30 天
-    var SITE = [['busuanzi_value_site_pv', 'site_pv'], ['busuanzi_value_site_uv', 'site_uv']];
-    var isLocal = /^(localhost|127\.0\.0\.1)$/.test(location.hostname);
-
-    function readCache() {
-        try {
-            var c = JSON.parse(localStorage.getItem(CACHE_KEY) || 'null');
-            if (c && Date.now() - (c.__t || 0) < TTL) return c;
-        } catch (e) {}
-        return null;
-    }
-    function writeCache(fn) {
-        try {
-            var c = readCache() || {};
-            fn(c);
-            c.__t = Date.now();
-            localStorage.setItem(CACHE_KEY, JSON.stringify(c));
-        } catch (e) {}
-    }
-
-    // ---------- Post Views ----------
-    var pvEl = document.getElementById(PV_ID);
-    var pvKey = 'pv:' + location.pathname;
-    function setPv(v) { if (pvEl) pvEl.textContent = v; }
-
-    var cached = readCache();
-    if (cached && cached[pvKey]) setPv(cached[pvKey]); // 秒显上次数值
-
-    var ns = isLocal ? 'zwany1-github-io-dev' : 'zwany1-github-io';
-    var pvKeyEnc = ('pv' + location.pathname).replace(/[^a-zA-Z0-9_-]/g, '-'); // Abacus 的 key 不允许斜杠
-    var pvDone = false;
-    // 同一会话内刷新不重复计数（去重，避免刷新刷爆浏览量）；跨会话每次访问 +1
-    var ssHit = false;
-    try { ssHit = sessionStorage.getItem('pv_hit' + pvKeyEnc) === '1'; } catch (e) {}
-    var pvReq = ssHit
-        ? 'https://abacus.jasoncameron.dev/get/' + ns + '/' + pvKeyEnc
-        : 'https://abacus.jasoncameron.dev/hit/' + ns + '/' + pvKeyEnc;
-    fetch(pvReq)
-        .then(function (r) { return r.ok ? r.json() : Promise.reject(new Error(r.status)); })
-        .then(function (d) {
-            pvDone = true;
-            if (d && typeof d.value === 'number') {
-                setPv(d.value);
-                writeCache(function (c) { c[pvKey] = d.value; });
-                if (!ssHit) { try { sessionStorage.setItem('pv_hit' + pvKeyEnc, '1'); } catch (e) {} }
-            }
-        })
-        .catch(function () {});
-    setTimeout(function () { // 10 秒仍无响应：有缓存保留缓存，否则显示占位符
-        if (pvDone || !pvEl) return;
-        var c2 = readCache();
-        setPv((c2 && c2[pvKey]) || '—');
-    }, 10000);
-
-    // ---------- 侧栏 Website Info（不蒜子：本站访问量/访客数） ----------
-    function spin(el) { return el && el.querySelector('i.fa-spinner'); }
-    function hideSiteRows() {
-        SITE.forEach(function (p) {
-            var el = document.getElementById(p[0]);
-            if (el) el.closest('.webinfo-item').style.display = 'none';
-        });
-    }
-    if (isLocal) { hideSiteRows(); return; }
-
-    SITE.forEach(function (p) {
-        var el = document.getElementById(p[0]);
-        if (el && cached && cached[p[1]] && spin(el)) el.textContent = cached[p[1]];
-    });
-    var tries = 0;
-    var timer = setInterval(function () {
-        tries++;
-        var el0 = document.getElementById(SITE[0][0]);
-        if (el0 && /^\d+$/.test(el0.textContent.trim())) {
-            clearInterval(timer);
-            writeCache(function (c) {
-                SITE.forEach(function (p) {
-                    var el = document.getElementById(p[0]);
-                    if (el && /^\d+$/.test(el.textContent.trim())) c[p[1]] = el.textContent.trim();
-                });
-            });
-            return;
-        }
-        if (tries >= 16) { // 8 秒无响应：缓存兜底，无缓存隐藏该行
-            clearInterval(timer);
-            SITE.forEach(function (p) {
-                var el = document.getElementById(p[0]);
-                if (el && spin(el)) {
-                    if (cached && cached[p[1]]) el.textContent = cached[p[1]];
-                    else el.closest('.webinfo-item').style.display = 'none';
-                }
-            });
-        }
-    }, 500);
-})();
-</script>
-<script src="/js/search/local-search.js?v=1791535698"></script>
-<script src="/js/global-music.js?v=1791535698" defer></script>
-<script>
-// 深浅色记忆：主题 JS 按 system 设置后，这里覆盖用户手动选择（跟随系统/浅色/深色）
-(function () {
-    try {
-        var m = localStorage.getItem('theme_mode_v1');
-        if (m === 'light' || m === 'dark') document.documentElement.setAttribute('data-theme', m);
-    } catch (e) {}
-})();
-</script>
-<script src="/js/fun-extras.js?v=1791535698" defer></script>
-<script>
-// 统一弹窗关闭动效 / Esc 关闭所有弹窗 / 离线提示 / 相对时间
-(function () {
-    // 关闭动效：先播 .is-closing 动画再隐藏
-    window.__closePop = function (el) {
-        if (!el || el.hidden || el.classList.contains('is-closing')) return;
-        el.classList.add('is-closing');
-        var done = function () { el.classList.remove('is-closing'); el.hidden = true; };
-        el.addEventListener('animationend', done, { once: true });
-        setTimeout(done, 260);
-    };
-
-    // Esc：关闭所有弹窗（游戏/壁纸/工具/相册/音乐/搜索/海报/图片灯箱）
-    document.addEventListener('keydown', function (e) {
-        if (e.key !== 'Escape') return;
-        document.querySelectorAll('.games-pop, .music-app').forEach(function (el) {
-            if (!el.hidden) window.__closePop(el);
-        });
-        var sd = document.querySelector('#local-search .search-dialog.open');
-        if (sd) { var sc = document.querySelector('#local-search .search-close-button'); if (sc) sc.click(); }
-        var pm = document.querySelector('.pe-poster-mask'); if (pm) pm.remove();
-        var im = document.getElementById('imageModal');
-        if (im && im.style.display === 'block') im.style.display = 'none';
-    });
-
-    // 离线提示
-    var pill = document.createElement('div');
-    pill.className = 'offline-pill';
-    pill.textContent = '网络已断开';
-    document.body.appendChild(pill);
-    function updOffline() { pill.classList.toggle('is-offline', !navigator.onLine); }
-    window.addEventListener('offline', updOffline);
-    window.addEventListener('online', updOffline);
-    updOffline();
-
-    // 相对时间：time[datetime] 显示"x 天前"，hover/原属性保留完整日期
-    function relTime() {
-        var m = { 31536000: '年前', 2592000: '个月前', 86400: '天前', 3600: '小时前', 60: '分钟前' };
-        document.querySelectorAll('time[datetime]').forEach(function (el) {
-            var d = new Date(el.getAttribute('datetime'));
-            if (isNaN(d.getTime()) || el.getAttribute('data-rel')) return;
-            el.setAttribute('data-rel', '1');
-            if (!el.getAttribute('title')) el.setAttribute('title', el.textContent.trim());
-            var diff = Date.now() - d.getTime();
-            if (diff < 60000) { el.textContent = '刚刚'; return; }
-            var out = '刚刚';
-            for (var k in m) if (diff >= k * 1000) { out = Math.floor(diff / (k * 1000)) + m[k]; break; }
-            el.textContent = out;
-        });
-    }
-    relTime();
-})();
-</script>
-<script>
-// 站点增强：阅读进度条 / Ctrl+K 搜索 / 随机一读 / 建站天数 / Service Worker
-(function () {
-    // 阅读进度条（仅文章页显示）
-    var bar = document.getElementById('reading-progress')
-    if (bar && document.body.classList.contains('type-post')) {
-        var updateBar = function () {
-            var el = document.documentElement
-            var max = el.scrollHeight - el.clientHeight
-            bar.style.width = (max > 0 ? (el.scrollTop / max) * 100 : 0) + '%'
-        }
-        window.addEventListener('scroll', updateBar, { passive: true })
-        updateBar()
-    }
-
-    // Ctrl+K / Cmd+K 唤起站内搜索
-    document.addEventListener('keydown', function (e) {
-        if ((e.ctrlKey || e.metaKey) && String(e.key).toLowerCase() === 'k') {
-            e.preventDefault()
-            var btn = document.querySelector('#search-button .search')
-            if (btn) btn.click()
-        }
-    })
-
-    // 随机一读
-    var goRandom = document.getElementById('go-random')
-    if (goRandom) {
-        goRandom.addEventListener('click', function () {
-            var urls = ["/2026/09/01/redis/","/2026/09/01/redis-hash/","/2026/09/01/redis-6-0/","/2026/08/31/redis/","/2026/08/28/redis/","/2025/12/26/IO%E5%9F%BA%E7%A1%80%E4%B8%8E%E6%B5%81%E6%93%8D%E4%BD%9C/","/2025/12/08/best-buddy/"]
-            if (!urls.length) return
-            var pick
-            do { pick = urls[Math.floor(Math.random() * urls.length)] } while (urls.length > 1 && pick === location.pathname)
-            location.href = pick
-        })
-    }
-
-    // 建站天数
-    var uptime = document.getElementById('site-uptime')
-    if (uptime) {
-        var start = new Date('2025-01-01T00:00:00+08:00')
-        var days = Math.floor((Date.now() - start.getTime()) / 86400000)
-        if (days > 0) uptime.textContent = days + ' 天'
-        else uptime.closest('.webinfo-item').style.display = 'none'
-    }
-
-    // Service Worker（仅线上环境注册，避免污染本地开发）
-    if ('serviceWorker' in navigator && !/^(localhost|127\.0\.0\.1)$/.test(location.hostname)) {
-        window.addEventListener('load', function () {
-            navigator.serviceWorker.register('/sw.js').catch(function () {})
-        })
-    }
-})();
-</script>
-<script>
-window.showImage = function(imageURL, event){ if(event) event.preventDefault(); var m=document.getElementById('imageModal'),i=document.getElementById('modalImage'); if(m&&i){ i.src=imageURL; m.style.display='block'; } };
-document.addEventListener('DOMContentLoaded', function(){
-    var modal=document.getElementById('imageModal');
-    if(modal){ modal.addEventListener('click', function(){ modal.style.display='none'; }); }
-});
-</script>
-
 
 
 </body>
 </html>
-
