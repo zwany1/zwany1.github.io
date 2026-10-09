@@ -563,6 +563,10 @@
                 self.onIdentity(p);
                 return;
             }
+            if (p.t === 'need-login') {              // 登录制：凭证不是 GitHub 身份
+                if (self.onNeedLogin) { self.onNeedLogin(p.msg); }
+                return;
+            }
             if (p.t === 'cf') {                      // 需要先过一次人机校验
                 self.onStatus('connecting', '正在做人机校验…');
                 getTurnstileToken(p.sitekey, function (t) {
@@ -705,14 +709,20 @@
         if (!this.me.uid) { this.me.uid = uid('u'); }
 
         this.identity = tokenInfo(getToken());
-        if (this.identity && !this.me.name) { this.me.name = this.identity.name || ''; }
+        // 昵称与头像一律取自 GitHub 账号，不再让用户手填
+        if (this.identity && this.identity.kind === 'github') {
+            this.me.uid = this.identity.uid;
+            if (this.identity.name) { this.me.name = this.identity.name; }
+        }
 
         this._cacheDom();
         this._bind();
         this._applyOptions();
 
-        if (this.me.name) { this._start(); }
-        else { this._askName(); }
+        // 自建后端要登录才进；公共频道/本机模式没有账号体系，仍走昵称
+        if (this.requiresLogin() && !this.loggedIn()) { this._showGate(); }
+        else if (!this.requiresLogin() && !this.me.name) { this._showGate(); }
+        else { this._start(); }
     }
 
     ChatRoom.prototype._pickRoom = function (name) {
@@ -741,7 +751,6 @@
             meAvatar: q('[data-cr-meavatar]'),
             meName: q('[data-cr-mename]'),
             meStatus: q('[data-cr-mestatus]'),
-            rename: q('[data-cr-rename]'),
             login: q('[data-cr-login]'),
             title: q('[data-cr-title]'),
             topic: q('[data-cr-topic]'),
@@ -761,10 +770,13 @@
             emojis: q('[data-cr-emojis]'),
             memberPanel: q('[data-cr-memberpanel]'),
             members: q('[data-cr-members]'),
-            mask: q('[data-cr-mask]'),
-            dialogInput: q('.cr-dialog-input'),
-            dialogOk: q('.cr-dialog-ok'),
-            dialogTip: q('[data-cr-dialogtip]')
+            gate: q('[data-cr-gate]'),
+            gateLoginBox: q('[data-cr-gate-loginbox]'),
+            gateNameBox: q('[data-cr-gate-namebox]'),
+            gateBtn: q('[data-cr-gate-login]'),
+            gateName: q('[data-cr-gate-name]'),
+            gateEnter: q('[data-cr-gate-enter]'),
+            gateErr: q('[data-cr-gate-err]')
         };
     };
 
@@ -878,6 +890,7 @@
     ChatRoom.prototype._start = function () {
         var self = this;
         this.ready = true;
+        this._hideGate();
         this._paintMe();
         this._renderEmoji();
         this._toggleEmpty(true);
@@ -914,6 +927,7 @@
         this.transport.onTyping = function (n) { self._showTyping(n); };
         this.transport.onIdentity = function (i) { self._onIdentity(i); };
         this.transport.onReaction = function (p) { self._onReaction(p); };
+        this.transport.onNeedLogin = function (msg) { self._onNeedLogin(msg); };
         this.transport.connect();
     };
 
@@ -948,56 +962,123 @@
     /* ------------------------------------------------------------ 身份展示 */
 
     ChatRoom.prototype._paintMe = function () {
-        if (this.dom.meName) { this.dom.meName.textContent = this.me.name || '未命名'; }
+        var loggedIn = this.loggedIn();
+        if (this.dom.meName) {
+            this.dom.meName.textContent = this.me.name
+                || (this.requiresLogin() && !loggedIn ? '未登录' : '未命名');
+        }
         var av = this.identity && this.identity.avatar;
         if (this.dom.meAvatar) {
-            if (this.identity && this.identity.kind === 'github' && av) {
+            if (loggedIn && av) {
                 this.dom.meAvatar.textContent = '';
                 this.dom.meAvatar.setAttribute('style', 'background:none');
                 this.dom.meAvatar.innerHTML = '<img src="' + esc(av) + '" alt="">';
             } else {
-                this.dom.meAvatar.textContent = initial(this.me.name);
+                this.dom.meAvatar.textContent = initial(this.me.name || '?');
                 this.dom.meAvatar.setAttribute('style', 'background:' + avatarColor(this.me.uid || this.me.name));
             }
         }
+        // 自建后端才有登录/退出；公共频道没有账号体系，这个入口就藏起来
         if (this.dom.login) {
-            var logged = !!(this.identity && this.identity.kind === 'github');
-            var wsMode = this.opts.transport === 'ws' && !!this.opts.ws;
-            this.dom.login.hidden = logged || !wsMode;
+            this.dom.login.hidden = !this.requiresLogin();
+            this.dom.login.title = loggedIn ? '退出登录' : '用 GitHub 登录';
         }
     };
 
-    ChatRoom.prototype._showName = function (on) {
-        this.dom.mask.hidden = !on;
-        if (on) {
-            var el = this.dom.dialogInput;
-            global.setTimeout(function () { try { el.focus(); } catch (e) {} }, 30);
+    /* ------------------------------------------------------------ 登录门禁 */
+
+    /** 自建后端（ws）必须登录；公共频道与本机模式没有账号体系 */
+    ChatRoom.prototype.requiresLogin = function () {
+        return this.opts.transport === 'ws' && !!this.opts.ws;
+    };
+
+    ChatRoom.prototype.loggedIn = function () {
+        return !!(this.identity && this.identity.kind === 'github');
+    };
+
+    ChatRoom.prototype._showGate = function (err) {
+        if (!this.dom.gate) { return; }
+        var needLogin = this.requiresLogin();
+        this.dom.gate.hidden = false;
+        if (this.dom.gateLoginBox) { this.dom.gateLoginBox.hidden = !needLogin; }
+        if (this.dom.gateNameBox) {
+            this.dom.gateNameBox.hidden = needLogin;
+            if (!needLogin && this.dom.gateName) { this.dom.gateName.value = this.me.name || ''; }
+        }
+        if (this.dom.gateErr) {
+            this.dom.gateErr.hidden = !err;
+            this.dom.gateErr.textContent = err || '';
+        }
+        this._paintMe();
+        if (!needLogin && this.dom.gateName) {
+            var el = this.dom.gateName;
+            global.setTimeout(function () { try { el.focus(); } catch (e) { /* 忽略 */ } }, 60);
         }
     };
 
-    ChatRoom.prototype._askName = function (isRename) {
-        this.dom.dialogInput.value = this.me.name || '';
-        if (this.dom.dialogTip) {
-            this.dom.dialogTip.textContent = isRename
-                ? '改名后新消息将使用新昵称'
-                : '昵称仅用于展示，无需注册';
-        }
-        this._showName(true);
+    ChatRoom.prototype._hideGate = function () {
+        if (this.dom.gate) { this.dom.gate.hidden = true; }
     };
 
-    ChatRoom.prototype._submitName = function () {
-        var v = (this.dom.dialogInput.value || '').trim().slice(0, 16);
-        if (!v) { return; }
-        var renamed = !!this.me.name;
+    ChatRoom.prototype._gotoLogin = function () {
+        var origin = wsOrigin(this.opts.ws);
+        if (!origin) { this._showGate('未配置自建服务端地址（ws 参数），无法登录'); return; }
+        if (this.dom.gateBtn) { this.dom.gateBtn.disabled = true; }
+        var back = global.location.origin + global.location.pathname;
+        global.location.href = origin + '/auth/github/start?return=' + encodeURIComponent(back);
+    };
+
+    /** 公共频道 / 本机模式的昵称入口 */
+    ChatRoom.prototype._submitGateName = function () {
+        var v = ((this.dom.gateName && this.dom.gateName.value) || '').trim().slice(0, 16);
+        if (!v) {
+            if (this.dom.gateErr) {
+                this.dom.gateErr.hidden = false;
+                this.dom.gateErr.textContent = '请先填一个昵称';
+            }
+            return;
+        }
         this.me.name = v;
         lsSet('wb-chat:me', this.me);
-        this._showName(false);
-        this._paintMe();
-        if (renamed && this.transport && typeof this.transport._hello === 'function') {
-            this.transport.name = this.me.name;
-            this.transport._hello();
+        this._hideGate();
+        this._start();
+    };
+
+    ChatRoom.prototype._logout = function () {
+        setToken('');
+        this.identity = null;
+        this.me.name = '';
+        this.me.uid = uid('u');
+        lsSet('wb-chat:me', this.me);
+        if (this.transport) {
+            try { this.transport.disconnect(); } catch (e) { /* 忽略 */ }
+            this.transport = null;
         }
-        if (!this.ready) { this._start(); }
+        this.ready = false;
+        this.messages = [];
+        this.seen = {};
+        this.reactions = {};
+        this.nodes = {};
+        this.membersOnline = [];
+        this.knownMembers = {};
+        this.presenceReady = false;
+        if (this.dom.stream) { this.dom.stream.innerHTML = ''; }
+        this._toggleEmpty(false);
+        this._setStatus('offline', '');
+        this._paintRoom();
+        this._showGate();
+    };
+
+    /** 服务端要求登录（凭证缺失 / 过期 / 不是 GitHub 身份） */
+    ChatRoom.prototype._onNeedLogin = function (msg) {
+        if (this.transport) {
+            try { this.transport.disconnect(); } catch (e) { /* 忽略 */ }
+            this.transport = null;
+        }
+        this.ready = false;
+        this.identity = null;
+        setToken('');
+        this._showGate(msg || '请先用 GitHub 登录');
     };
 
     /* ------------------------------------------------------------ 事件绑定 */
@@ -1005,19 +1086,20 @@
     ChatRoom.prototype._bind = function () {
         var self = this;
 
-        this.dom.dialogOk.addEventListener('click', function () { self._submitName(); });
-        this.dom.dialogInput.addEventListener('keydown', function (e) {
-            if (e.key === 'Enter') { e.preventDefault(); self._submitName(); }
-        });
-        if (this.dom.rename) {
-            this.dom.rename.addEventListener('click', function () { self._askName(true); });
+        if (this.dom.gateBtn) {
+            this.dom.gateBtn.addEventListener('click', function () { self._gotoLogin(); });
+        }
+        if (this.dom.gateEnter) {
+            this.dom.gateEnter.addEventListener('click', function () { self._submitGateName(); });
+        }
+        if (this.dom.gateName) {
+            this.dom.gateName.addEventListener('keydown', function (e) {
+                if (e.key === 'Enter') { e.preventDefault(); self._submitGateName(); }
+            });
         }
         if (this.dom.login) {
             this.dom.login.addEventListener('click', function () {
-                var origin = wsOrigin(self.opts.ws);
-                if (!origin) { return; }
-                var back = global.location.origin + global.location.pathname;
-                global.location.href = origin + '/auth/github/start?return=' + encodeURIComponent(back);
+                if (self.loggedIn()) { self._logout(); } else { self._gotoLogin(); }
             });
         }
 

@@ -39,6 +39,10 @@ new_sqlite_classes = ["Accounts"]
 
 # 非敏感变量（会进产物，别放密钥）
 [vars]
+# 登录制：只有 GitHub 身份能进聊天室，服务端不再签发匿名身份。
+# 设为 "false" 可退回「匿名 + Turnstile 人机校验」模式（逻辑保留在 room.js 里）。
+REQUIRE_LOGIN = "true"
+
 # Turnstile 的 sitekey 是公开值（本来就会出现在前端），可以放这里。
 # 注意：本地 .dev.vars 里的 sitekey 会覆盖它。
 TURNSTILE_SITEKEY = "0x4AAAAAAFR6ILFQnlSngqbd"

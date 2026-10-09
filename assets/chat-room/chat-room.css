@@ -45,6 +45,20 @@
 
 .chatroom *, .chatroom *::before, .chatroom *::after { box-sizing: border-box; }
 
+/* 全屏模式（配合 _layouts/chat.html）：铺满视口，去掉圆角与留白 */
+.chatroom[data-full] {
+    height: 100vh;
+    height: 100dvh;
+    margin: 0;
+    border-radius: 0;
+}
+
+/* 大屏时把两侧栏加宽一些，别浪费横向空间 */
+@media (min-width: 1500px) {
+    .chatroom { --cr-side-w: 212px; --cr-members-w: 200px; }
+}
+
+
 /* 移动端：去掉点击高亮，双击不缩放 */
 .chatroom button,
 .chatroom textarea,
@@ -621,61 +635,116 @@
     flex-shrink: 0;
 }
 
-/* ------------------------------------------------------------------ 昵称弹层 */
+/* ------------------------------------------------------------------ 登录门禁 */
 
-.cr-mask {
+.cr-gate {
     position: absolute;
     inset: 0;
-    background: rgba(0, 0, 0, .55);
+    background: radial-gradient(120% 90% at 50% 0%, #1d1d24 0%, #131316 60%);
     display: flex;
     align-items: center;
     justify-content: center;
-    z-index: 10;
-    padding: 16px;
+    z-index: 20;
+    padding: 24px;
 }
 
-.cr-mask[hidden] { display: none; }
+.cr-gate[hidden] { display: none; }
 
-.cr-dialog {
-    background: var(--cr-bg-elev);
-    border: 1px solid var(--cr-line);
-    border-radius: 12px;
-    padding: 20px;
+.cr-gate-card {
     width: 100%;
-    max-width: 300px;
+    max-width: 340px;
     text-align: center;
 }
 
-.cr-dialog h4 { margin: 0 0 6px; font-size: 15px; color: #fff; font-weight: 600; }
-.cr-dialog p { margin: 0 0 14px; font-size: 12px; color: var(--cr-fg-mute); }
+.cr-gate-logo {
+    width: 54px;
+    height: 54px;
+    margin: 0 auto 16px;
+    border-radius: 16px;
+    background: #4f6ef7;
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
 
-.cr-dialog-input {
+.cr-gate-title {
+    margin: 0 0 8px;
+    font-size: 19px;
+    font-weight: 600;
+    color: #fff;
+}
+
+.cr-gate-desc {
+    margin: 0 0 22px;
+    font-size: 13px;
+    line-height: 1.7;
+    color: var(--cr-fg-dim);
+}
+
+.cr-gate-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 9px;
     width: 100%;
-    background: var(--cr-bg-rail);
+    height: 42px;
+    border: 0;
+    border-radius: 9px;
+    background: #fff;
+    color: #1b1b21;
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: opacity .2s, transform .1s;
+}
+
+.cr-gate-btn:hover { opacity: .88; }
+.cr-gate-btn:active { transform: translateY(1px); }
+.cr-gate-btn[disabled] { opacity: .5; cursor: default; }
+
+.cr-gate-input {
+    width: 100%;
+    height: 40px;
+    margin-bottom: 10px;
+    padding: 0 14px;
+    border-radius: 9px;
     border: 1px solid var(--cr-line);
-    border-radius: 8px;
-    padding: 9px 12px;
+    background: var(--cr-bg-rail);
     color: var(--cr-fg);
     font-family: inherit;
     font-size: 14px;
-    outline: none;
     text-align: center;
-    margin-bottom: 12px;
+    outline: none;
 }
 
-.cr-dialog-input:focus { border-color: var(--cr-accent); }
+.cr-gate-input:focus { border-color: var(--cr-accent); }
 
-.cr-dialog-ok {
-    width: 100%;
-    height: 36px;
-    border: 0;
-    border-radius: 8px;
-    background: var(--cr-accent);
-    color: #fff;
-    font-family: inherit;
-    font-size: 14px;
-    cursor: pointer;
+.cr-gate-note {
+    margin: 14px 0 0;
+    font-size: 11.5px;
+    line-height: 1.7;
+    color: var(--cr-fg-mute);
 }
+
+.cr-gate-err {
+    margin: 12px 0 0;
+    font-size: 12.5px;
+    color: var(--cr-danger);
+    line-height: 1.6;
+}
+
+.cr-gate-err[hidden] { display: none; }
+
+.cr-gate-back {
+    display: inline-block;
+    margin-top: 20px;
+    font-size: 12.5px;
+    color: var(--cr-fg-mute);
+}
+
+.cr-gate-back:hover { color: var(--cr-fg-dim); }
 
 /* ------------------------------------------------------------------ 响应式 */
 
@@ -714,7 +783,7 @@
     .cr-composer { padding-left: 11px; padding-right: 11px; }
     .cr-search { display: none; }
     /* 输入框字号 <16px 时 iOS 聚焦会放大整页 */
-    .cr-text, .cr-dialog-input { font-size: 16px; }
+    .cr-text { font-size: 16px; }
     .cr-img { max-width: 100%; }
     .cr-send span { display: none; }
     .cr-send { padding: 9px 11px; }

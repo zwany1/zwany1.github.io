@@ -160,6 +160,14 @@ comments: false
             </div>
             <div class="tools-preview__label">工具</div>
         </div>
+        <div class="ios-widget ios-widget--chat" id="chat-widget" title="聊天室">
+            <div class="chat-preview">
+                <span class="chat-preview__bubble"><i class="fas fa-comment"></i></span>
+                <span class="chat-preview__bubble chat-preview__bubble--alt"><i class="fas fa-comment-dots"></i></span>
+                <span class="chat-preview__bubble"><i class="fas fa-comment"></i></span>
+            </div>
+            <div class="chat-preview__label">聊天室</div>
+        </div>
     </div>
 
     <div class="ios-grid">
@@ -194,6 +202,10 @@ comments: false
         <a class="ios-app" href="javascript:void(0)" id="dock-tool" hidden>
             <span class="ios-app__icon" id="dock-tool-iconwrap"><i id="dock-tool-icon" class="fas fa-toolbox"></i></span>
             <span class="ios-app__label" id="dock-tool-name">工具</span>
+        </a>
+        <a class="ios-app" href="javascript:void(0)" id="dock-chat" hidden>
+            <span class="ios-app__icon" style="background:#4f6ef7"><i class="fas fa-comments"></i></span>
+            <span class="ios-app__label" id="dock-chat-name">聊天室</span>
         </a>
         <a class="ios-app" href="javascript:void(0)" id="dock-photos" hidden>
             <span class="ios-app__icon" style="background:linear-gradient(135deg,#a29bfe,#6c5ce7)"><i class="fas fa-images"></i></span>
@@ -539,6 +551,14 @@ comments: false
 </div>
 
 {% comment %} 相册组件：回忆录重构，数据在 _data/photos.yml，网格 + 灯箱大图/视频 {% endcomment %}
+<div class="games-pop chat-pop" id="chat-pop" hidden>
+    <div class="music-app__mask" id="chat-pop-mask"></div>
+    <div class="games-pop__window chat-pop__window">
+        <button class="games-pop__close" id="chat-pop-close" title="关闭"><i class="fas fa-xmark"></i></button>
+        {% include chat-room.html lazy="on" station="朱的小屋 · 聊天室" rooms="大厅|一起聊聊天，随便聊什么都行,技术|代码、踩坑与折腾记录,闲聊|无关紧要的日常,吐槽|有话直说" transport="ws" ws="wss://chat.myzwy.qzz.io/ws" %}
+    </div>
+</div>
+
 <div class="games-pop" id="photos-pop" hidden>
     <div class="music-app__mask" id="photos-pop-mask"></div>
     <div class="games-pop__window">
@@ -1184,6 +1204,7 @@ comments: false
 </script>
 <script src="/js/ios-wallpaper.js?v={{ site.time | date: '%s' }}" defer></script>
 <script src="/js/ios-tools.js?v={{ site.time | date: '%s' }}" defer></script>
+<script src="/js/chat-pop.js?v={{ site.time | date: '%s' }}" defer></script>
 <script>
     // ---------- 相册组件：网格 + 灯箱（大图/视频）+ 左右切换 + Dock 钉图标 ----------
     (function () {

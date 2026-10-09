@@ -1,21 +1,23 @@
 {%- comment -%}
-  在线聊天室 · 可复用入口组件（四栏工作台布局）
+  在线聊天室 · 可复用入口组件（四栏工作台）
   ---------------------------------------------------------------------------
   用法：
-    {% include chat-room.html rooms="大厅|一起聊聊天,技术|代码与踩坑,闲聊" %}
+    {% include chat-room.html full="on" rooms="大厅|一起聊聊天,技术|代码与踩坑" %}
 
   可选参数：
-    room      当前默认房间，默认取 rooms 的第一项
-    rooms     房间列表，逗号分隔；每项「名称」或「名称|主题」
+    rooms     房间列表，逗号分隔；每项「名称」或「名称|主题」，默认「大厅」
+    room      默认进入哪个房间（默认取 rooms 第一项）
     station   左上角站点名，默认「聊天室」
+    full      "on" 时占满整屏（配合 _layouts/chat.html 使用），默认嵌入式
     transport 通道：ws(自建后端，默认) | mqtt(公共频道) | local(仅本机)
     ws        自建服务端地址（transport="ws" 时必填）
     broker    MQTT 接入地址
     key       公共频道房间口令
     limit     保留历史条数，默认 200
-    height    面板高度 px，默认 620
+    height    嵌入式面板高度 px，默认 620；full="on" 时忽略
     notice    顶部提示；notice="off" 关闭
 
+  进入方式：需用 GitHub 登录后才可加入（昵称与头像取自 GitHub 账号）。
   依赖（自动注入一次）：assets/chat-room/chat-room.css 与 .js
 {%- endcomment -%}
 
@@ -30,6 +32,10 @@
 {%- assign cr_key = include.key | default: "" -%}
 {%- assign cr_limit = include.limit | default: 200 -%}
 {%- assign cr_height = include.height | default: 620 -%}
+{%- assign cr_full = false -%}
+{%- if include.full == "on" or include.full == true -%}{%- assign cr_full = true -%}{%- endif -%}
+{%- assign cr_lazy = false -%}
+{%- if include.lazy == "on" or include.lazy == true -%}{%- assign cr_lazy = true -%}{%- endif -%}
 
 <script>
 (function () {
@@ -48,8 +54,9 @@
 </script>
 
 <div class="chatroom"
+     {% if cr_full %}data-full="1"{% endif %}
      data-rooms="{{ cr_rooms }}"
-     data-room="{{ include.room | default: '' }}"
+     {%- unless cr_lazy %} data-room="{{ include.room | default: '' }}"{% endunless %}
      data-station="{{ cr_station }}"
      data-transport="{{ cr_transport }}"
      data-broker="{{ cr_broker }}"
@@ -57,7 +64,7 @@
      data-key="{{ cr_key }}"
      data-limit="{{ cr_limit }}"
      data-notice="{% if include.notice == 'off' %}off{% else %}{{ include.notice }}{% endif %}"
-     style="--cr-height: {{ cr_height }}px;">
+     style="{% unless cr_full %}--cr-height: {{ cr_height }}px;{% endunless %}">
 
     <!-- ── ① 应用栏 ─────────────────────────────────────────────── -->
     <aside class="cr-rail">
@@ -65,7 +72,9 @@
             <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path d="M12 2c1.6 3 4.5 4.6 4.5 8a4.5 4.5 0 0 1-9 0c0-1.3.4-2.4 1-3.4.9 1.6 2 2.2 2.9 2.2-1.3-2.4-.6-5 1.1-6.8Z" fill="currentColor"/></svg>
         </div>
         <div class="cr-rail-list" data-cr-rail></div>
-        <a class="cr-rail-add" href="/chat/" title="房间列表">+</a>
+        <a class="cr-rail-add" href="/" title="返回博客首页">
+            <svg viewBox="0 0 24 24" width="17" height="17" aria-hidden="true"><path d="M12 3 2 12h3v9h6v-6h2v6h6v-9h3L12 3Z" fill="currentColor"/></svg>
+        </a>
     </aside>
 
     <!-- ── ② 频道栏 ─────────────────────────────────────────────── -->
@@ -85,7 +94,6 @@
         <nav class="cr-nav">
             <div class="cr-group">文字频道</div>
             <div class="cr-channels" data-cr-channels></div>
-
             <div class="cr-group">房间信息</div>
             <div class="cr-info" data-cr-info></div>
         </nav>
@@ -93,13 +101,10 @@
         <footer class="cr-me">
             <span class="cr-avatar cr-avatar--sm" data-cr-meavatar>?</span>
             <span class="cr-me-text">
-                <b data-cr-mename>未命名</b>
-                <i data-cr-mestatus>离线</i>
+                <b data-cr-mename>未登录</b>
+                <i data-cr-mestatus>未连接</i>
             </span>
-            <button class="cr-icon cr-icon--btn" type="button" data-cr-rename title="修改昵称">
-                <svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true"><path d="M4 20h4l10-10-4-4L4 16v4Zm12.7-12.7 1.6-1.6a1 1 0 0 0 0-1.4l-2.6-2.6a1 1 0 0 0-1.4 0l-1.6 1.6 4 4Z" fill="currentColor"/></svg>
-            </button>
-            <button class="cr-icon cr-icon--btn" type="button" data-cr-login hidden title="用 GitHub 登录">
+            <button class="cr-icon cr-icon--btn" type="button" data-cr-login title="用 GitHub 登录">
                 <svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true"><path d="M12 2a10 10 0 0 0-3.2 19.5c.5.1.7-.2.7-.5v-1.9c-2.8.6-3.4-1.3-3.4-1.3-.5-1.2-1.1-1.5-1.1-1.5-.9-.6.1-.6.1-.6 1 .1 1.5 1 1.5 1 .9 1.5 2.3 1.1 2.9.8.1-.6.3-1.1.6-1.4-2.2-.2-4.6-1.1-4.6-5 0-1.1.4-2 1-2.7-.1-.3-.4-1.3.1-2.7 0 0 .8-.3 2.7 1a9.4 9.4 0 0 1 5 0c1.9-1.3 2.7-1 2.7-1 .5 1.4.2 2.4.1 2.7.6.7 1 1.6 1 2.7 0 3.9-2.4 4.8-4.6 5 .4.3.7 1 .7 2v2.9c0 .3.2.6.7.5A10 10 0 0 0 12 2Z" fill="currentColor"/></svg>
             </button>
         </footer>
@@ -158,13 +163,28 @@
         <div class="cr-members-body" data-cr-members></div>
     </aside>
 
-    <!-- 昵称弹层 -->
-    <div class="cr-mask" data-cr-mask hidden>
-        <div class="cr-dialog">
-            <h4>起个昵称</h4>
-            <p data-cr-dialogtip>昵称仅用于展示，无需注册</p>
-            <input class="cr-dialog-input" type="text" maxlength="16" placeholder="例如：路人甲">
-            <button class="cr-dialog-ok" type="button">进入聊天室</button>
+    <!-- ── 登录门禁（未登录时盖住整块面板）──────────────────────── -->
+    <div class="cr-gate" data-cr-gate>
+        <div class="cr-gate-card">
+            <div class="cr-gate-logo">
+                <svg viewBox="0 0 24 24" width="26" height="26" aria-hidden="true"><path d="M12 2c1.6 3 4.5 4.6 4.5 8a4.5 4.5 0 0 1-9 0c0-1.3.4-2.4 1-3.4.9 1.6 2 2.2 2.9 2.2-1.3-2.4-.6-5 1.1-6.8Z" fill="currentColor"/></svg>
+            </div>
+            <h2 class="cr-gate-title">{{ cr_station }}</h2>
+            <div data-cr-gate-loginbox>
+                <p class="cr-gate-desc">用 GitHub 登录后即可加入聊天，昵称与头像直接取自你的账号。</p>
+                <button class="cr-gate-btn" type="button" data-cr-gate-login>
+                    <svg viewBox="0 0 24 24" width="17" height="17" aria-hidden="true"><path d="M12 2a10 10 0 0 0-3.2 19.5c.5.1.7-.2.7-.5v-1.9c-2.8.6-3.4-1.3-3.4-1.3-.5-1.2-1.1-1.5-1.1-1.5-.9-.6.1-.6.1-.6 1 .1 1.5 1 1.5 1 .9 1.5 2.3 1.1 2.9.8.1-.6.3-1.1.6-1.4-2.2-.2-4.6-1.1-4.6-5 0-1.1.4-2 1-2.7-.1-.3-.4-1.3.1-2.7 0 0 .8-.3 2.7 1a9.4 9.4 0 0 1 5 0c1.9-1.3 2.7-1 2.7-1 .5 1.4.2 2.4.1 2.7.6.7 1 1.6 1 2.7 0 3.9-2.4 4.8-4.6 5 .4.3.7 1 .7 2v2.9c0 .3.2.6.7.5A10 10 0 0 0 12 2Z" fill="currentColor"/></svg>
+                    <span>使用 GitHub 登录</span>
+                </button>
+                <p class="cr-gate-note">仅读取你的公开资料（昵称、头像），不会访问你的任何仓库。</p>
+            </div>
+            <div data-cr-gate-namebox hidden>
+                <p class="cr-gate-desc">这个通道没有账号体系，起个昵称就能进。</p>
+                <input class="cr-gate-input" data-cr-gate-name type="text" maxlength="16" placeholder="例如：路人甲">
+                <button class="cr-gate-btn" type="button" data-cr-gate-enter><span>进入聊天室</span></button>
+            </div>
+            <p class="cr-gate-err" data-cr-gate-err hidden></p>
+            <a class="cr-gate-back" href="/">← 返回博客</a>
         </div>
     </div>
 </div>

@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="zh-cmn-Hans">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>{% if page.title %}{{ page.title }} - {% endif %}{{ site.title }}</title>
+    <meta name="author" content="{{ site.author }}">
+    <meta name="description" content="{% if page.description %}{{ page.description }}{% else %}{{ site.description }}{% endif %}">
+    {% if page.keywords %}<meta name="keywords" content="{{ page.keywords }}">{% endif %}
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="{% if page.title %}{{ page.title }}{% else %}{{ site.title }}{% endif %}">
+    <meta property="og:url" content="{{ site.url }}{{ page.url }}">
+    <meta property="og:site_name" content="{{ site.title }}">
+    <meta property="og:description" content="{% if page.description %}{{ page.description }}{% else %}{{ site.description }}{% endif %}">
+    <!-- 深色应用面板，与组件主色一致 -->
+    <meta name="theme-color" content="#131316">
+    <link rel="icon" href="/assets/images/site-icon.ico">
+    <link rel="shortcut icon" href="/assets/images/site-icon.ico">
+    <link rel="canonical" href="{{ site.url }}{{ page.url }}">
+    <style>
+        /* 全屏承载页：不引入博客样式，把整块屏幕交给聊天组件 */
+        html, body {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            background: #131316;
+            overflow: hidden;
+            -webkit-text-size-adjust: 100%;
+        }
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif; }
+        /* 组件自身自带全部样式，这里只负责铺满 */
+        .chatroom { margin: 0 !important; border-radius: 0 !important; }
+    </style>
+</head>
+<body>
+{{ content }}
+</body>
+</html>

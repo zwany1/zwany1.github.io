@@ -83,14 +83,26 @@ export class ChatRoom {
     /* ------------------------------------------------------------ 身份处理 */
 
     async _join(ws, p) {
-        // 1) 先看有没有合法凭证 —— 有就直接放行，不必过人机校验
         const verified = await verifyToken(p.token, this.env.IDENTITY_SECRET);
-        if (verified) {
+        // 登录制（默认）：只有 GitHub 身份能进。
+        // 设 REQUIRE_LOGIN=false 可退回"匿名 + 人机校验"模式。
+        const requireLogin = this.env.REQUIRE_LOGIN !== 'false';
+
+        if (verified && (!requireLogin || verified.kind === 'github')) {
             this._accept(ws, verified, p.name);
             return;
         }
 
-        // 2) 没有身份 ⇒ 首次进入，必须过人机校验才发新身份
+        if (requireLogin) {
+            // 不签发匿名身份了：没有 GitHub 身份的直接打回登录
+            this._send(ws, {
+                t: 'need-login',
+                msg: verified ? '身份已失效，请重新用 GitHub 登录' : '请先用 GitHub 登录后再进入'
+            });
+            return;
+        }
+
+        // —— 以下为匿名模式（REQUIRE_LOGIN=false）——
         const vs = await verifyTurnstile(p.cf, this.env.TURNSTILE_SECRET, this._meta(ws).ip);
 
         if (!vs.ok) {
@@ -103,7 +115,6 @@ export class ChatRoom {
             return;
         }
 
-        // 3) 签发匿名身份并回传（客户端存起来，之后就不再需要人机校验）
         let anon;
         try {
             anon = await issueAnon(this.env.IDENTITY_SECRET, p.name);
@@ -119,11 +130,15 @@ export class ChatRoom {
     }
 
     _accept(ws, payload, wantedName) {
+        // 登录身份：昵称一律以凭证为准，客户端自报的名字不采信（否则可顶着别人的名字说话）。
+        // 匿名模式（REQUIRE_LOGIN=false）才允许自取昵称。
+        const isGithub = payload.kind === 'github';
+        const fallback = payload.name || '访客';
         const meta = {
             ip: this._meta(ws).ip || '',
             uid: payload.uid,                          // ← 只认凭证里的 uid
             kind: payload.kind || 'anon',
-            name: String(wantedName || payload.name || '访客').slice(0, MAX_NAME),
+            name: String(isGithub ? fallback : (wantedName || fallback)).slice(0, MAX_NAME),
             avatar: payload.avatar || '',
             sent: []
         };

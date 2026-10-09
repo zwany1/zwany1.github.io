@@ -19,10 +19,17 @@ const MIME_TYPES = {
 
 const server = http.createServer((req, res) => {
   console.log(`${req.method} ${req.url}`);
-  
-  let filePath = '.' + req.url;
-  if (filePath === './') {
-    filePath = './index.html';
+
+  // 必须剥掉查询串和 hash：站点里不少资源带 ?v={{ site.time }} 做缓存击穿，
+  // 不剥的话 './js/xxx.js?v=123' 会被当成文件名，直接 404。
+  let pathname = req.url.split('#')[0].split('?')[0];
+  try {
+    pathname = decodeURIComponent(pathname);
+  } catch (e) { /* 非法编码就按原样用 */ }
+
+  let filePath = '.' + pathname;
+  if (filePath === './' || pathname.endsWith('/')) {
+    filePath = filePath.replace(/\/$/, '') + '/index.html';
   }
   
   const extname = String(path.extname(filePath)).toLowerCase();
