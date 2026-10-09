@@ -16,6 +16,7 @@ exclude:
     - Gemfile
     - Gemfile.lock
     - node_modules
+    - chat-worker
     - .github
     - sync-siyuan.ps1
     - sync-forum.ps1
@@ -97,6 +98,10 @@ navs:
   -
     href: /fragments/
     label: 片段
+
+  -
+    href: /chat/
+    label: 聊天室
 
   -
     href: /about/

@@ -1,0 +1,1596 @@
+/* ============================================================================
+   chat-room.js — 在线聊天室组件（独立可复用，无第三方运行时依赖）
+   ----------------------------------------------------------------------------
+   架构：
+     ChatRoom 内核  ──  统一的 Transport 接口  ──┬─ LocalTransport  (BroadcastChannel)
+                                                ├─ MqttTransport   (mqtt.js + 公共 broker)
+                                                └─ WsTransport     (自带 WebSocket 服务端)
+
+   Transport 接口约定（实现任一即可，通过 ChatRoom.registerTransport 注册）：
+     connect()            开始连接
+     send(msg)            发送一条消息，返回 boolean 表示是否发出
+     disconnect()         断开
+     由内核注入的回调：
+     onStatus(status,detail)   status: connecting | online | offline | error
+     onMessage(msg)            收到一条消息
+     onPresence(list)          在线成员变化，list: [{uid,name}]
+     onTyping(name)            有人正在输入
+   ========================================================================== */
+
+(function (global) {
+    'use strict';
+
+    var VERSION = '1.0.0';
+    var MAX_LEN = 1000;
+    var EMOJIS = ('😀 😄 😁 😂 😊 😉 😍 🤔 😅 😭 😡 👍 👎 👏 🙏 🎉 ❤️ 🔥 ⭐ ' +
+                  '🌹 🌈 ☕ 🍺 🍚 🐶 🐱 🌙 ☀️ 💪 🤝 😴 😎 🤣 🥳 😢 😱 ✅ ❓').split(' ');
+
+    /* ---------------------------------------------------------------- utils */
+
+    function uid(p) {
+        return (p || 'id') + '_' + Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
+    }
+
+    function esc(s) {
+        return String(s).replace(/[&<>"']/g, function (c) {
+            return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
+        });
+    }
+
+    function linkify(text) {
+        return text.replace(/\bhttps?:\/\/[^\s<]+/g, function (url) {
+            var clean = url.replace(/[)\].,，。]+$/, '');
+            return '<a href="' + clean + '" target="_blank" rel="noopener nofollow">' + clean + '</a>';
+        });
+    }
+
+    function hash(str) {
+        var h = 0;
+        for (var i = 0; i < str.length; i++) { h = (h * 31 + str.charCodeAt(i)) >>> 0; }
+        return h;
+    }
+
+    /* 头像用扁平色块（对照设计稿）；名字与头像同一色系但更亮，便于扫读 */
+    var AVATAR_COLORS = [
+        '#4f6ef7', '#e2703a', '#2fa56a', '#c4553f', '#8b5cf6',
+        '#0ea5b7', '#d9a441', '#5b7cfa', '#e0598b', '#4b9ad6'
+    ];
+
+    function avatarColor(seed) {
+        return AVATAR_COLORS[hash(String(seed || '?')) % AVATAR_COLORS.length];
+    }
+
+    function nameColor(seed) {
+        return AVATAR_COLORS[(hash(String(seed || '?')) + 3) % AVATAR_COLORS.length];
+    }
+
+    /* 整条消息就是一个图片地址时，直接内联渲染成图片 */
+    var IMAGE_RE = /^https?:\/\/\S+\.(png|jpe?g|gif|webp|avif)(\?\S*)?$/i;
+
+    function initial(name) {
+        var s = String(name || '?').trim();
+        return s ? Array.from(s)[0].toUpperCase() : '?';
+    }
+
+    function pad(n) { return n < 10 ? '0' + n : String(n); }
+
+    function fmtTime(ts) {
+        var d = new Date(ts);
+        return pad(d.getHours()) + ':' + pad(d.getMinutes());
+    }
+
+    function fmtDay(ts) {
+        var d = new Date(ts), n = new Date();
+        var same = function (a, b) { return a.getFullYear() === b.getFullYear() && a.getMonth() === b.getMonth() && a.getDate() === b.getDate(); };
+        var md = (d.getMonth() + 1) + '月' + d.getDate() + '日';
+        if (same(d, n)) { return '今天 · ' + md; }
+        var y = new Date(n.getTime() - 864e5);
+        if (same(d, y)) { return '昨天 · ' + md; }
+        return d.getFullYear() + '年' + (d.getMonth() + 1) + '月' + d.getDate() + '日';
+    }
+
+    function lsGet(key, def) {
+        try {
+            var raw = global.localStorage.getItem(key);
+            return raw === null ? def : JSON.parse(raw);
+        } catch (e) { return def; }
+    }
+
+    function lsSet(key, val) {
+        try { global.localStorage.setItem(key, JSON.stringify(val)); return true; }
+        catch (e) { return false; }
+    }
+
+    function loadScript(src, cb) {
+        var s = document.createElement('script');
+        s.src = src;
+        s.async = true;
+        s.onload = function () { cb(null); };
+        s.onerror = function () { cb(new Error('脚本加载失败：' + src)); };
+        document.head.appendChild(s);
+    }
+
+    /* -------------------------------------------------------------- 身份 */
+
+    var TOKEN_KEY = 'wb-chat:token';
+
+    function getToken() {
+        var t = lsGet(TOKEN_KEY, '');
+        return typeof t === 'string' ? t : '';
+    }
+
+    function setToken(t) { lsSet(TOKEN_KEY, t || ''); }
+
+    function b64urlDecode(s) {
+        var pad = s.length % 4 === 0 ? '' : '='.repeat(4 - (s.length % 4));
+        var bin = global.atob(s.replace(/-/g, '+').replace(/_/g, '/') + pad);
+        var bytes = new Uint8Array(bin.length);
+        for (var i = 0; i < bin.length; i++) { bytes[i] = bin.charCodeAt(i); }
+        return new global.TextDecoder().decode(bytes);
+    }
+
+    /** 只读地解出凭证里的展示信息（不校验签名——展示用够了，真伪由服务端把关） */
+    function tokenInfo(t) {
+        if (!t || t.indexOf('.') <= 0) { return null; }
+        try {
+            var p = JSON.parse(b64urlDecode(t.split('.')[0]));
+            return (p && p.uid) ? p : null;
+        } catch (e) { return null; }
+    }
+
+    /** 登录回调把凭证放在 #chat_token=...，读完立刻清掉片段，避免刷新时重复处理 */
+    function absorbHash() {
+        var h = global.location && global.location.hash;
+        if (!h || (h.indexOf('chat_token=') < 0 && h.indexOf('chat_error=') < 0)) { return null; }
+
+        var out = { token: '', error: '' };
+        h.replace(/^#/, '').split('&').forEach(function (kv) {
+            var i = kv.indexOf('=');
+            if (i < 0) { return; }
+            var k = decodeURIComponent(kv.slice(0, i));
+            var v = decodeURIComponent(kv.slice(i + 1));
+            if (k === 'chat_token') { out.token = v; }
+            if (k === 'chat_error') { out.error = v; }
+        });
+        try {
+            global.history.replaceState(null, '', global.location.pathname + global.location.search);
+        } catch (e) { /* 忽略 */ }
+        return out;
+    }
+
+    function wsOrigin(wsUrl) {
+        if (!wsUrl) { return ''; }
+        return String(wsUrl).replace(/^ws/, 'http').replace(/\/[^/]*$/, '');
+    }
+
+    var turnstileLoading = null;
+    function loadTurnstile(cb) {
+        if (global.turnstile) { cb(null); return; }
+        if (turnstileLoading) { turnstileLoading.push(cb); return; }
+        turnstileLoading = [cb];
+        loadScript('https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit', function (err) {
+            var q = turnstileLoading || [];
+            turnstileLoading = null;
+            for (var i = 0; i < q.length; i++) { q[i](err); }
+        });
+    }
+
+    /** 取一个一次性人机令牌（隐形模式，用户基本无感） */
+    function getTurnstileToken(sitekey, cb) {
+        if (!sitekey) { cb(''); return; }
+        loadTurnstile(function (err) {
+            if (err || !global.turnstile) { cb(''); return; }
+            var box = document.createElement('div');
+            box.style.display = 'none';
+            document.body.appendChild(box);
+            try {
+                var id = global.turnstile.render(box, {
+                    sitekey: sitekey,
+                    callback: function (t) { cb(t); },
+                    'error-callback': function () { cb(''); },
+                    'timeout-callback': function () { cb(''); }
+                });
+                global.turnstile.execute(id);
+            } catch (e) { cb(''); }
+        });
+    }
+
+    /* ----------------------------------------------------------- transports */
+
+    var FACTORIES = {};
+
+    function registerTransport(name, factory) { FACTORIES[name] = factory; }
+
+    /* -- 本机传输：BroadcastChannel + localStorage（零配置、离线可用） ------- */
+    function LocalTransport(opts) {
+        this.room = opts.room;
+        this.limit = opts.limit;
+        this.uid = opts.uid;
+        this.name = opts.name;
+        this.channel = null;
+        this.timer = null;
+        this.peers = {};
+        this.status = 'offline';
+    }
+
+    LocalTransport.prototype.connect = function () {
+        var self = this;
+        this.onStatus('connecting');
+
+        if (typeof global.BroadcastChannel === 'function') {
+            this.channel = new global.BroadcastChannel('wb-chat:' + this.room);
+            this.channel.onmessage = function (e) { self._dispatch(e.data); };
+        } else {
+            // 老浏览器兜底：localStorage 的 storage 事件（不触发本页面，效果等价）
+            global.addEventListener('storage', function (e) {
+                if (e.key === 'wb-chat:bus:' + self.room && e.newValue) {
+                    try { self._dispatch(JSON.parse(e.newValue)); } catch (err) { /* 忽略脏数据 */ }
+                }
+            });
+        }
+
+        // 回放本地历史
+        var hist = lsGet('wb-chat:hist:' + this.room, []);
+        if (Array.isArray(hist)) {
+            for (var i = 0; i < hist.length; i++) { this.onMessage(hist[i], true); }
+        }
+
+        this._hello();
+        this.timer = global.setInterval(function () { self._hello(); }, 10000);
+        global.addEventListener('beforeunload', function () { self._bye(); });
+
+        this.onStatus('online', '本机模式（同浏览器多标签互通）');
+    };
+
+    LocalTransport.prototype._hello = function () {
+        this._post({ t: 'here', uid: this.uid, name: this.name });
+        this._prunePeers();
+        this.peers[this.uid] = { name: this.name, last: Date.now() };
+        this.onPresence(this._list());
+    };
+
+    LocalTransport.prototype._bye = function () {
+        this._post({ t: 'bye', uid: this.uid, name: this.name });
+    };
+
+    LocalTransport.prototype._post = function (payload) {
+        if (this.channel) {
+            try { this.channel.postMessage(payload); } catch (e) { /* 通道已关闭 */ }
+        } else {
+            // 兜底通道：写一个带随机后缀的 key，触发其他标签页的 storage 事件
+            try {
+                global.localStorage.setItem('wb-chat:bus:' + this.room,
+                    JSON.stringify(Object.assign({}, payload, { _n: Math.random() })));
+            } catch (e) { /* 隐私模式配额不足 */ }
+        }
+    };
+
+    LocalTransport.prototype._prunePeers = function () {
+        var cut = Date.now() - 35000;
+        for (var k in this.peers) {
+            if (this.peers[k].last < cut) { delete this.peers[k]; }
+        }
+    };
+
+    LocalTransport.prototype._list = function () {
+        var out = [];
+        for (var k in this.peers) { out.push({ uid: k, name: this.peers[k].name }); }
+        return out;
+    };
+
+    LocalTransport.prototype._dispatch = function (p) {
+        if (!p || !p.t) { return; }
+        if (p.uid === this.uid) { return; }   // 自己的消息已乐观渲染，不重复处理
+        if (p.t === 'msg') { this.onMessage(p); return; }
+        if (p.t === 'here') {
+            this.peers[p.uid] = { name: p.name, last: Date.now() };
+            this.onPresence(this._list());
+            return;
+        }
+        if (p.t === 'bye') {
+            delete this.peers[p.uid];
+            this.onPresence(this._list());
+            return;
+        }
+        if (p.t === 'typing') { this.onTyping(p.name); }
+    };
+
+    LocalTransport.prototype.send = function (msg) {
+        this._post(Object.assign({ t: 'msg' }, msg));
+        return true;
+    };
+
+    LocalTransport.prototype.typing = function () {
+        this._post({ t: 'typing', uid: this.uid, name: this.name });
+    };
+
+    LocalTransport.prototype.disconnect = function () {
+        if (this.timer) { global.clearInterval(this.timer); }
+        this._bye();
+        if (this.channel) { this.channel.close(); }
+    };
+
+    /* -- MQTT 传输：mqtt.js + 公共 broker（免注册、真·跨设备群聊） -----------
+       主题设计（room 经 slug，可选 key 做不可猜的盐）：
+         base/m/<消息id>   消息本体，retain=true  ⇒ 新人一订阅就收到历史
+         base/p/<客户端id> 在线状态，retain=true  ⇒ 订阅即得在线名单；
+                                           LWT 以空载荷清除，掉线自动下线
+         base/t            正在输入，不 retain（瞬时事件，不该进历史）
+       ------------------------------------------------------------------------ */
+    function MqttTransport(opts) {
+        this.room = opts.room;
+        this.broker = opts.broker;
+        this.key = opts.key || '';
+        this.limit = opts.limit || 200;
+        this.uid = opts.uid;
+        this.name = opts.name;
+        this.client = null;
+        this.connected = false;
+        this.watchdog = null;
+        this.timer = null;
+        this.pruneTimer = null;
+        this.peers = {};       // uid -> { name, ts }，来自 p/# 的 retain 消息
+        this.brokerMsgs = {};  // 消息id -> ts，仅统计经 broker 收到的，用于裁剪历史
+        this.status = 'offline';
+
+        var slug = String(opts.room).replace(/[^\w\u4e00-\u9fa5-]/g, '') || 'room';
+        this.base = 'wbchat/v1/' + slug +
+            (this.key ? '-' + hash(this.key + '\u0000' + slug).toString(36) : '');
+        this.tMsg = this.base + '/m';
+        this.tPresence = this.base + '/p';
+        this.tTyping = this.base + '/t';
+    }
+
+    MqttTransport.prototype.connect = function () {
+        var self = this;
+        this.onStatus('connecting', '正在连接实时通道…');
+
+        if (!global.mqtt) {
+            loadScript('https://cdn.jsdelivr.net/npm/mqtt@5/dist/mqtt.min.js', function (err) {
+                if (err) {
+                    self.onStatus('error', '实时通道库加载失败，请检查网络');
+                    return;
+                }
+                self._open();
+            });
+        } else {
+            this._open();
+        }
+    };
+
+    MqttTransport.prototype._open = function () {
+        var self = this;
+        if (this.client) { return; }   // 幂等：断线重连交给 mqtt.js 自己处理
+
+        // 遗嘱：意外掉线时由 broker 代发"空载荷 + retain"，把在线状态从名单里抹掉
+        var will = { topic: this.tPresence + '/' + this.uid, payload: '', qos: 1, retain: true };
+
+        try {
+            this.client = global.mqtt.connect(this.broker, {
+                clientId: 'wbchat_' + Math.random().toString(16).slice(2, 10),
+                clean: true,
+                keepalive: 30,
+                connectTimeout: 20000,
+                reconnectPeriod: 4000,
+                resubscribe: true,
+                will: will
+            });
+        } catch (e) {
+            this.onStatus('error', '通道地址无效：' + this.broker);
+            return;
+        }
+
+        // 看门狗：长时间连不上要给出明确提示，而不是一直停在"连接中"
+        this.watchdog = global.setTimeout(function () {
+            if (!self.connected) {
+                self.onStatus('error', '实时通道连接超时，可改用本机模式，或在参数里更换 broker');
+            }
+        }, 35000);
+
+        this.client.on('connect', function () {
+            self.connected = true;
+            global.clearTimeout(self.watchdog);
+            // 订阅 m/# 与 p/# 会立刻收到 broker 上的 retain 消息 ⇒ 历史 + 在线名单
+            self.client.subscribe([self.tMsg + '/#', self.tPresence + '/#', self.tTyping],
+                { qos: 1 }, function (err) {
+                    if (err) { self.onStatus('error', '订阅失败：' + (err.message || err)); return; }
+                    self.onStatus('online', '已连接公共频道');
+                    self._hello();
+                    // 心跳：retain 的在线状态也要定期刷新时间戳，
+                    // 否则一个"在线但安静"的人会被别人按过期清掉
+                    if (self.timer) { global.clearInterval(self.timer); }
+                    self.timer = global.setInterval(function () { self._hello(); }, 30000);
+                });
+        });
+
+        this.client.on('message', function (topic, buf) {
+            var raw = buf.toString();
+
+            if (topic.indexOf(self.tMsg + '/') === 0) {
+                var m;
+                try { m = JSON.parse(raw); } catch (e) { return; }
+                if (!m || !m.id || m.uid === self.uid) { return; }
+                self.brokerMsgs[m.id] = m.ts || Date.now();
+                self._schedulePrune();
+                self.onMessage(m);
+                return;
+            }
+
+            if (topic.indexOf(self.tPresence + '/') === 0) {
+                var puid = topic.slice(self.tPresence.length + 1);
+                if (puid === self.uid) { return; }
+                if (!raw) { delete self.peers[puid]; }          // 空载荷＝该用户已离线
+                else {
+                    var p;
+                    try { p = JSON.parse(raw); } catch (e) { return; }
+                    self.peers[puid] = { name: p.name || '匿名', ts: p.ts || Date.now() };
+                }
+                self._emitPresence();
+                return;
+            }
+
+            if (topic === self.tTyping) {
+                var t;
+                try { t = JSON.parse(raw); } catch (e) { return; }
+                if (t && t.uid !== self.uid) { self.onTyping(t.name); }
+            }
+        });
+
+        this.client.on('reconnect', function () { self.onStatus('connecting', '连接中断，正在重连…'); });
+        this.client.on('close', function () { self.connected = false; self.onStatus('offline', '连接已关闭，等待重连…'); });
+        this.client.on('offline', function () { self.onStatus('offline', '已离线，等待重连…'); });
+        this.client.on('error', function (err) {
+            self.onStatus('error', '通道异常：' + (err && err.message ? err.message : err));
+        });
+    };
+
+    /* 上报/刷新自己的在线状态（retain，所以新订阅者也能看到） */
+    MqttTransport.prototype._hello = function () {
+        if (!this.client || !this.client.connected) { return; }
+        this.client.publish(this.tPresence + '/' + this.uid,
+            JSON.stringify({ name: this.name, ts: Date.now() }), { qos: 1, retain: true });
+        this._emitPresence();
+    };
+
+    MqttTransport.prototype._emitPresence = function () {
+        var now = Date.now(), out = [{ uid: this.uid, name: this.name }];
+        for (var k in this.peers) {
+            // retain 兜底：心跳周期 30s，这里给 120s 宽限；
+            // 真掉线由 broker 的 LWT（空载荷）清除，不依赖这个兜底
+            if (now - this.peers[k].ts > 120000) { delete this.peers[k]; }
+            else { out.push({ uid: k, name: this.peers[k].name }); }
+        }
+        this.onPresence(out);
+    };
+
+    /* 历史裁剪：只保留最近 limit 条 retain 消息，超出的用空载荷删除 */
+    MqttTransport.prototype._schedulePrune = function () {
+        var self = this;
+        if (this.pruneTimer) { return; }
+        this.pruneTimer = global.setTimeout(function () {
+            self.pruneTimer = null;
+            self._prune();
+        }, 4000);
+    };
+
+    MqttTransport.prototype._prune = function () {
+        if (!this.client || !this.client.connected) { return; }
+        var map = this.brokerMsgs;
+        var ids = Object.keys(map);
+        var excess = ids.length - this.limit;
+        if (excess <= 0) { return; }
+        ids.sort(function (a, b) { return map[a] - map[b]; });
+        for (var i = 0; i < excess; i++) {
+            this.client.publish(this.tMsg + '/' + ids[i], '', { qos: 0, retain: true });
+            delete map[ids[i]];
+        }
+    };
+
+    MqttTransport.prototype.send = function (msg) {
+        if (!this.client || !this.client.connected) { return false; }
+        // retain + QoS1：新人能补到历史，且至少送达一次（靠 id 去重）
+        this.client.publish(this.tMsg + '/' + msg.id, JSON.stringify(msg), { qos: 1, retain: true });
+        this.brokerMsgs[msg.id] = msg.ts;
+        this._schedulePrune();
+        return true;
+    };
+
+    MqttTransport.prototype.typing = function () {
+        if (this.client && this.client.connected) {
+            this.client.publish(this.tTyping,
+                JSON.stringify({ uid: this.uid, name: this.name }), { qos: 0 });
+        }
+    };
+
+    MqttTransport.prototype.disconnect = function () {
+        if (this.timer) { global.clearInterval(this.timer); }
+        if (this.watchdog) { global.clearTimeout(this.watchdog); }
+        if (this.pruneTimer) { global.clearTimeout(this.pruneTimer); }
+        if (this.client) {
+            try {
+                // 主动离线：清掉自己的 retain 在线状态
+                this.client.publish(this.tPresence + '/' + this.uid, '', { qos: 1, retain: true });
+                this.client.end(true);
+            } catch (e) { /* 已断开 */ }
+        }
+    };
+
+    /* -- WebSocket 传输：自建服务端（配套 chat-worker/） ---------------------
+       协议与 chat-worker/src/index.js 一一对应：
+         发出  {t:'join',uid,name} / {t:'msg',id,text} / {t:'typing'}
+         收到  {t:'history',list} / {t:'msg',…} / {t:'presence',list} /
+               {t:'typing',name} / {t:'error',msg}
+       时间戳、昵称、限流都以服务端为准；客户端只负责收发与渲染。
+       ---------------------------------------------------------------------- */
+    function WsTransport(opts) {
+        this.room = opts.room;
+        this.url = opts.ws;
+        this.uid = opts.uid;
+        this.name = opts.name;
+        this.socket = null;
+        this.retry = 0;
+        this.closed = false;
+        this.status = 'offline';
+    }
+
+    WsTransport.prototype._endpoint = function () {
+        var sep = this.url.indexOf('?') >= 0 ? '&' : '?';
+        return this.url + sep + 'room=' + encodeURIComponent(this.room);
+    };
+
+    WsTransport.prototype.connect = function () {
+        var self = this;
+        if (!this.url) { this.onStatus('error', '未配置 WebSocket 地址（ws 参数）'); return; }
+        this.onStatus('connecting', '正在连接自建服务端…');
+
+        try { this.socket = new global.WebSocket(this._endpoint()); }
+        catch (e) { this.onStatus('error', 'WebSocket 地址无效：' + this.url); return; }
+
+        this.socket.onopen = function () {
+            self.retry = 0;
+            self.onStatus('online', '已连接自建服务端');
+            // 带上服务端签发的身份凭证；没有的话服务端会先要求过人机校验
+            self._join();
+        };
+
+        this.socket.onmessage = function (e) {
+            var p;
+            try { p = JSON.parse(e.data); } catch (err) { return; }
+            if (!p || !p.t) { return; }
+
+            if (p.t === 'welcome') {                 // 服务端刚签发的匿名身份
+                setToken(p.token);
+                self.onIdentity(p);
+                return;
+            }
+            if (p.t === 'cf') {                      // 需要先过一次人机校验
+                self.onStatus('connecting', '正在做人机校验…');
+                getTurnstileToken(p.sitekey, function (t) {
+                    if (!t) {
+                        self.onStatus('error', '人机校验未通过，请刷新页面重试');
+                        return;
+                    }
+                    self._join(t);
+                });
+                return;
+            }
+            if (p.t === 'history') {
+                if (p.me) { self.onIdentity(p.me); }
+                var list = p.list || [];
+                for (var i = 0; i < list.length; i++) { self.onMessage(list[i]); }
+                return;
+            }
+            if (p.t === 'msg') { self.onMessage(p); return; }   // 自己发的也会回来，靠 id 幂等去重
+            if (p.t === 'presence') { self.onPresence(p.list || []); return; }
+            if (p.t === 'typing') { self.onTyping(p.name); return; }
+            if (p.t === 'reaction') { if (self.onReaction) { self.onReaction(p); } return; }
+            if (p.t === 'error') { self.onStatus('error', p.msg || '服务端拒绝了这次操作'); }
+        };
+
+        this.socket.onerror = function () { self.onStatus('error', '连接出错'); };
+        this.socket.onclose = function () {
+            if (self.closed) { return; }
+            var wait = Math.min(30000, Math.pow(2, self.retry) * 1000);
+            self.onStatus('offline', '连接已断开，' + Math.round(wait / 1000) + 's 后重连');
+            self.retry++;
+            global.setTimeout(function () { if (!self.closed) { self.connect(); } }, wait);
+        };
+    };
+
+    WsTransport.prototype._join = function (cf) {
+        var msg = { t: 'join', token: getToken(), name: this.name };
+        if (cf) { msg.cf = cf; }
+        this._tx(msg);
+    };
+
+    WsTransport.prototype._tx = function (obj) {
+        if (this.socket && this.socket.readyState === 1) {
+            this.socket.send(JSON.stringify(obj));
+            return true;
+        }
+        return false;
+    };
+
+    /* 改名 / 回前台时重新上报身份，服务端据此刷新在线名单 */
+    WsTransport.prototype._hello = function () {
+        this._join();
+    };
+
+    WsTransport.prototype.send = function (msg) {
+        return this._tx({ t: 'msg', id: msg.id, text: msg.text });
+    };
+
+    WsTransport.prototype.typing = function () { this._tx({ t: 'typing' }); };
+
+    /* 表情回应：同一个 emoji 再点一次即取消（由服务端决定增删） */
+    WsTransport.prototype.react = function (id, emoji) {
+        this._tx({ t: 'react', id: id, emoji: emoji });
+    };
+
+    WsTransport.supportsReactions = true;
+
+    WsTransport.prototype.disconnect = function () {
+        this.closed = true;
+        if (this.socket) { try { this.socket.close(); } catch (e) { /* 忽略 */ } }
+    };
+
+    registerTransport('local', LocalTransport);
+    registerTransport('mqtt', MqttTransport);
+    registerTransport('ws', WsTransport);
+
+    /* --------------------------------------------------------------- 内核 */
+
+    var QUICK_REACTS = ['👍', '❤️', '😂', '🎉', '🤔', '👀'];
+
+    function parseRooms(raw, primary) {
+        var out = [];
+        var add = function (item) {
+            var s = String(item || '').trim();
+            if (!s) { return; }
+            var i = s.indexOf('|');
+            var name = (i < 0 ? s : s.slice(0, i)).trim().slice(0, 20);
+            var topic = (i < 0 ? '' : s.slice(i + 1)).trim().slice(0, 80);
+            if (!name) { return; }
+            for (var k = 0; k < out.length; k++) { if (out[k].name === name) { return; } }
+            out.push({ name: name, topic: topic });
+        };
+        String(raw || '').split(',').forEach(add);
+        if (!out.length) { add(primary || '大厅'); }
+        return out;
+    }
+
+    /** 消息正文渲染：转义 → @提及 → 链接 */
+    function renderText(text) {
+        var parts = String(text).split(/(@[^\s@]{1,16})/g);
+        var out = '';
+        for (var i = 0; i < parts.length; i++) {
+            var p = parts[i];
+            if (i % 2 === 1 && p.charAt(0) === '@') {
+                out += '<span class="cr-mention">' + esc(p) + '</span>';
+            } else {
+                out += linkify(esc(p));
+            }
+        }
+        return out;
+    }
+
+    function ChatRoom(root, opts) {
+        this.root = root;
+        this.opts = opts;
+        this.limit = opts.limit;
+
+        this.rooms = parseRooms(opts.rooms, opts.room);
+        this.room = this._pickRoom(opts.room);
+
+        this.messages = [];
+        this.seen = {};
+        this.reactions = {};        // msgId -> [{emoji, count, users}]
+        this.nodes = {};            // msgId -> 消息行元素
+        this.membersOnline = [];
+        this.knownMembers = {};     // uid -> true（用来识别"新加入"）
+        this.presenceReady = false;
+        this.typingUntil = 0;
+        this.typingTimer = null;
+        this.lastTypingSent = 0;
+        this.unread = 0;
+        this.query = '';
+        this.reactPickerFor = '';
+        this.ready = false;
+        this.status = 'offline';
+        this.statusDetail = '';
+        this.notice = opts.notice || '';
+        this.reactSupported = false;
+
+        this.me = lsGet('wb-chat:me', null) || { uid: uid('u'), name: '' };
+        if (!this.me.uid) { this.me.uid = uid('u'); }
+
+        this.identity = tokenInfo(getToken());
+        if (this.identity && !this.me.name) { this.me.name = this.identity.name || ''; }
+
+        this._cacheDom();
+        this._bind();
+        this._applyOptions();
+
+        if (this.me.name) { this._start(); }
+        else { this._askName(); }
+    }
+
+    ChatRoom.prototype._pickRoom = function (name) {
+        var want = String(name || '').trim();
+        for (var i = 0; i < this.rooms.length; i++) {
+            if (this.rooms[i].name === want) { return want; }
+        }
+        return this.rooms[0].name;
+    };
+
+    ChatRoom.prototype._roomInfo = function () {
+        for (var i = 0; i < this.rooms.length; i++) {
+            if (this.rooms[i].name === this.room) { return this.rooms[i]; }
+        }
+        return { name: this.room, topic: '' };
+    };
+
+    ChatRoom.prototype._cacheDom = function () {
+        var q = function (sel) { return this.root.querySelector(sel); }.bind(this);
+        this.dom = {
+            station: q('[data-cr-station]'),
+            rail: q('[data-cr-rail]'),
+            channels: q('[data-cr-channels]'),
+            roomSearch: q('[data-cr-roomsearch]'),
+            info: q('[data-cr-info]'),
+            meAvatar: q('[data-cr-meavatar]'),
+            meName: q('[data-cr-mename]'),
+            meStatus: q('[data-cr-mestatus]'),
+            rename: q('[data-cr-rename]'),
+            login: q('[data-cr-login]'),
+            title: q('[data-cr-title]'),
+            topic: q('[data-cr-topic]'),
+            search: q('[data-cr-search]'),
+            sideToggle: q('[data-cr-side-toggle]'),
+            jumpTop: q('[data-cr-jump-top]'),
+            link: q('[data-cr-link]'),
+            stream: q('[data-cr-stream]'),
+            hint: q('[data-cr-hint]'),
+            hintText: q('[data-cr-hinttext]'),
+            dots: q('.cr-dots'),
+            input: q('[data-cr-input]'),
+            send: q('[data-cr-send]'),
+            count: q('[data-cr-count]'),
+            emojiPanel: q('[data-cr-emoji]'),
+            plus: q('[data-cr-emoji-btn]'),
+            emojis: q('[data-cr-emojis]'),
+            memberPanel: q('[data-cr-memberpanel]'),
+            members: q('[data-cr-members]'),
+            mask: q('[data-cr-mask]'),
+            dialogInput: q('.cr-dialog-input'),
+            dialogOk: q('.cr-dialog-ok'),
+            dialogTip: q('[data-cr-dialogtip]')
+        };
+    };
+
+    ChatRoom.prototype._applyOptions = function () {
+        if (this.opts.height) { this.root.style.setProperty('--cr-height', this.opts.height + 'px'); }
+        if (this.dom.station && this.opts.station) { this.dom.station.textContent = this.opts.station; }
+        this._paintRooms();
+        this._paintRoom();
+        this._refreshHint();
+    };
+
+    /* ------------------------------------------------------------ 房间渲染 */
+
+    ChatRoom.prototype._paintRooms = function () {
+        var self = this;
+        if (this.dom.rail) {
+            this.dom.rail.innerHTML = '';
+            this.rooms.forEach(function (r) {
+                var b = document.createElement('button');
+                b.type = 'button';
+                b.className = 'cr-rail-item' + (r.name === self.room ? ' is-active' : '');
+                b.title = r.name;
+                b.textContent = initial(r.name);
+                b.setAttribute('style', 'background:' + avatarColor(r.name));
+                b.addEventListener('click', function () { self._switchRoom(r.name); });
+                self.dom.rail.appendChild(b);
+            });
+        }
+        if (this.dom.channels) {
+            this.dom.channels.innerHTML = '';
+            this.rooms.forEach(function (r) {
+                var b = document.createElement('button');
+                b.type = 'button';
+                b.className = 'cr-channel' + (r.name === self.room ? ' is-active' : '');
+                b.dataset.room = r.name;
+                b.innerHTML = '<span class="cr-h">#</span><span class="cr-channel-name"></span>';
+                b.querySelector('.cr-channel-name').textContent = r.name;
+                b.addEventListener('click', function () { self._switchRoom(r.name); });
+                self.dom.channels.appendChild(b);
+            });
+        }
+        this._filterRooms();
+    };
+
+    ChatRoom.prototype._filterRooms = function () {
+        if (!this.dom.channels || !this.dom.roomSearch) { return; }
+        var q = (this.dom.roomSearch.value || '').trim().toLowerCase();
+        var items = this.dom.channels.querySelectorAll('.cr-channel');
+        for (var i = 0; i < items.length; i++) {
+            var name = (items[i].dataset.room || '').toLowerCase();
+            items[i].hidden = !!q && name.indexOf(q) < 0;
+        }
+    };
+
+    ChatRoom.prototype._paintRoom = function () {
+        var info = this._roomInfo();
+        if (this.dom.title) { this.dom.title.textContent = this.room; }
+        if (this.dom.topic) { this.dom.topic.textContent = info.topic || ''; }
+        if (this.dom.input) { this.dom.input.placeholder = '发送到 # ' + this.room; }
+        this._paintInfo();
+    };
+
+    ChatRoom.prototype._paintInfo = function () {
+        if (!this.dom.info) { return; }
+        var state = this.status === 'online'
+            ? '<span class="cr-ok">已连接</span>'
+            : (this.status === 'connecting'
+                ? '<span>连接中…</span>'
+                : '<span class="cr-bad">未连接</span>');
+        var html = '房间 <code>' + esc(this.room) + '</code><br>' +
+            '在线 <b>' + this.membersOnline.length + '</b> 人<br>' +
+            '消息 <b>' + this.messages.length + '</b> 条<br>' +
+            '通道 ' + state;
+        html += '<br>身份 ' + (this.identity && this.identity.kind === 'github'
+            ? '<span class="cr-ok">GitHub</span>'
+            : '<span>匿名</span>');
+        if (this.notice) { html += '<br><span class="cr-bad">' + esc(this.notice) + '</span>'; }
+        this.dom.info.innerHTML = html;
+    };
+
+    ChatRoom.prototype._switchRoom = function (name) {
+        if (!name || name === this.room) { return; }
+        this.room = name;
+
+        if (this.transport) {
+            try { this.transport.disconnect(); } catch (e) { /* 忽略 */ }
+            this.transport = null;
+        }
+        this.messages = [];
+        this.seen = {};
+        this.reactions = {};
+        this.nodes = {};
+        this.membersOnline = [];
+        this.knownMembers = {};
+        this.presenceReady = false;
+        this.unread = 0;
+        this.query = '';
+        this.reactPickerFor = '';
+        this.typingUntil = 0;
+        this.dom.stream.innerHTML = '';
+        if (this.dom.search) { this.dom.search.value = ''; }
+        this._toggleEmpty(true);
+        this._paintRoom();
+        this._renderMembers();
+        this._refreshHint();
+        this._connect();
+    };
+
+    /* ---------------------------------------------------------------- 连接 */
+
+    ChatRoom.prototype._start = function () {
+        var self = this;
+        this.ready = true;
+        this._paintMe();
+        this._renderEmoji();
+        this._toggleEmpty(true);
+        this._paintRoom();
+        this._connect();
+
+        if (!this._unloadBound) {
+            this._unloadBound = true;
+            global.addEventListener('beforeunload', function () {
+                if (self.transport) { self.transport.disconnect(); }
+            });
+        }
+    };
+
+    ChatRoom.prototype._connect = function () {
+        var self = this;
+        var Factory = FACTORIES[this.opts.transport];
+        if (!Factory) { this._setStatus('error', '未知通道：' + this.opts.transport); return; }
+
+        this.reactSupported = !!Factory.supportsReactions;
+
+        this.transport = new Factory({
+            room: this.room,
+            limit: this.limit,
+            uid: this.me.uid,
+            name: this.me.name,
+            broker: this.opts.broker,
+            ws: this.opts.ws,
+            key: this.opts.key
+        });
+        this.transport.onStatus = function (s, d) { self._setStatus(s, d); };
+        this.transport.onMessage = function (m) { self._receive(m); };
+        this.transport.onPresence = function (l) { self._setMembers(l); };
+        this.transport.onTyping = function (n) { self._showTyping(n); };
+        this.transport.onIdentity = function (i) { self._onIdentity(i); };
+        this.transport.onReaction = function (p) { self._onReaction(p); };
+        this.transport.connect();
+    };
+
+    ChatRoom.prototype._setStatus = function (status, detail) {
+        this.status = status;
+        this.statusDetail = detail || '';
+        this.root.dataset.status = status;   // 供样式与自动化测试观察
+        if (this.dom.meStatus) {
+            this.dom.meStatus.textContent = status === 'online' ? '在线'
+                : (status === 'connecting' ? '连接中…' : '离线');
+        }
+        this._paintInfo();
+        this._syncSend();
+        this._refreshHint();
+    };
+
+    ChatRoom.prototype._onIdentity = function (info) {
+        if (!info || !info.uid) { return; }
+        this.identity = {
+            uid: info.uid,
+            kind: info.kind || 'anon',
+            name: info.name || this.me.name,
+            avatar: info.avatar || (this.identity && this.identity.avatar) || ''
+        };
+        this.me.uid = info.uid;
+        if (info.name) { this.me.name = info.name; }
+        lsSet('wb-chat:me', this.me);
+        this._paintMe();
+        this._paintInfo();
+    };
+
+    /* ------------------------------------------------------------ 身份展示 */
+
+    ChatRoom.prototype._paintMe = function () {
+        if (this.dom.meName) { this.dom.meName.textContent = this.me.name || '未命名'; }
+        var av = this.identity && this.identity.avatar;
+        if (this.dom.meAvatar) {
+            if (this.identity && this.identity.kind === 'github' && av) {
+                this.dom.meAvatar.textContent = '';
+                this.dom.meAvatar.setAttribute('style', 'background:none');
+                this.dom.meAvatar.innerHTML = '<img src="' + esc(av) + '" alt="">';
+            } else {
+                this.dom.meAvatar.textContent = initial(this.me.name);
+                this.dom.meAvatar.setAttribute('style', 'background:' + avatarColor(this.me.uid || this.me.name));
+            }
+        }
+        if (this.dom.login) {
+            var logged = !!(this.identity && this.identity.kind === 'github');
+            var wsMode = this.opts.transport === 'ws' && !!this.opts.ws;
+            this.dom.login.hidden = logged || !wsMode;
+        }
+    };
+
+    ChatRoom.prototype._showName = function (on) {
+        this.dom.mask.hidden = !on;
+        if (on) {
+            var el = this.dom.dialogInput;
+            global.setTimeout(function () { try { el.focus(); } catch (e) {} }, 30);
+        }
+    };
+
+    ChatRoom.prototype._askName = function (isRename) {
+        this.dom.dialogInput.value = this.me.name || '';
+        if (this.dom.dialogTip) {
+            this.dom.dialogTip.textContent = isRename
+                ? '改名后新消息将使用新昵称'
+                : '昵称仅用于展示，无需注册';
+        }
+        this._showName(true);
+    };
+
+    ChatRoom.prototype._submitName = function () {
+        var v = (this.dom.dialogInput.value || '').trim().slice(0, 16);
+        if (!v) { return; }
+        var renamed = !!this.me.name;
+        this.me.name = v;
+        lsSet('wb-chat:me', this.me);
+        this._showName(false);
+        this._paintMe();
+        if (renamed && this.transport && typeof this.transport._hello === 'function') {
+            this.transport.name = this.me.name;
+            this.transport._hello();
+        }
+        if (!this.ready) { this._start(); }
+    };
+
+    /* ------------------------------------------------------------ 事件绑定 */
+
+    ChatRoom.prototype._bind = function () {
+        var self = this;
+
+        this.dom.dialogOk.addEventListener('click', function () { self._submitName(); });
+        this.dom.dialogInput.addEventListener('keydown', function (e) {
+            if (e.key === 'Enter') { e.preventDefault(); self._submitName(); }
+        });
+        if (this.dom.rename) {
+            this.dom.rename.addEventListener('click', function () { self._askName(true); });
+        }
+        if (this.dom.login) {
+            this.dom.login.addEventListener('click', function () {
+                var origin = wsOrigin(self.opts.ws);
+                if (!origin) { return; }
+                var back = global.location.origin + global.location.pathname;
+                global.location.href = origin + '/auth/github/start?return=' + encodeURIComponent(back);
+            });
+        }
+
+        this.dom.send.addEventListener('click', function () { self._submit(); });
+        this.dom.input.addEventListener('keydown', function (e) {
+            if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); self._submit(); }
+        });
+        this.dom.input.addEventListener('input', function () { self._onInput(); });
+        this.dom.input.addEventListener('focus', function () {
+            global.setTimeout(function () {
+                if (self.dom.input.scrollIntoView) {
+                    self.dom.input.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+                }
+            }, 300);
+        });
+
+        if (this.dom.roomSearch) {
+            this.dom.roomSearch.addEventListener('input', function () { self._filterRooms(); });
+        }
+        if (this.dom.search) {
+            this.dom.search.addEventListener('input', function () {
+                self.query = self.dom.search.value || '';
+                self._applySearch();
+            });
+        }
+        if (this.dom.sideToggle) {
+            this.dom.sideToggle.addEventListener('click', function () {
+                self.root.dataset.members = self.root.dataset.members === 'on' ? '' : 'on';
+            });
+        }
+        if (this.dom.jumpTop) {
+            this.dom.jumpTop.addEventListener('click', function () { self._scrollToBottom(true); });
+        }
+        if (this.dom.link) {
+            this.dom.link.addEventListener('click', function () {
+                var url = global.location.href;
+                if (global.navigator.clipboard) {
+                    global.navigator.clipboard.writeText(url);
+                    self._flash('链接已复制');
+                } else {
+                    self._flash('请手动复制地址栏链接');
+                }
+            });
+        }
+
+        var toggleEmoji = function () {
+            self.dom.emojiPanel.hidden = !self.dom.emojiPanel.hidden;
+            if (!self.dom.emojiPanel.hidden) { self.dom.input.focus(); }
+        };
+        if (this.dom.plus) { this.dom.plus.addEventListener('click', toggleEmoji); }
+        if (this.dom.emojis) { this.dom.emojis.addEventListener('click', toggleEmoji); }
+        this.dom.emojiPanel.addEventListener('click', function (e) {
+            var b = e.target.closest('button');
+            if (!b) { return; }
+            self._insert(b.textContent);
+            self.dom.emojiPanel.hidden = true;
+        });
+        document.addEventListener('click', function (e) {
+            if (!self.dom.emojiPanel.hidden && !self.root.contains(e.target)) {
+                self.dom.emojiPanel.hidden = true;
+            }
+        });
+
+        this.dom.stream.addEventListener('scroll', function () {
+            if (self._nearBottom() && self.unread) { self.unread = 0; self._refreshHint(); }
+        });
+
+        document.addEventListener('visibilitychange', function () {
+            if (document.hidden) { return; }
+            var t = self.transport;
+            if (t && typeof t._hello === 'function') { t._hello(); }
+        });
+        global.addEventListener('pageshow', function (e) {
+            if (e.persisted && self.transport && self.transport.client && !self.transport.client.connected) {
+                self.transport.client.reconnect();
+            }
+        });
+    };
+
+    /* ------------------------------------------------------------ 输入交互 */
+
+    ChatRoom.prototype._renderEmoji = function () {
+        var html = '';
+        for (var i = 0; i < EMOJIS.length; i++) {
+            html += '<button type="button">' + EMOJIS[i] + '</button>';
+        }
+        this.dom.emojiPanel.innerHTML = html;
+    };
+
+    ChatRoom.prototype._insert = function (ch) {
+        var el = this.dom.input;
+        var s = el.selectionStart === null || el.selectionStart === undefined ? el.value.length : el.selectionStart;
+        var e = el.selectionStart === null || el.selectionStart === undefined ? el.value.length : el.selectionEnd;
+        el.value = el.value.slice(0, s) + ch + el.value.slice(e);
+        el.selectionStart = el.selectionEnd = s + ch.length;
+        el.focus();
+        this._onInput();
+    };
+
+    ChatRoom.prototype._onInput = function () {
+        var len = this.dom.input.value.length;
+        if (len > MAX_LEN) {
+            this.dom.input.value = this.dom.input.value.slice(0, MAX_LEN);
+            len = MAX_LEN;
+        }
+        this._syncSend();
+
+        this.dom.input.style.height = '21px';
+        this.dom.input.style.height = Math.min(110, this.dom.input.scrollHeight) + 'px';
+
+        var now = Date.now();
+        if (len > 0 && this.transport && this.transport.typing && now - this.lastTypingSent > 3000) {
+            this.lastTypingSent = now;
+            this.transport.typing();
+        }
+    };
+
+    ChatRoom.prototype._syncSend = function () {
+        var len = this.dom.input.value.length;
+        var offline = this.status === 'offline' || this.status === 'error';
+        this.dom.send.disabled = len === 0 || offline;
+        if (this.dom.count) {
+            this.dom.count.hidden = len === 0;
+            if (len > 0) { this.dom.count.textContent = len + '/' + MAX_LEN; }
+        }
+    };
+
+    ChatRoom.prototype._submit = function () {
+        var text = (this.dom.input.value || '').replace(/\s+$/, '');
+        if (!text || !this.transport) { return; }
+        var msg = {
+            id: uid('m'),
+            room: this.room,
+            uid: this.me.uid,
+            name: this.me.name,
+            text: text,
+            ts: Date.now()
+        };
+        if (!this.transport.send(msg)) {
+            this._flash('发送失败：通道未连接');
+            return;
+        }
+        this._receive(msg, true);
+        this.dom.input.value = '';
+        this._onInput();
+    };
+
+    /* ---------------------------------------------------------------- 提示 */
+
+    ChatRoom.prototype._setHint = function (text, bad) {
+        if (this.dom.hintText) { this.dom.hintText.textContent = text || ''; }
+        if (this.dom.hint) { this.dom.hint.classList.toggle('is-bad', !!bad); }
+        if (!text && this.dom.dots) { this.dom.dots.hidden = true; }
+    };
+
+    ChatRoom.prototype._refreshHint = function () {
+        if (this.status === 'error' && this.statusDetail) { this._setHint(this.statusDetail, true); return; }
+        if (this.typingUntil && Date.now() < this.typingUntil) { return; }
+        if (this.unread) { this._setHint('↓ ' + this.unread + ' 条新消息'); return; }
+        if (this.notice) { this._setHint(this.notice); return; }
+        if (this.status === 'connecting' && !this.messages.length) { this._setHint('正在连接…'); return; }
+        this._setHint('');
+    };
+
+    ChatRoom.prototype._flash = function (text) {
+        this._setHint(text, true);
+        var self = this;
+        global.clearTimeout(this._flashTimer);
+        this._flashTimer = global.setTimeout(function () { self._refreshHint(); }, 3000);
+    };
+
+    ChatRoom.prototype._showTyping = function (name) {
+        var self = this;
+        this.typingUntil = Date.now() + 2600;
+        if (this.dom.dots) { this.dom.dots.hidden = false; }
+        this._setHint(name + ' 正在输入…');
+        global.clearTimeout(this.typingTimer);
+        this.typingTimer = global.setTimeout(function () {
+            self.typingUntil = 0;
+            if (self.dom.dots) { self.dom.dots.hidden = true; }
+            self._refreshHint();
+        }, 2600);
+    };
+
+    /* ---------------------------------------------------------------- 数据 */
+
+    ChatRoom.prototype._receive = function (m, isSelf) {
+        if (!m || typeof m.text !== 'string') { return; }
+        if (!m.id) { m.id = uid('m'); }
+        if (this.seen[m.id]) { return; }
+        this.seen[m.id] = 1;
+
+        m.ts = Number(m.ts) || Date.now();
+        m.name = String(m.name || '匿名').slice(0, 16);
+        m.text = m.text.slice(0, MAX_LEN);
+
+        if (m.reactions && m.reactions.length) {
+            this.reactions[m.id] = m.reactions;
+        }
+
+        var atBottom = this._nearBottom();
+        var idx = this.messages.length;
+        while (idx > 0 && this.messages[idx - 1].ts > m.ts) { idx--; }
+
+        if (idx === this.messages.length) {
+            this.messages.push(m);
+            this._appendNode(m);
+        } else {
+            this.messages.splice(idx, 0, m);
+            this._renderAll();
+        }
+
+        this._paintInfo();
+        this._saveHistory();
+
+        if (!atBottom && !(isSelf || m.uid === this.me.uid)) {
+            this.unread++;
+            this._refreshHint();
+        } else {
+            this._scrollToBottom(false);
+        }
+    };
+
+    ChatRoom.prototype._saveHistory = function () {
+        var self = this;
+        global.clearTimeout(this._saveTimer);
+        this._saveTimer = global.setTimeout(function () {
+            lsSet('wb-chat:hist:' + self.room, self.messages.slice(-self.limit));
+        }, 500);
+    };
+
+    /* ------------------------------------------------------------ 表情回应 */
+
+    ChatRoom.prototype._onReaction = function (p) {
+        if (!p || !p.id) { return; }
+        this.reactions[p.id] = Array.isArray(p.list) ? p.list : [];
+        this._renderReactions(p.id);
+    };
+
+    ChatRoom.prototype._toggleReaction = function (id, emoji) {
+        if (!this.transport || typeof this.transport.react !== 'function') { return; }
+        this.reactPickerFor = '';
+        this.transport.react(id, emoji);
+    };
+
+    ChatRoom.prototype._renderReactions = function (id) {
+        var row = this.nodes[id];
+        if (!row || !this.reactSupported) { return; }
+        var col = row.querySelector('.cr-msg-col');
+        var old = col.querySelector('.cr-reacts');
+        if (old) { old.remove(); }
+
+        var list = this.reactions[id] || [];
+        if (!list.length && this.reactPickerFor !== id) { return; }
+
+        var self = this;
+        var box = document.createElement('div');
+        box.className = 'cr-reacts';
+
+        list.forEach(function (r) {
+            var b = document.createElement('button');
+            b.type = 'button';
+            b.className = 'cr-react' + (r.users && r.users.indexOf(self.me.uid) >= 0 ? ' is-mine' : '');
+            b.textContent = r.emoji + ' ' + r.count;
+            b.addEventListener('click', function () { self._toggleReaction(id, r.emoji); });
+            box.appendChild(b);
+        });
+
+        if (this.reactPickerFor === id) {
+            QUICK_REACTS.forEach(function (e) {
+                var b = document.createElement('button');
+                b.type = 'button';
+                b.className = 'cr-react';
+                b.textContent = e;
+                b.addEventListener('click', function () { self._toggleReaction(id, e); });
+                box.appendChild(b);
+            });
+        } else {
+            var add = document.createElement('button');
+            add.type = 'button';
+            add.className = 'cr-react';
+            add.textContent = '＋';
+            add.title = '添加表情';
+            add.addEventListener('click', function () {
+                self.reactPickerFor = id;
+                self._renderReactions(id);
+            });
+            box.appendChild(add);
+        }
+
+        col.appendChild(box);
+    };
+
+    /* ------------------------------------------------------------- 成员名单 */
+
+    ChatRoom.prototype._setMembers = function (list) {
+        var self = this;
+        this.membersOnline = list.slice().sort(function (a, b) {
+            return a.name > b.name ? 1 : -1;
+        });
+
+        if (this.presenceReady) {
+            this.membersOnline.forEach(function (m) {
+                if (m.uid !== self.me.uid && !self.knownMembers[m.uid]) {
+                    self._sysLine(m.name, '加入了 #' + self.room);
+                }
+            });
+        }
+        this.membersOnline.forEach(function (m) { self.knownMembers[m.uid] = 1; });
+        this.presenceReady = true;
+
+        this._renderMembers();
+        this._paintInfo();
+    };
+
+    ChatRoom.prototype._offlineMembers = function () {
+        var online = {};
+        this.membersOnline.forEach(function (m) { online[m.uid] = 1; });
+        var seen = {}, out = [];
+        for (var i = this.messages.length - 1; i >= 0 && out.length < 15; i--) {
+            var m = this.messages[i];
+            if (!m.uid || online[m.uid] || seen[m.uid]) { continue; }
+            seen[m.uid] = 1;
+            out.push({ uid: m.uid, name: m.name });
+        }
+        return out;
+    };
+
+    ChatRoom.prototype._renderMembers = function () {
+        if (!this.dom.members) { return; }
+        var self = this;
+        var row = function (m, isOff) {
+            var mine = m.uid === self.me.uid;
+            return '<div class="cr-member' + (isOff ? ' is-off' : '') + '">' +
+                '<span class="cr-avatar cr-avatar--xs" style="background:' +
+                avatarColor(m.uid || m.name) + '">' + esc(initial(m.name)) + '</span>' +
+                '<span class="cr-member-name">' + esc(m.name) + '</span>' +
+                (mine ? '<span class="cr-member-tag">我</span>' : '') +
+                '</div>';
+        };
+
+        var html = '<div class="cr-members-title">在线 — ' + this.membersOnline.length + '</div>';
+        this.membersOnline.forEach(function (m) { html += row(m, false); });
+
+        var off = this._offlineMembers();
+        if (off.length) {
+            html += '<div class="cr-members-title">离线 — ' + off.length + '</div>';
+            off.forEach(function (m) { html += row(m, true); });
+        }
+
+        this.dom.members.innerHTML = html;
+    };
+
+    /* ---------------------------------------------------------------- 渲染 */
+
+    ChatRoom.prototype._node = function (m, prev) {
+        var frag = document.createDocumentFragment();
+
+        if (!prev || fmtDay(prev.ts) !== fmtDay(m.ts)) {
+            var day = document.createElement('div');
+            day.className = 'cr-day';
+            var ds = document.createElement('span');
+            ds.textContent = fmtDay(m.ts);
+            day.appendChild(ds);
+            frag.appendChild(day);
+        }
+
+        var row = document.createElement('div');
+        row.className = 'cr-msg';
+        row.dataset.id = m.id;
+
+        var av = document.createElement('span');
+        av.className = 'cr-avatar';
+        av.setAttribute('style', 'background:' + avatarColor(m.uid || m.name));
+        av.textContent = initial(m.name);
+
+        var col = document.createElement('div');
+        col.className = 'cr-msg-col';
+
+        var head = document.createElement('div');
+        head.className = 'cr-msg-head';
+
+        var nm = document.createElement('span');
+        nm.className = 'cr-msg-name';
+        nm.textContent = m.name;
+        nm.setAttribute('style', 'color:' + nameColor(m.uid || m.name));
+
+        var tm = document.createElement('span');
+        tm.className = 'cr-msg-time';
+        tm.textContent = fmtTime(m.ts);
+
+        head.appendChild(nm);
+        head.appendChild(tm);
+        if (m.kind === 'github') {
+            var tag = document.createElement('span');
+            tag.className = 'cr-member-tag';
+            tag.textContent = 'GitHub';
+            head.appendChild(tag);
+        }
+
+        var body = document.createElement('div');
+        body.className = 'cr-msg-body';
+        this._fillBody(body, m.text);
+
+        col.appendChild(head);
+        col.appendChild(body);
+        row.appendChild(av);
+        row.appendChild(col);
+        frag.appendChild(row);
+
+        return { frag: frag, row: row };
+    };
+
+    ChatRoom.prototype._fillBody = function (el, text) {
+        var t = String(text).trim();
+        if (IMAGE_RE.test(t)) {
+            var a = document.createElement('a');
+            a.href = t;
+            a.target = '_blank';
+            a.rel = 'noopener';
+            var img = document.createElement('img');
+            img.className = 'cr-img';
+            img.src = t;
+            img.alt = '';
+            img.loading = 'lazy';
+            a.appendChild(img);
+            el.appendChild(a);
+            return;
+        }
+        el.innerHTML = renderText(text);
+    };
+
+    ChatRoom.prototype._appendNode = function (m) {
+        var prev = this.messages[this.messages.length - 2] || null;
+        var n = this._node(m, prev);
+        this.nodes[m.id] = n.row;
+        this.dom.stream.appendChild(n.frag);
+        this._toggleEmpty(false);
+        this._applySearchTo(n.row, m);
+        this._renderReactions(m.id);
+    };
+
+    ChatRoom.prototype._renderAll = function () {
+        var frag = document.createDocumentFragment();
+        this.nodes = {};
+        for (var i = 0; i < this.messages.length; i++) {
+            var prev = i > 0 ? this.messages[i - 1] : null;
+            var n = this._node(this.messages[i], prev);
+            this.nodes[this.messages[i].id] = n.row;
+            frag.appendChild(n.frag);
+        }
+        this.dom.stream.innerHTML = '';
+        this.dom.stream.appendChild(frag);
+        this._toggleEmpty(this.messages.length === 0);
+        var self = this;
+        this.messages.forEach(function (m) {
+            self._applySearchTo(self.nodes[m.id], m);
+            self._renderReactions(m.id);
+        });
+        this._scrollToBottom(false);
+    };
+
+    ChatRoom.prototype._applySearchTo = function (row, m) {
+        if (!row) { return; }
+        var q = (this.query || '').trim().toLowerCase();
+        if (!q) { row.hidden = false; return; }
+        row.hidden = String(m.text).toLowerCase().indexOf(q) < 0 &&
+            String(m.name).toLowerCase().indexOf(q) < 0;
+    };
+
+    ChatRoom.prototype._applySearch = function () {
+        var self = this;
+        this.messages.forEach(function (m) { self._applySearchTo(self.nodes[m.id], m); });
+    };
+
+    ChatRoom.prototype._sysLine = function (name, text) {
+        var d = document.createElement('div');
+        d.className = 'cr-sys';
+        d.innerHTML = '<span><b>' + esc(name) + '</b> ' + esc(text) + '</span>';
+        this.dom.stream.appendChild(d);
+        this._scrollToBottom(false);
+    };
+
+    ChatRoom.prototype._toggleEmpty = function (on) {
+        var el = this.dom.stream.querySelector('.cr-empty');
+        if (on && !el) {
+            el = document.createElement('div');
+            el.className = 'cr-empty';
+            el.textContent = '还没有人说话，来打个招呼吧';
+            this.dom.stream.appendChild(el);
+        } else if (!on && el) {
+            el.remove();
+        }
+    };
+
+    ChatRoom.prototype._nearBottom = function () {
+        var s = this.dom.stream;
+        return s.scrollHeight - s.scrollTop - s.clientHeight < 90;
+    };
+
+    ChatRoom.prototype._scrollToBottom = function (smooth) {
+        var s = this.dom.stream;
+        if (smooth && s.scrollTo) { s.scrollTo({ top: s.scrollHeight, behavior: 'smooth' }); }
+        else { s.scrollTop = s.scrollHeight; }
+        this.unread = 0;
+    };
+    /* ---------------------------------------------------------------- 挂载 */
+
+    function readOptions(root) {
+        var d = root.dataset;
+        return {
+            room: d.room || '',
+            rooms: d.rooms || '',
+            station: d.station || '',
+            transport: d.transport || 'ws',
+            broker: d.broker || 'wss://broker.emqx.io:8084/mqtt',
+            ws: d.ws || '',
+            key: d.key || '',
+            limit: parseInt(d.limit, 10) > 0 ? parseInt(d.limit, 10) : 200,
+            height: parseInt(d.height, 10) > 0 ? parseInt(d.height, 10) : 0,
+            wantNotice: d.notice !== 'off'
+        };
+    }
+
+    function mount(root, opts) {
+        if (!root) { return null; }
+        var o = Object.assign(readOptions(root), opts || {});
+        if (!o.notice && o.transport === 'mqtt' && o.wantNotice !== false) {
+            o.notice = '公共频道：消息与在线名单对所有订阅者可见（含最近历史），请勿发送隐私信息。' +
+                (o.key ? '' : ' 建议在参数里加 key 让房间不易被搜到。');
+        }
+        var app = new ChatRoom(root, o);
+        if (!global.__wbChatRooms) { global.__wbChatRooms = []; }
+        global.__wbChatRooms.push(app);
+        return app;
+    }
+
+    function autoMount() {
+        var nodes = document.querySelectorAll('.chatroom[data-room]');
+        for (var i = 0; i < nodes.length; i++) {
+            if (!nodes[i].dataset.crMounted) {
+                nodes[i].dataset.crMounted = '1';
+                mount(nodes[i]);
+            }
+        }
+    }
+
+    /* 登录回来时先把凭证收好，再让组件进场 —— 顺序反了就会先用旧身份连一次 */
+    var HASH = absorbHash();
+    if (HASH && HASH.token) { setToken(HASH.token); }
+    var LOGIN_ERROR = (HASH && HASH.error) || '';
+
+    if (LOGIN_ERROR) {
+        // 挂载后把错误显示到首个实例的状态栏上，别让失败静默
+        var showErr = function () {
+            var el = document.querySelector('.chatroom [data-cr-barleft]');
+            if (el) { el.textContent = '登录失败：' + LOGIN_ERROR; el.classList.add('is-warn'); }
+        };
+        if (document.readyState === 'loading') { document.addEventListener('DOMContentLoaded', showErr); }
+        else { showErr(); }
+    }
+
+    global.ChatRoom = {
+        version: VERSION,
+        mount: mount,
+        autoMount: autoMount,
+        registerTransport: registerTransport,
+        esc: esc
+    };
+
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', autoMount);
+    } else {
+        autoMount();
+    }
+})(window);

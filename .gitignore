@@ -12,3 +12,7 @@ Gemfile.lock
 .obsidian/
 .mimosa/
 games-check-report.md
+chat-worker/node_modules/
+chat-worker/.wrangler/
+chat-worker/.dev.vars
+.workbuddy/

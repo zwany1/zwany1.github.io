@@ -1,0 +1,9 @@
+{
+  "devDependencies": {
+    "wrangler": "^4.149.0"
+  },
+  "dependencies": {
+    "@cloudflare/workerd-windows-64": "^1.20261008.1",
+    "@esbuild/win32-x64": "^0.28.2"
+  }
+}
