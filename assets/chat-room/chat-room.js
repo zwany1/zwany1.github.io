@@ -917,6 +917,7 @@
         if (this.dom.search) { this.dom.search.value = ''; }
         this._toggleEmpty(true);
         this._paintRoom();
+        this._paintRooms();   // ← 补上：同步左侧频道列表与竖栏图标的高亮（此前漏掉导致高亮停在大厅）
         this._renderMembers();
         this._refreshHint();
         this._connect();
