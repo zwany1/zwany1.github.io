@@ -39,12 +39,16 @@ const ALLOWED_RETURN = [
     'http://127.0.0.1:8000'
 ];
 
+// 登录后允许回落的路径：聊天室唯一入口是首页弹层（/chat/ 已下线）
+const ALLOWED_RETURN_PATHS = ['/', '/index.html'];
 function safeReturn(raw, fallback) {
     if (!raw) { return fallback; }
     try {
         const u = new URL(raw);
         const origin = u.origin;
         if (ALLOWED_RETURN.indexOf(origin) < 0) { return fallback; }
+        // 路径也必须在白名单内（旧版会把人带回已下线的 /chat/ 404 页）
+        if (ALLOWED_RETURN_PATHS.indexOf(u.pathname) < 0) { return fallback; }
         // 只保留 origin + pathname，丢掉别人塞进来的 query/hash
         return origin + u.pathname;
     } catch (e) {
@@ -99,7 +103,7 @@ export default {
                 return new Response('GitHub 登录尚未配置（缺少 GITHUB_CLIENT_ID / GITHUB_CLIENT_SECRET）',
                     { status: 503, headers: { 'content-type': 'text/plain; charset=utf-8' } });
             }
-            const back = safeReturn(url.searchParams.get('return'), 'https://zwany1.github.io/chat/');
+            const back = safeReturn(url.searchParams.get('return'), 'https://zwany1.github.io/');
             // 用同一个 HMAC 密钥给 state 签名 —— 防 CSRF，也顺手防了伪造的 return
             const state = await signToken({ rt: back, exp: Date.now() + 10 * 60 * 1000 }, env.IDENTITY_SECRET);
             const cb = url.origin + '/auth/github/callback';
@@ -117,7 +121,7 @@ export default {
             const state = url.searchParams.get('state');
             const back = safeReturn(
                 (await verifyToken(state, env.IDENTITY_SECRET) || {}).rt,
-                'https://zwany1.github.io/chat/'
+                'https://zwany1.github.io/'
             );
             const fail = (msg) => Response.redirect(back + '#chat_error=' + encodeURIComponent(msg), 302);
 
