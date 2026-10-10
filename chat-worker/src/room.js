@@ -18,6 +18,7 @@ const MAX_REF_TEXT = 120;   // 引用快照里保留的原文摘要长度
 const RATE_WINDOW = 10000;
 const RATE_MAX = 20;
 const RECALL_WINDOW = 3 * 60 * 1000;   // 普通成员只能撤回自己 3 分钟内的消息
+const HIST_PAGE = 100;                 // 「加载更早」每页条数
 // 管理员（「凹凸曼」）名单：凭证里的 role 或 GitHub 登录名任一命中即为管理员
 const ADMIN_LOGINS = ['zwany1'];
 
@@ -48,6 +49,20 @@ export class ChatRoom {
             for (const stmt of MIGRATIONS) {
                 try { this.sql.exec(stmt); } catch (e) { /* 已有该列 */ }
             }
+            // 限流（uid 级持久化，断线重连不清零）/ 撤回与封禁审计
+            this.sql.exec(`CREATE TABLE IF NOT EXISTS rate (
+                uid    TEXT NOT NULL,
+                bucket INTEGER NOT NULL,
+                count  INTEGER NOT NULL,
+                PRIMARY KEY (uid, bucket)
+            )`);
+            this.sql.exec(`CREATE TABLE IF NOT EXISTS audit (
+                id     INTEGER PRIMARY KEY AUTOINCREMENT,
+                action TEXT NOT NULL,
+                actor  TEXT NOT NULL,
+                target TEXT NOT NULL,
+                ts     INTEGER NOT NULL
+            )`);
             // 表情回应：谁对哪条消息点了哪个 emoji。用"存在即选中"的语义，
             // 同一个人对同一条消息同一个 emoji 只会有一行，重复点击就是取消。
             this.sql.exec(`CREATE TABLE IF NOT EXISTS reactions (
@@ -87,8 +102,10 @@ export class ChatRoom {
         if (!p || typeof p.t !== 'string') { return; }
 
         if (p.t === 'join') { await this._join(ws, p); return; }
-        if (p.t === 'msg') { this._message(ws, p); return; }
+        if (p.t === 'msg') { await this._message(ws, p); return; }
         if (p.t === 'del') { this._delete(ws, p); return; }
+        if (p.t === 'hist') { this._histBefore(ws, p); return; }
+        if (p.t === 'ban') { await this._banRequest(ws, p); return; }
         if (p.t === 'typing') { this._typing(ws); return; }
         if (p.t === 'react') { this._react(ws, p); }
     }
@@ -145,7 +162,15 @@ export class ChatRoom {
         this._accept(ws, anon.payload, p.name);
     }
 
-    _accept(ws, payload, wantedName) {
+    async _accept(ws, payload, wantedName) {
+        // 封禁检查：被封禁的用户直接打回，不进入房间（结果缓存 60s，避免每次重连都跨 DO 查询）
+        const ban = await this._checkBan(payload.uid);
+        if (ban.banned) {
+            try { ws.serializeAttachment({ ip: this._meta(ws).ip || '', uid: payload.uid, banned: ban.until }); } catch (e) { /* 忽略 */ }
+            this._send(ws, { t: 'banned', msg: '你已被封禁' + (ban.reason ? '（' + ban.reason + '）' : ''), until: ban.until });
+            return;
+        }
+
         // 登录身份：昵称一律以凭证为准，客户端自报的名字不采信（否则可顶着别人的名字说话）。
         // 匿名模式（REQUIRE_LOGIN=false）才允许自取昵称。
         const isGithub = payload.kind === 'github';
@@ -175,18 +200,25 @@ export class ChatRoom {
             if (r.ref) { try { r.ref = JSON.parse(r.ref); } catch (e) { r.ref = null; } }
         }
 
-        this._send(ws, { t: 'history', list: rows, me: { uid: meta.uid, name: meta.name, kind: meta.kind, role: meta.role, avatar: meta.avatar } });
+        this._send(ws, { t: 'history', list: rows, now: Date.now(), me: { uid: meta.uid, name: meta.name, kind: meta.kind, role: meta.role, avatar: meta.avatar } });
 
         this._presence();
     }
 
     /** 取最近 MAX_HISTORY 条消息的回应，聚合成 [{emoji, count, users}] */
     _reactionsFor() {
+        const ids = [...this.sql.exec('SELECT id FROM messages ORDER BY ts DESC LIMIT ?', MAX_HISTORY)]
+            .map(function (r) { return r.id; });
+        return this._reactionsForIds(ids);
+    }
+
+    /** 按指定消息 id 集合聚合回应（分页加载更早的历史时用） */
+    _reactionsForIds(ids) {
         const out = {};
+        if (!ids.length) { return out; }
+        const placeholders = ids.map(function () { return '?'; }).join(',');
         const rows = [...this.sql.exec(
-            `SELECT msg_id, emoji, uid FROM reactions
-             WHERE msg_id IN (SELECT id FROM messages ORDER BY ts DESC LIMIT ?)`,
-            MAX_HISTORY
+            `SELECT msg_id, emoji, uid FROM reactions WHERE msg_id IN (${placeholders})`, ...ids
         )];
         for (const row of rows) {
             const list = out[row.msg_id] || (out[row.msg_id] = []);
@@ -210,22 +242,44 @@ export class ChatRoom {
         try { ws.send(JSON.stringify(obj)); } catch (e) { /* 连接已断 */ }
     }
 
-    _message(ws, p) {
+    async _message(ws, p) {
         const meta = this._meta(ws);
         if (!meta.uid) { return; }
+
+        // 已被封禁的连接不应再发出任何消息（join 时与被踢时都会设置 meta.banned）
+        if (meta.banned && meta.banned > Date.now()) {
+            this._send(ws, { t: 'error', msg: '你已被封禁，无法发言' });
+            return;
+        }
 
         const text = String(p.text || '').slice(0, MAX_TEXT).replace(/\s+$/, '');
         if (!text) { return; }
 
-        // 服务端限流：客户端限流可被绕过，这里不行
+        // 管理命令：/ban 昵称 [小时]（仅管理员），不作为普通消息发送
+        if (meta.role === 'admin' && text.startsWith('/ban ')) {
+            await this._handleBanCommand(ws, meta, text);
+            return;
+        }
+
+        // 服务端限流：客户端限流可被绕过，这里不行。
+        // 计数按 **uid 持久化**（SQLite 分桶），断线重连也不会清零。
         const now = Date.now();
-        const sent = (meta.sent || []).filter(function (t) { return now - t < RATE_WINDOW; });
-        if (sent.length >= RATE_MAX) {
+        const bucket = Math.floor(now / RATE_WINDOW);
+        const rateRow = [...this.sql.exec(
+            'SELECT count FROM rate WHERE uid = ? AND bucket = ?', meta.uid, bucket
+        )][0];
+        if ((rateRow ? rateRow.count : 0) >= RATE_MAX) {
             this._send(ws, { t: 'error', msg: '发送太快了，请稍后再试' });
             return;
         }
-        sent.push(now);
-        meta.sent = sent;
+        this.sql.exec(
+            'INSERT OR REPLACE INTO rate (uid, bucket, count) VALUES (?, ?, ?)',
+            meta.uid, bucket, (rateRow ? rateRow.count : 0) + 1
+        );
+        // 顺手清掉 2 个窗口之前的旧桶，表不会无限膨胀
+        if (!rateRow) {
+            this.sql.exec('DELETE FROM rate WHERE bucket < ?', bucket - 2);
+        }
         try { ws.serializeAttachment(meta); } catch (e) { /* 忽略 */ }
 
         // 引用快照：客户端只传被引消息 id，内容一律以服务端库里的为准（防伪造）
@@ -324,6 +378,11 @@ export class ChatRoom {
         this.sql.exec('UPDATE messages SET deleted = 1 WHERE id = ?', id);
         // 被撤回消息上的表情回应一并清掉
         this.sql.exec('DELETE FROM reactions WHERE msg_id = ?', id);
+        // 审计：谁在什么时候撤了谁的消息
+        this.sql.exec(
+            'INSERT INTO audit (action, actor, target, ts) VALUES (?, ?, ?, ?)',
+            'recall', meta.name, id, Date.now()
+        );
         this._broadcast({ t: 'msgdel', id: id, by: meta.name }, null);
     }
 
@@ -377,7 +436,19 @@ export class ChatRoom {
         }
     }
 
+    /** presence 广播节流：高频进出时避免 O(N) 广播风暴（400ms 合并） */
     _presence() {
+        if (this._pThrottling) { this._pPending = true; return; }
+        this._pThrottling = true;
+        this._pPending = false;
+        this._broadcastPresenceNow();
+        setTimeout(() => {
+            this._pThrottling = false;
+            if (this._pPending) { this._presence(); }
+        }, 400);
+    }
+
+    _broadcastPresenceNow() {
         const sockets = this.ctx.getWebSockets();
         const seen = {};
         const list = [];
@@ -389,5 +460,129 @@ export class ChatRoom {
             list.push({ uid: m.uid, name: m.name, kind: m.kind || 'anon', avatar: m.avatar || '' });
         }
         this._broadcast({ t: 'presence', list: list }, null);
+    }
+
+    /** 封禁状态查询（60s 内存缓存；Accounts DO 查询失败按未封禁处理，可用性优先） */
+    async _checkBan(uid) {
+        if (!uid) { return { banned: false }; }
+        const now = Date.now();
+        this._banCache = this._banCache || {};
+        const hit = this._banCache[uid];
+        if (hit && now - hit.at < 60000) {
+            return hit.until && hit.until > now ? { banned: true, until: hit.until, reason: hit.reason } : { banned: false };
+        }
+        let result = { banned: false };
+        try {
+            const acct = this.env.ACCOUNTS.get(this.env.ACCOUNTS.idFromName('accounts-v1'));
+            // 注意：DO stub 的 fetch 必须是绝对 URL（相对路径会抛错被 catch 吞掉）
+            const res = await acct.fetch('https://accounts/checkban?uid=' + encodeURIComponent(uid));
+            if (res.ok) {
+                const d = JSON.parse(await res.text());
+                result = d.banned ? { banned: true, until: d.until || 0, reason: d.reason || '' } : { banned: false };
+            }
+        } catch (e) { /* 查询失败按未封禁处理 */ }
+        this._banCache[uid] = { at: now, until: result.until || 0, reason: result.reason || '' };
+        return result;
+    }
+
+    /** 管理命令：/ban 昵称 [小时]（默认 24h，最长 720h）。成功后目标连接被踢出并全员公告 */
+    async _handleBanCommand(ws, meta, text) {
+        const mm = text.match(/^\/ban\s+(\S{1,16})(?:\s+(\d{1,4}))?$/);
+        if (!mm) {
+            this._send(ws, { t: 'error', msg: '用法：/ban 昵称 [小时数]，例如 /ban 张三 24' });
+            return;
+        }
+        const targetName = mm[1];
+        const hours = Math.min(720, Math.max(1, parseInt(mm[2] || '24', 10) || 24));
+        if (targetName === meta.name) {
+            this._send(ws, { t: 'error', msg: '不能封禁自己' });
+            return;
+        }
+        // 在线成员里找目标
+        let targetUid = null;
+        for (const s of this.ctx.getWebSockets()) {
+            if (s.readyState !== 1) { continue; }
+            const om = this._meta(s);
+            if (om.uid && om.name === targetName) { targetUid = om.uid; break; }
+        }
+        if (!targetUid) {
+            this._send(ws, { t: 'error', msg: '在线成员里没有叫「' + targetName + '」的人' });
+            return;
+        }
+        await this._banByUid(ws, meta, targetUid, targetName, hours);
+    }
+
+    /** 封禁核心：写 Accounts、审计、踢人、全员公告。admin 校验由调用方完成 */
+    async _banByUid(ws, meta, targetUid, targetName, hours) {
+        const until = Date.now() + hours * 3600 * 1000;
+        try {
+            const acct = this.env.ACCOUNTS.get(this.env.ACCOUNTS.idFromName('accounts-v1'));
+            await acct.fetch('https://accounts/ban', {
+                method: 'POST',
+                headers: { 'content-type': 'application/json' },
+                body: JSON.stringify({ uid: targetUid, reason: 'by ' + meta.name, until: until })
+            });
+        } catch (e) {
+            this._send(ws, { t: 'error', msg: '封禁写入失败，请稍后再试' });
+            return;
+        }
+        this.sql.exec(
+            'INSERT INTO audit (action, actor, target, ts) VALUES (?, ?, ?, ?)',
+            'ban', meta.name, targetUid + ' ' + hours + 'h', Date.now()
+        );
+        this._invalidateBanCache(targetUid);
+        // 踢掉目标的所有连接（本房间内的）
+        for (const s of this.ctx.getWebSockets()) {
+            if (s.readyState !== 1) { continue; }
+            const om = this._meta(s);
+            if (om.uid === targetUid) {
+                this._send(s, { t: 'banned', msg: '你已被管理员封禁 ' + hours + ' 小时', until: until });
+                try { s.close(1008, 'banned'); } catch (e) { /* 忽略 */ }
+            }
+        }
+        this._broadcast({ t: 'sys', text: '「' + targetName + '」已被管理员封禁 ' + hours + ' 小时' }, null);
+        this._invalidateBanCache(targetUid);
+    }
+
+    _invalidateBanCache(uid) {
+        if (this._banCache) { delete this._banCache[uid]; }
+    }
+
+    /** WS 封禁请求（admin 消息操作条按钮）：{t:'ban', uid, hours} */
+    async _banRequest(ws, p) {
+        const meta = this._meta(ws);
+        if (meta.role !== 'admin') {
+            this._send(ws, { t: 'error', msg: '只有管理员（凹凸曼）可以封禁成员' });
+            return;
+        }
+        const uid = String(p.uid || '').slice(0, 64);
+        const hours = Math.min(720, Math.max(1, Number(p.hours) || 24));
+        if (!uid || uid === meta.uid) { return; }
+        let targetName = String(p.name || '').slice(0, 16) || '成员';
+        for (const s of this.ctx.getWebSockets()) {
+            if (s.readyState !== 1) { continue; }
+            const om = this._meta(s);
+            if (om.uid === uid) { targetName = om.name || targetName; break; }
+        }
+        await this._banByUid(ws, meta, uid, targetName, hours);
+    }
+
+    /** 加载更早的历史：前端传 before（最早一条消息的 ts），返回更早的 100 条 */
+    _histBefore(ws, p) {
+        const meta = this._meta(ws);
+        if (!meta.uid) { return; }
+        const before = Number(p.before) || 0;
+        if (!before) { return; }
+        const rows = [...this.sql.exec(
+            'SELECT id, uid, name, kind, role, avatar, ref, deleted, text, ts FROM messages WHERE ts < ? ORDER BY ts DESC LIMIT ?',
+            before, HIST_PAGE
+        )];
+        rows.reverse();
+        const reacts = this._reactionsForIds(rows.map(function (r) { return r.id; }));
+        for (const r of rows) {
+            r.reactions = reacts[r.id] || [];
+            if (r.ref) { try { r.ref = JSON.parse(r.ref); } catch (e) { r.ref = null; } }
+        }
+        this._send(ws, { t: 'histmore', list: rows, hasMore: rows.length >= HIST_PAGE });
     }
 }

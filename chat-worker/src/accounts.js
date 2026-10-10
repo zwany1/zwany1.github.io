@@ -34,6 +34,13 @@ export class Accounts {
             for (const stmt of MIGRATIONS) {
                 try { this.sql.exec(stmt); } catch (e) { /* 已有该列 */ }
             }
+            // 封禁名单：全局生效（跨房间、跨连接），until 为 0/过去时间即未封禁
+            this.sql.exec(`CREATE TABLE IF NOT EXISTS bans (
+                uid        TEXT PRIMARY KEY,
+                reason     TEXT NOT NULL DEFAULT '',
+                until      INTEGER NOT NULL,
+                created_at INTEGER NOT NULL
+            )`);
         });
     }
 
@@ -73,6 +80,45 @@ export class Accounts {
                 uid, provider, providerUid, login, name, avatar, now, now
             );
             return this._json({ uid: uid, login: login, created: true });
+        }
+
+        // 封禁：设置/更新（until 传 0 表示解封）
+        if (request.method === 'POST' && url.pathname === '/ban') {
+            let body;
+            try { body = await request.json(); } catch (e) { return this._json({ error: 'bad json' }, 400); }
+            const uid = String(body.uid || '').slice(0, 64);
+            const reason = String(body.reason || '').slice(0, 100);
+            const until = Number(body.until) || 0;
+            if (!uid) { return this._json({ error: 'missing uid' }, 400); }
+            if (until > Date.now()) {
+                this.sql.exec(
+                    'INSERT OR REPLACE INTO bans (uid, reason, until, created_at) VALUES (?, ?, ?, ?)',
+                    uid, reason, until, Date.now()
+                );
+            } else {
+                this.sql.exec('DELETE FROM bans WHERE uid = ?', uid);
+            }
+            return this._json({ ok: true, uid: uid, until: until });
+        }
+
+        // 解封
+        if (request.method === 'POST' && url.pathname === '/unban') {
+            let body;
+            try { body = await request.json(); } catch (e) { return this._json({ error: 'bad json' }, 400); }
+            const uid = String(body.uid || '').slice(0, 64);
+            if (!uid) { return this._json({ error: 'missing uid' }, 400); }
+            this.sql.exec('DELETE FROM bans WHERE uid = ?', uid);
+            return this._json({ ok: true });
+        }
+
+        // 封禁状态查询（房间 DO 在用户 join 时调用）
+        if (request.method === 'GET' && url.pathname === '/checkban') {
+            const uid = url.searchParams.get('uid') || '';
+            const rows = [...this.sql.exec('SELECT reason, until FROM bans WHERE uid = ?', uid)];
+            if (rows.length && rows[0].until > Date.now()) {
+                return this._json({ banned: true, until: rows[0].until, reason: rows[0].reason });
+            }
+            return this._json({ banned: false });
         }
 
         // 按 uid 查账号（续签身份时补 login 用）

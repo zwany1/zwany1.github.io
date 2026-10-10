@@ -580,10 +580,18 @@
             }
             if (p.t === 'history') {
                 if (p.me) { self.onIdentity(p.me); }
+                if (p.now) { self.tsOffset = p.now - Date.now(); }   // 服务端时间偏移，撤回窗口判定用
                 var list = p.list || [];
                 for (var i = 0; i < list.length; i++) { self.onMessage(list[i]); }
                 return;
             }
+            if (p.t === 'histmore') { if (self.onHistMore) { self.onHistMore(p); } return; }
+            if (p.t === 'banned') {
+                self.onStatus('error', p.msg || '你已被封禁');
+                self._flash(p.msg || '你已被封禁');
+                return;
+            }
+            if (p.t === 'sys') { if (self.onSys) { self.onSys(p.text || ''); } return; }
             if (p.t === 'msg') { self.onMessage(p); return; }   // 自己发的也会回来，靠 id 幂等去重
             if (p.t === 'msgdel') { if (self.onDeleted) { self.onDeleted(p); } return; } // 管理员撤回广播
             if (p.t === 'presence') { self.onPresence(p.list || []); return; }
@@ -639,6 +647,22 @@
     WsTransport.prototype.disconnect = function () {
         this.closed = true;
         if (this.socket) { try { this.socket.close(); } catch (e) { /* 忽略 */ } }
+    };
+
+    /** 暂停：断开且不自动重连（弹层关闭后的省连接模式） */
+    WsTransport.prototype.pause = function () {
+        this.paused = true;
+        this.closed = true;
+        if (this.socket) { try { this.socket.close(); } catch (e) { /* 忽略 */ } }
+    };
+
+    /** 恢复：重新连接（join 会随 onopen 自动发生） */
+    WsTransport.prototype.resume = function () {
+        if (!this.paused) { return; }
+        this.paused = false;
+        this.closed = false;
+        this.retry = 0;
+        this.connect();
     };
 
     registerTransport('local', LocalTransport);
@@ -763,6 +787,7 @@
             sideToggle: q('[data-cr-side-toggle]'),
             jumpTop: q('[data-cr-jump-top]'),
             link: q('[data-cr-link]'),
+            loadMore: q('[data-cr-loadmore]'),
             bgBtn: q('[data-cr-bgbtn]'),
             bgPanel: q('[data-cr-bgpanel]'),
             bgInput: q('[data-cr-bginput]'),
@@ -939,6 +964,8 @@
         this.transport.onTyping = function (n) { self._showTyping(n); };
         this.transport.onIdentity = function (i) { self._onIdentity(i); };
         this.transport.onReaction = function (p) { self._onReaction(p); };
+        this.transport.onSys = function (t) { self._sysLine('ℹ️', t); };
+        this.transport.onHistMore = function (p) { self.onHistMore(p); };
         this.transport.onDeleted = function (p) { self.onDeleted(p); };
         this.transport.onNeedLogin = function (msg) { self._onNeedLogin(msg); };
         this.transport.connect();
@@ -1011,14 +1038,36 @@
         if (!this.opts.ws || !this.identity || this.identity.kind !== 'github') { return; }
         if (this.identity.login) { return; }                        // 已是新格式
         if (this._refreshTried) { return; }
+        // 循环防护：每次浏览器会话只尝试一次；且只有新凭证**确实带来了升级**
+        // （多了 login/role）才刷新页面——服务端反查失败时新凭证仍是老格式，
+        // 此时刷新只会陷入「续签→刷新→再续签」的死循环。
+        var marked = false;
+        try {
+            marked = global.sessionStorage.getItem('wb-chat:refreshed') === '1';
+            global.sessionStorage.setItem('wb-chat:refreshed', '1');
+        } catch (e) { /* 隐私模式忽略 */ }
+        if (marked) { return; }
         this._refreshTried = true;
         var origin = wsOrigin(this.opts.ws);
         var token = getToken();
         if (!origin || !token) { return; }
-        fetch(origin + '/auth/refresh?token=' + encodeURIComponent(token))
+        // token 走 POST body——放 URL query 会进访问日志，等于把身份泄露出去
+        fetch(origin + '/auth/refresh', {
+            method: 'POST',
+            headers: { 'content-type': 'application/json' },
+            body: JSON.stringify({ token: token })
+        })
             .then(function (r) { return r.ok ? r.json() : null; })
             .then(function (d) {
                 if (!d || !d.token) { return; }
+                var upgraded = false;
+                try {
+                    var head = d.token.split('.')[0].replace(/-/g, '+').replace(/_/g, '/');
+                    var pad = '=='.slice((head.length + 2) % 4);
+                    var payload = JSON.parse(global.atob(head + pad));
+                    upgraded = !!payload.login || !!payload.role;
+                } catch (e) { return; }
+                if (!upgraded) { return; }                          // 无升级，放弃
                 setToken(d.token);
                 global.location.reload();                           // 用新凭证重来一遍
             })
@@ -1246,6 +1295,15 @@
         }
         if (this.dom.jumpTop) {
             this.dom.jumpTop.addEventListener('click', function () { self._scrollToBottom(true); });
+        }
+
+        /* ── 加载更早的历史 ── */
+        if (this.dom.loadMore) {
+            this.dom.loadMore.addEventListener('click', function () {
+                if (!self.messages.length) { return; }
+                self.dom.loadMore.disabled = true;
+                self.transport._tx({ t: 'hist', before: self.messages[0].ts });
+            });
         }
 
         /* ── 引用回复条：× 取消本次引用 ── */
@@ -1631,7 +1689,7 @@
         if (!atBottom && !(isSelf || m.uid === this.me.uid)) {
             this.unread++;
             this._refreshHint();
-            if (mentioned) { this._flashTitle(); }
+            this._flashTitle(mentioned ? '有人@我' : '新消息');
         } else {
             this._scrollToBottom(false);
         }
@@ -1649,24 +1707,49 @@
             g.gain.exponentialRampToValueAtTime(0.0001, ac.currentTime + 0.35);
             o.start(ac.currentTime); o.stop(ac.currentTime + 0.4);
         } catch (e) { /* 无声环境忽略 */ }
-        if (global.document && global.document.hidden) {
-            var self = this;
-            this._titleTimer = this._titleTimer || 0;
-            if (!this._titleTimer) {
-                var flip = false, base = global.document.title;
-                this._titleTimer = global.setInterval(function () {
-                    flip = !flip;
-                    global.document.title = flip ? '【有人@我】' + base : base;
-                }, 900);
-                global.document.addEventListener('visibilitychange', function () {
-                    if (!global.document.hidden && self._titleTimer) {
-                        global.clearInterval(self._titleTimer);
-                        self._titleTimer = 0;
-                        global.document.title = base;
-                    }
-                });
+        if (global.document && global.document.hidden) { this._flashTitle('有人@我'); }
+    };
+
+    /** 「加载更早」：把分页历史插到消息列表头部并保持视口位置 */
+    ChatRoom.prototype.onHistMore = function (p) {
+        var list = p.list || [];
+        this.hasMore = !!p.hasMore;
+        if (this.dom.loadMore) { this.dom.loadMore.hidden = !this.hasMore; this.dom.loadMore.disabled = false; }
+        var prevFirstId = this.messages.length ? this.messages[0].id : null;
+        var added = 0;
+        for (var i = 0; i < list.length; i++) {
+            var m = list[i];
+            if (this.seen[m.id]) { continue; }
+            this.seen[m.id] = 1;
+            if (m.ref && typeof m.ref === 'string') {
+                try { m.ref = JSON.parse(m.ref); } catch (e) { m.ref = null; }
             }
+            this.messages.unshift(m);
+            added++;
         }
+        if (!added) { return; }
+        this._renderAll();
+        var anchor = prevFirstId ? this.nodes[prevFirstId] : null;
+        if (anchor && anchor.scrollIntoView) { anchor.scrollIntoView({ block: 'start' }); }
+    };
+
+    /** 标签页在后台时闪烁标题；回到前台自动恢复 */
+    ChatRoom.prototype._flashTitle = function (label) {
+        if (!global.document || !global.document.hidden) { return; }
+        var self = this;
+        if (this._titleTimer) { return; }
+        var flip = false, base = global.document.title;
+        this._titleTimer = global.setInterval(function () {
+            flip = !flip;
+            global.document.title = flip ? '【' + label + '】' + base : base;
+        }, 900);
+        global.document.addEventListener('visibilitychange', function () {
+            if (!global.document.hidden && self._titleTimer) {
+                global.clearInterval(self._titleTimer);
+                self._titleTimer = 0;
+                global.document.title = base;
+            }
+        });
     };
 
     /** 管理员撤回广播：把对应消息就地变成「已撤回」样式 */
@@ -1847,6 +1930,7 @@
         if (mAv) {
             var img = document.createElement('img');
             img.src = mAv;
+            img.referrerPolicy = 'no-referrer';
             img.alt = '';
             av.appendChild(img);
         } else {
@@ -1939,7 +2023,7 @@
             acts.appendChild(qb);
 
             var isAdmin = !!(self.identity && self.identity.role === 'admin');
-            var fresh = Date.now() - m.ts <= 180000;
+            var fresh = (Date.now() - (self.tsOffset || 0)) - m.ts <= 180000;   // tsOffset=服务端钟差
             if (self.opts.ws && (isAdmin || (m.uid === self.me.uid && fresh))) {
                 var db = document.createElement('button');
                 db.type = 'button';
@@ -1948,7 +2032,7 @@
                 db.innerHTML = '<svg viewBox="0 0 24 24" width="13" height="13" aria-hidden="true"><path d="M9 3h6l1 2h4v2H4V5h4l1-2Zm-3 6h12l-1 12a1 1 0 0 1-1 1H8a1 1 0 0 1-1-1L6 9Zm4 2v9h2v-9h-2Z" fill="currentColor"/></svg>';
                 db.addEventListener('click', function (e) {
                     e.stopPropagation();
-                    if (!isAdmin && Date.now() - m.ts > 180000) {
+                    if (!isAdmin && (Date.now() - (self.tsOffset || 0)) - m.ts > 180000) {
                         self._flash('发送超过 3 分钟的消息不能撤回了');
                         return;
                     }
@@ -1957,6 +2041,22 @@
                     }
                 });
                 acts.appendChild(db);
+            }
+            // 管理员对**别人的**消息：额外提供封禁 24h 入口
+            if (self.opts.ws && isAdmin && m.uid !== self.me.uid && !m.deleted) {
+                var bb = document.createElement('button');
+                bb.type = 'button';
+                bb.className = 'cr-act-btn cr-act-btn--ban';
+                bb.title = '封禁该成员 24 小时';
+                bb.innerHTML = '<svg viewBox="0 0 24 24" width="13" height="13" aria-hidden="true"><path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20Zm-8 10a8 8 0 0 1 12.9-6.3L5.7 16.9A8 8 0 0 1 4 12Zm8 8a8 8 0 0 1-4.9-1.7L18.3 7.1A8 8 0 0 1 12 20Z" fill="currentColor"/></svg>';
+                bb.addEventListener('click', function (e) {
+                    e.stopPropagation();
+                    if (!global.confirm('确定封禁「' + m.name + '」24 小时吗？')) { return; }
+                    if (self.transport && self.transport._tx) {
+                        self.transport._tx({ t: 'ban', uid: m.uid, name: m.name, hours: 24 });
+                    }
+                });
+                acts.appendChild(bb);
             }
 
             if (acts.children.length) { row.appendChild(acts); }
@@ -1979,6 +2079,7 @@
             img.src = t;
             img.alt = '';
             img.loading = 'lazy';
+            img.referrerPolicy = 'no-referrer';
             a.appendChild(img);
             el.appendChild(a);
             return;

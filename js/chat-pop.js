@@ -33,15 +33,38 @@
         }
     }
 
+    var closeTimer = null;
+
+    /** 断开弹层里的聊天连接（省连接费 + 从在线名单消失）；重开时自动恢复 */
+    function pauseChat() {
+        var apps = window.__wbChatRooms || [];
+        var app = apps[apps.length - 1];
+        if (app && app.transport && app.transport.pause) {
+            app.transport.pause();
+            if (app._setStatus) { app._setStatus('offline', '连接已暂停，重新打开自动恢复'); }
+        }
+    }
+
     function openPop() {
         pop.hidden = false;
         if (dock) { dock.hidden = false; }
+        if (closeTimer) { clearTimeout(closeTimer); closeTimer = null; }
         mountOnce();
+        // 之前被 pause 的连接自动恢复
+        var apps = window.__wbChatRooms || [];
+        var app = apps[apps.length - 1];
+        if (app && app.transport && app.transport.resume) { app.transport.resume(); }
     }
 
     function closePop() {
         if (window.__closePop) { window.__closePop(pop); }
         else { pop.hidden = true; }
+        // 关闭 5 分钟后仍无操作则断开连接（期间重新打开会取消）
+        if (closeTimer) { clearTimeout(closeTimer); }
+        closeTimer = setTimeout(function () {
+            closeTimer = null;
+            if (pop.hidden) { pauseChat(); }
+        }, 5 * 60 * 1000);
     }
 
     if (app) { app.addEventListener('click', openPop); }

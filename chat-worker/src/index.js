@@ -67,6 +67,15 @@ export default {
             if (request.headers.get('Upgrade') !== 'websocket') {
                 return new Response('此端点仅接受 WebSocket 连接', { status: 426 });
             }
+            // Origin 校验：浏览器一定带 Origin；带了的必须在白名单内，防跨站滥用。
+            // 无 Origin（curl/服务端测试工具）放行，便于联调。
+            const origin = request.headers.get('Origin') || '';
+            if (origin) {
+                const allowed = ALLOWED_RETURN.some(function (u) { return u.indexOf(origin + '/') === 0 || u === origin; });
+                if (!allowed) {
+                    return new Response('Origin 不被允许', { status: 403 });
+                }
+            }
             const room = (url.searchParams.get('room') || '大厅').slice(0, 40);
             return env.CHAT_ROOM.get(env.CHAT_ROOM.idFromName(room)).fetch(request);
         }
@@ -172,9 +181,21 @@ export default {
 
         // 身份续签：老格式凭证（没有 login/role 字段）换发新格式，前端静默调用。
         // 拿不到 login 时用 GitHub 公共 API 按 provider_uid 反查一次并回写账号库。
+        // 身份续签：老格式凭证（没有 login/role 字段）换发新格式，前端静默调用。
+        // token 走 **POST body**——放 URL query 会进访问日志，等于把身份泄露出去。
         if (url.pathname === '/auth/refresh') {
-            const old = url.searchParams.get('token') || '';
-            const v = await verifyToken(old, env.IDENTITY_SECRET);
+            if (request.method !== 'POST') {
+                return new Response(JSON.stringify({ error: 'method not allowed' }), {
+                    status: 405,
+                    headers: { 'content-type': 'application/json; charset=utf-8' }
+                });
+            }
+            let bodyToken = '';
+            try {
+                const body = await request.json();
+                bodyToken = String(body.token || '');
+            } catch (e) { /* ignore */ }
+            const v = await verifyToken(bodyToken, env.IDENTITY_SECRET);
             if (!v || v.kind !== 'github') {
                 return new Response(JSON.stringify({ error: 'bad token' }), {
                     status: 401,
@@ -184,7 +205,7 @@ export default {
             let login = String(v.login || '');
             const acct = env.ACCOUNTS.get(env.ACCOUNTS.idFromName(ACCOUNTS_NAME));
             if (!login) {
-                const info = JSON.parse(await (await acct.fetch('/get?uid=' + encodeURIComponent(v.uid))).text());
+                const info = JSON.parse(await (await acct.fetch('https://accounts/get?uid=' + encodeURIComponent(v.uid))).text());
                 if (info.login) {
                     login = info.login;
                 } else if (info.provider_uid) {
