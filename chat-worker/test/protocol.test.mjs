@@ -17,6 +17,7 @@ let base;
 before(async () => {
     worker = await unstable_dev('src/index.js', {
         experimental: { disableExperimentalWarning: true },
+        persist: false,   // 每次运行用干净内存态，不受上次测试封禁记录影响
         vars: {
             REQUIRE_LOGIN: 'true',
             IDENTITY_SECRET: SECRET,
@@ -275,6 +276,45 @@ test('跨房间封禁：被封者存留连接立即不能发言（核心封禁�
     const leaked = (wsX.__queue || []).some((p) => p.t === 'msg' && p.id === 'm_x1');
     assert.equal(leaked, false, '被封禁后的消息不应广播');
     wsAdmin.close();
+});
+
+test('重复封禁被拒；unban 消息解封并回发最新封禁名单', async () => {
+    const tAdmin = (await issueGithub(SECRET, 'uid-admin', '少帅', '', 'admin', 'zwany1')).token;
+    const tE = (await issueGithub(SECRET, 'uid-e', '用户E', '', '', 'e')).token;
+    const { ws: wsE } = await connect(tE, '房重复');
+    const { ws: wsAdmin, history } = await connect(tAdmin, '房重复');
+    assert.equal(history.t, 'history');
+
+    // admin join 后应收到当前封禁名单（可能为空数组）
+    const bl0 = await nextOf(wsAdmin, (p) => p.t === 'banlist');
+    assert.ok(Array.isArray(bl0.uids));
+
+    // 封禁 uid-e
+    send(wsAdmin, { t: 'ban', uid: 'uid-e', name: '用户E', hours: 1 });
+    const bannedMsg = await nextOf(wsE, (p) => p.t === 'banned');
+    assert.match(bannedMsg.msg, /封禁/);
+    // admin 收到封禁公告 + 最新名单（含 uid-e）
+    const sysBan = await nextOf(wsAdmin, (p) => p.t === 'sys');
+    assert.match(sysBan.text, /已被管理员封禁/);
+    const bl1 = await nextOf(wsAdmin, (p) => p.t === 'banlist');
+    assert.ok(bl1.uids.indexOf('uid-e') >= 0, '名单应包含 uid-e');
+
+    // 重复封禁：被服务端拒绝
+    send(wsAdmin, { t: 'ban', uid: 'uid-e', name: '用户E', hours: 1 });
+    const dup = await nextOf(wsAdmin, (p) => p.t === 'error');
+    assert.match(dup.msg, /已被封禁/);
+
+    // unban 消息：解封 + 回发名单（不含 uid-e）
+    send(wsAdmin, { t: 'unban', uid: 'uid-e', name: '用户E' });
+    const sys = await nextOf(wsAdmin, (p) => p.t === 'sys');
+    assert.match(sys.text, /解除封禁/);
+    // 在途可能有多条 banlist（ban/unban 各一次），轮询直到不含 uid-e
+    let bl2 = null;
+    for (let i = 0; i < 10 && !(bl2 && bl2.uids.indexOf('uid-e') === -1); i++) {
+        bl2 = await nextOf(wsAdmin, (p) => p.t === 'banlist');
+    }
+    assert.equal(bl2.uids.indexOf('uid-e'), -1, '名单应已移除 uid-e');
+    wsAdmin.close(); wsE.close();
 });
 
 test('历史分页：hist 返回更早的 100 条内且带 hasMore', async () => {

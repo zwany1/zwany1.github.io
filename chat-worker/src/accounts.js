@@ -112,6 +112,7 @@ export class Accounts {
             const uid = String(body.uid || '').slice(0, 64);
             if (!uid) { return this._json({ error: 'missing uid' }, 400); }
             this.sql.exec('DELETE FROM bans WHERE uid = ?', uid);
+            const after = [...this.sql.exec('SELECT uid FROM bans')];
             return this._json({ ok: true });
         }
 
@@ -119,6 +120,12 @@ export class Accounts {
         if (request.method === 'GET' && url.pathname === '/uidbyname') {
             const name = url.searchParams.get('name') || '';
             const rows = [...this.sql.exec('SELECT uid, name, login FROM users WHERE name = ?', name)];
+            return this._json({ uids: rows.map(function (r) { return r.uid; }) });
+        }
+
+        // 全部生效中的封禁名单（管理员 join 时下发，用于成员列表操作菜单的状态判断）
+        if (request.method === 'GET' && url.pathname === '/banlist') {
+            const rows = [...this.sql.exec('SELECT uid FROM bans WHERE until > ?', Date.now())];
             return this._json({ uids: rows.map(function (r) { return r.uid; }) });
         }
 

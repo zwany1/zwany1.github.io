@@ -106,6 +106,7 @@ export class ChatRoom {
         if (p.t === 'del') { this._delete(ws, p); return; }
         if (p.t === 'hist') { this._histBefore(ws, p); return; }
         if (p.t === 'ban') { await this._banRequest(ws, p); return; }
+        if (p.t === 'unban') { await this._unbanRequest(ws, p); return; }
         if (p.t === 'typing') { this._typing(ws); return; }
         if (p.t === 'react') { this._react(ws, p); }
     }
@@ -201,6 +202,11 @@ export class ChatRoom {
         }
 
         this._send(ws, { t: 'history', list: rows, now: Date.now(), me: { uid: meta.uid, name: meta.name, kind: meta.kind, role: meta.role, avatar: meta.avatar } });
+
+        // 管理员：下发当前封禁名单（成员列表操作菜单的状态判断用）
+        if (meta.role === 'admin') {
+            this._sendBanList(ws);
+        }
 
         this._presence();
     }
@@ -618,6 +624,7 @@ export class ChatRoom {
         }
         this._broadcast({ t: 'sys', text: '「' + targetName + '」已被管理员封禁 ' + hours + ' 小时' }, null);
         this._invalidateBanCache(targetUid);
+        await this._sendBanList(ws);
     }
 
     _invalidateBanCache(uid) {
@@ -634,6 +641,12 @@ export class ChatRoom {
         const uid = String(p.uid || '').slice(0, 64);
         const hours = Math.min(720, Math.max(1, Number(p.hours) || 24));
         if (!uid || uid === meta.uid) { return; }
+        // 已封禁的不可重复封禁（服务端兜底，前端菜单也不显示该入口）
+        const already = await this._checkBan(uid);
+        if (already.banned) {
+            this._send(ws, { t: 'error', msg: '「' + (p.name || '该成员') + '」已被封禁，如需恢复请使用解封' });
+            return;
+        }
         let targetName = String(p.name || '').slice(0, 16) || '成员';
         for (const s of this.ctx.getWebSockets()) {
             if (s.readyState !== 1) { continue; }
@@ -641,6 +654,54 @@ export class ChatRoom {
             if (om.uid === uid) { targetName = om.name || targetName; break; }
         }
         await this._banByUid(ws, meta, uid, targetName, hours);
+        await this._sendBanList(ws);   // 封禁后把最新名单推给管理员
+    }
+
+    /** WS 解封请求：{t:'unban', uid, name} */
+    async _unbanRequest(ws, p) {
+        const meta = this._meta(ws);
+        if (meta.role !== 'admin') {
+            this._send(ws, { t: 'error', msg: '只有管理员（凹凸曼）可以解封成员' });
+            return;
+        }
+        const uid = String(p.uid || '').slice(0, 64);
+        if (!uid) { return; }
+        let targetName = String(p.name || '').slice(0, 16) || '成员';
+        for (const s of this.ctx.getWebSockets()) {
+            if (s.readyState !== 1) { continue; }
+            const om = this._meta(s);
+            if (om.uid === uid) { targetName = om.name || targetName; break; }
+        }
+        try {
+            const acct = this.env.ACCOUNTS.get(this.env.ACCOUNTS.idFromName('accounts-v1'));
+            const r = await acct.fetch('https://accounts/unban', {
+                method: 'POST',
+                headers: { 'content-type': 'application/json' },
+                body: JSON.stringify({ uid: uid })
+            });
+        } catch (e) {
+            this._send(ws, { t: 'error', msg: '解封失败，请稍后再试' });
+            return;
+        }
+        this._invalidateBanCache(uid);
+        this.sql.exec(
+            'INSERT INTO audit (action, actor, target, ts) VALUES (?, ?, ?, ?)',
+            'unban', meta.name, uid, Date.now()
+        );
+        this._broadcast({ t: 'sys', text: '「' + targetName + '」已被管理员解除封禁' }, null);
+        await this._sendBanList(ws);
+    }
+
+    /** 把当前生效中的封禁名单发给（管理员）连接 */
+    async _sendBanList(ws) {
+        try {
+            const acct = this.env.ACCOUNTS.get(this.env.ACCOUNTS.idFromName('accounts-v1'));
+            const res = await acct.fetch('https://accounts/banlist');
+            if (res.ok) {
+                const d = JSON.parse(await res.text());
+                this._send(ws, { t: 'banlist', uids: d.uids || [] });
+            }
+        } catch (e) { /* 忽略 */ }
     }
 
     /** 加载更早的历史：前端传 before（最早一条消息的 ts），返回更早的 100 条 */
