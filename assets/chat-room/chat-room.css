@@ -997,3 +997,28 @@
     color: #f7b733;
     flex-shrink: 0;
 }
+
+
+/* 触屏设备没有 hover：操作条常显（半透明不遮挡） */
+@media (hover: none) {
+    .cr-acts { display: inline-flex; opacity: .9; }
+}
+
+/* 「加载更早的消息」按钮 */
+.cr-loadmore {
+    display: block;
+    margin: 8px auto 0;
+    padding: 5px 14px;
+    font-size: 12px;
+    color: var(--cr-fg-dim);
+    background: var(--cr-bg-elev);
+    border: 1px solid var(--cr-line);
+    border-radius: 999px;
+    cursor: pointer;
+}
+.cr-loadmore:hover { color: var(--cr-fg); background: var(--cr-bg-hover); }
+.cr-loadmore[hidden] { display: none; }
+.cr-loadmore:disabled { opacity: .5; cursor: default; }
+
+/* 管理员封禁按钮（hover 红） */
+.cr-act-btn--ban:hover { color: var(--cr-danger); border-color: var(--cr-danger); }
