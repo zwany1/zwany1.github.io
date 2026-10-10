@@ -14,6 +14,7 @@ import { verifyTurnstile, turnstileEnabled } from './turnstile.js';
 const MAX_HISTORY = 300;
 const MAX_TEXT = 1000;
 const MAX_NAME = 16;
+const MAX_REF_TEXT = 120;   // 引用快照里保留的原文摘要长度
 const RATE_WINDOW = 10000;
 const RATE_MAX = 20;
 
@@ -33,10 +34,17 @@ export class ChatRoom {
                 ts   INTEGER NOT NULL
             )`);
             this.sql.exec(`CREATE INDEX IF NOT EXISTS idx_messages_ts ON messages (ts)`);
-            // 轻量迁移：早期的表没有 avatar 列。重复执行会报 duplicate column，吞掉即可。
-            try {
-                this.sql.exec(`ALTER TABLE messages ADD COLUMN avatar TEXT NOT NULL DEFAULT ''`);
-            } catch (e) { /* 已有该列 */ }
+            // 轻量迁移：早期的表没有这些列。**每条 ALTER 必须独立 try**——
+            // 放在同一个 try 里时，前面任何一条"已存在"抛错，后面的就永远不会执行。
+            const MIGRATIONS = [
+                `ALTER TABLE messages ADD COLUMN avatar TEXT NOT NULL DEFAULT ''`,
+                `ALTER TABLE messages ADD COLUMN ref TEXT NOT NULL DEFAULT ''`,
+                `ALTER TABLE messages ADD COLUMN deleted INTEGER NOT NULL DEFAULT 0`,
+                `ALTER TABLE messages ADD COLUMN role TEXT NOT NULL DEFAULT ''`
+            ];
+            for (const stmt of MIGRATIONS) {
+                try { this.sql.exec(stmt); } catch (e) { /* 已有该列 */ }
+            }
             // 表情回应：谁对哪条消息点了哪个 emoji。用"存在即选中"的语义，
             // 同一个人对同一条消息同一个 emoji 只会有一行，重复点击就是取消。
             this.sql.exec(`CREATE TABLE IF NOT EXISTS reactions (
@@ -77,6 +85,7 @@ export class ChatRoom {
 
         if (p.t === 'join') { await this._join(ws, p); return; }
         if (p.t === 'msg') { this._message(ws, p); return; }
+        if (p.t === 'del') { this._delete(ws, p); return; }
         if (p.t === 'typing') { this._typing(ws); return; }
         if (p.t === 'react') { this._react(ws, p); }
     }
@@ -142,6 +151,7 @@ export class ChatRoom {
             ip: this._meta(ws).ip || '',
             uid: payload.uid,                          // ← 只认凭证里的 uid
             kind: payload.kind || 'anon',
+            role: payload.role || '',                  // 'admin'（凹凸曼）—— 撤回等管理权限
             name: String(isGithub ? fallback : (wantedName || fallback)).slice(0, MAX_NAME),
             avatar: payload.avatar || '',
             sent: []
@@ -149,15 +159,18 @@ export class ChatRoom {
         try { ws.serializeAttachment(meta); } catch (e) { /* 忽略 */ }
 
         const rows = [...this.sql.exec(
-            'SELECT id, uid, name, kind, avatar, text, ts FROM messages ORDER BY ts DESC LIMIT ?', MAX_HISTORY
+            'SELECT id, uid, name, kind, role, avatar, ref, deleted, text, ts FROM messages ORDER BY ts DESC LIMIT ?', MAX_HISTORY
         )];
         rows.reverse();
 
         // 一次性把最近这段消息的回应全取回来，避免逐条查
         const reacts = this._reactionsFor();
-        for (const r of rows) { r.reactions = reacts[r.id] || []; }
+        for (const r of rows) {
+            r.reactions = reacts[r.id] || [];
+            if (r.ref) { try { r.ref = JSON.parse(r.ref); } catch (e) { r.ref = null; } }
+        }
 
-        this._send(ws, { t: 'history', list: rows, me: { uid: meta.uid, name: meta.name, kind: meta.kind, avatar: meta.avatar } });
+        this._send(ws, { t: 'history', list: rows, me: { uid: meta.uid, name: meta.name, kind: meta.kind, role: meta.role, avatar: meta.avatar } });
 
         this._presence();
     }
@@ -210,19 +223,48 @@ export class ChatRoom {
         meta.sent = sent;
         try { ws.serializeAttachment(meta); } catch (e) { /* 忽略 */ }
 
+        // 引用快照：客户端只传被引消息 id，内容一律以服务端库里的为准（防伪造）
+        let refOut = null;
+        const refId = String((p.ref && p.ref.id) || '').slice(0, 60);
+        if (refId) {
+            const src = [...this.sql.exec(
+                'SELECT id, name, text, deleted FROM messages WHERE id = ?', refId
+            )][0];
+            if (src && !src.deleted) {
+                refOut = { id: src.id, name: src.name, text: String(src.text).slice(0, MAX_REF_TEXT) };
+            }
+        }
+
+        // @提及：按本房间**在线成员**的名字匹配，命中谁就把谁的 uid 放进 mentions
+        const nameToUid = new Map();
+        for (const s of this.ctx.getWebSockets()) {
+            if (s.readyState !== 1) { continue; }
+            const mm = this._meta(s);
+            if (mm.uid) { nameToUid.set(mm.name, mm.uid); }
+        }
+        const mentions = [];
+        const seenMention = {};
+        for (const match of text.matchAll(/@([^\s@]{1,16})/g)) {
+            const hit = nameToUid.get(match[1]);
+            if (hit && !seenMention[hit]) { seenMention[hit] = 1; mentions.push(hit); }
+        }
+
         const msg = {
             id: String(p.id || '').slice(0, 60) || ('s_' + now.toString(36) + Math.random().toString(36).slice(2, 6)),
             uid: meta.uid,
             name: meta.name,          // 昵称以服务端记录为准
             kind: meta.kind || 'anon',
+            role: meta.role || '',    // 管理员标识，前端画「凹凸曼」徽章
             avatar: meta.avatar || '',// 头像随消息一起广播/入库，渲染端不必再查
+            ref: refOut,
+            mentions: mentions,
             text: text,
             ts: now                   // 服务端时间戳
         };
 
         this.sql.exec(
-            'INSERT OR REPLACE INTO messages (id, uid, name, kind, avatar, text, ts) VALUES (?, ?, ?, ?, ?, ?, ?)',
-            msg.id, msg.uid, msg.name, msg.kind, msg.avatar, msg.text, msg.ts
+            'INSERT OR REPLACE INTO messages (id, uid, name, kind, role, avatar, ref, text, ts) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)',
+            msg.id, msg.uid, msg.name, msg.kind, msg.role, msg.avatar, refOut ? JSON.stringify(refOut) : '', msg.text, msg.ts
         );
         this.sql.exec(
             'DELETE FROM messages WHERE id NOT IN (SELECT id FROM messages ORDER BY ts DESC LIMIT ?)',
@@ -231,7 +273,27 @@ export class ChatRoom {
         // 消息被裁掉后，挂在它上面的回应也一并清掉，别留孤儿行
         this.sql.exec('DELETE FROM reactions WHERE msg_id NOT IN (SELECT id FROM messages)');
 
-        this._broadcast({ t: 'msg', id: msg.id, uid: msg.uid, name: msg.name, kind: msg.kind, avatar: msg.avatar, text: msg.text, ts: msg.ts }, null);
+        this._broadcast({
+            t: 'msg', id: msg.id, uid: msg.uid, name: msg.name, kind: msg.kind, role: msg.role,
+            avatar: msg.avatar, ref: refOut, mentions: mentions, text: msg.text, ts: msg.ts
+        }, null);
+    }
+
+    /** 管理员撤回：只有凭证里 role === 'admin' 的连接可以撤任意人的消息（软删除） */
+    _delete(ws, p) {
+        const meta = this._meta(ws);
+        if (meta.role !== 'admin') {
+            this._send(ws, { t: 'error', msg: '只有管理员（凹凸曼）可以撤回消息' });
+            return;
+        }
+        const id = String(p.id || '').slice(0, 60);
+        if (!id) { return; }
+        const ok = [...this.sql.exec('SELECT 1 AS ok FROM messages WHERE id = ?', id)];
+        if (!ok.length) { return; }
+        this.sql.exec('UPDATE messages SET deleted = 1 WHERE id = ?', id);
+        // 被撤回消息上的表情回应一并清掉
+        this.sql.exec('DELETE FROM reactions WHERE msg_id = ?', id);
+        this._broadcast({ t: 'msgdel', id: id, by: meta.name }, null);
     }
 
     _typing(ws) {

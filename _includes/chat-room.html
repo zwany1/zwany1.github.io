@@ -152,6 +152,14 @@
 
         <div class="cr-stream" data-cr-stream></div>
 
+        <!-- 引用回复条：点了消息上的「引用」按钮后出现，随下一条消息发出 -->
+        <div class="cr-replybar" data-cr-replybar hidden>
+            <span class="cr-replybar-text">回复 <b data-cr-replyname></b><span data-cr-replytext></span></span>
+            <button class="cr-replybar-x" type="button" data-cr-replycancel title="取消引用">
+                <svg viewBox="0 0 24 24" width="12" height="12" aria-hidden="true"><path d="M6.4 5 12 10.6 17.6 5 19 6.4 13.4 12l5.6 5.6-1.4 1.4L12 13.4 6.4 19 5 17.6 10.6 12 5 6.4 6.4 5Z" fill="currentColor"/></svg>
+            </button>
+        </div>
+
         <div class="cr-hint" data-cr-hint>
             <span class="cr-dots" hidden><i></i><i></i><i></i></span>
             <span data-cr-hinttext></span>
@@ -173,6 +181,7 @@
                 <span>发送</span>
             </button>
             <div class="cr-emoji-panel" data-cr-emoji hidden></div>
+            <div class="cr-mention-panel" data-cr-mentionpanel hidden></div>
             <span class="cr-count" data-cr-count>0/1000</span>
         </div>
     </main>

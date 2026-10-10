@@ -91,7 +91,8 @@ export async function issueAnon(secret, name) {
     return { token: await signToken(payload, secret), payload: payload };
 }
 
-export async function issueGithub(secret, uid, name, avatar) {
+export async function issueGithub(secret, uid, name, avatar, role) {
     const payload = { uid: uid, kind: 'github', name: name || 'GitHub 用户', avatar: avatar || '', exp: Date.now() + ANON_TTL };
+    if (role) { payload.role = String(role).slice(0, 16); }   // 'admin' —— 签进凭证，房间 DO 验签后即可信
     return { token: await signToken(payload, secret), payload: payload };
 }

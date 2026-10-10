@@ -21,6 +21,9 @@ import { turnstileEnabled } from './turnstile.js';
 export { ChatRoom, Accounts };
 
 const ACCOUNTS_NAME = 'accounts-v1';
+// 管理员（「凹凸曼」）：按 GitHub 登录名判定，登录签发的凭证里带 role:'admin'。
+// 权限校验在房间 DO 验签之后进行，伪造不了。
+const ADMIN_LOGINS = ['zwany1'];
 const GH_AUTHORIZE = 'https://github.com/login/oauth/authorize';
 const GH_TOKEN = 'https://github.com/login/oauth/access_token';
 const GH_USER = 'https://api.github.com/user';
@@ -135,6 +138,7 @@ export default {
                 });
                 const gh = await userRes.json();
                 if (!gh || !gh.id) { return fail('读取 GitHub 用户失败'); }
+                const isAdmin = ADMIN_LOGINS.indexOf(String(gh.login || '')) >= 0;
 
                 const acct = env.ACCOUNTS.get(env.ACCOUNTS.idFromName(ACCOUNTS_NAME));
                 const up = await acct.fetch('https://accounts/upsert', {
@@ -153,7 +157,8 @@ export default {
                 const issued = await issueGithub(
                     env.IDENTITY_SECRET, mapped.uid,
                     String(gh.name || gh.login || '用户').slice(0, 16),
-                    gh.avatar_url || ''
+                    gh.avatar_url || '',
+                    isAdmin ? 'admin' : ''
                 );
                 // 用 fragment 回传：不会进服务端日志，也不会被 Referer 带出去
                 return Response.redirect(back + '#chat_token=' + encodeURIComponent(issued.token), 302);
