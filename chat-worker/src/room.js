@@ -249,12 +249,13 @@ export class ChatRoom {
         }
         const mentions = [];
         const seenMention = {};
-        for (const match of text.matchAll(/@([^\s@]{1,16})/g)) {
+        // 兼容半角 @ 与全角 ＠（中文输入法）
+        for (const match of text.matchAll(/[@＠]([^\s@＠]{1,16})/g)) {
             const hit = nameToUid.get(match[1]);
             if (hit && !seenMention[hit]) { seenMention[hit] = 1; mentions.push(hit); }
         }
         // @所有人（仅管理员）：提醒本房间全部在线成员（不含自己）
-        if (meta.role === 'admin' && text.indexOf('@所有人') >= 0) {
+        if (meta.role === 'admin' && (text.indexOf('@所有人') >= 0 || text.indexOf('＠所有人') >= 0)) {
             mentions.length = 0;
             for (const s of this.ctx.getWebSockets()) {
                 if (s.readyState !== 1) { continue; }

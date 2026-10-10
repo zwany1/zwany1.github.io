@@ -172,9 +172,8 @@ comments: false
             <span class="ios-app__label">{{ app.name }}</span>
         </a>
         {% endfor %}
-        {% comment %} 聊天室排在 GitHub 右边：单个 app 图标，点击原地弹层（js/chat-pop.js 拦截），
-        JS 失效时退化为普通链接跳 /chat/ 全屏页 {% endcomment %}
-        <a class="ios-app" href="/chat/" title="聊天室">
+        {% comment %} 聊天室排在 GitHub 右边：单个 app 图标，点击原地弹层（js/chat-pop.js 绑定） {% endcomment %}
+        <a class="ios-app" href="javascript:void(0)" id="chat-app" title="聊天室">
             <span class="ios-app__icon" style="background:linear-gradient(135deg,#4f6ef7,#3b55d9)"><i class="fas fa-comments"></i></span>
             <span class="ios-app__label">聊天室</span>
         </a>

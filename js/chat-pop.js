@@ -1,8 +1,8 @@
 /* 首页 iOS 桌面「聊天室」
  * ---------------------------------------------------------------------------
- * 入口是图标区里的单个 app 图标（a[href="/chat/"]，排在 GitHub 右边），
- * 点击 → 在当前页弹出聊天室（不跳转页面），和工具箱 / 游戏中心一致。
- * 顶部导航的「聊天室」链接同样被拦截为弹层；JS 失效时浏览器直接跳 /chat/ 全屏页。
+ * 入口是图标区里的单个 app 图标（#chat-app，排在 GitHub 右边），
+ * 点击 → 在当前页弹出聊天室（不跳转页面）。
+ * 顶部导航不再有聊天室入口；/chat/ 独立页已下线，聊天只从首页弹层进入。
  * 「首次打开才挂载」很重要：组件本身带 WebSocket，若在页面加载时就挂载，
  * 每个访客一进首页就会建立一条连接。
  * 关闭动效与 Esc 复用 footer.html 里的 window.__closePop（本弹层带 .games-pop 类）。
@@ -15,7 +15,7 @@
     var mask = $('chat-pop-mask');
     var closeBtn = $('chat-pop-close');
     var dock = $('dock-chat');
-    var widget = $('chat-widget');           // 旧版顶部组件（已移除，保留兼容）
+    var app = $('chat-app');                 // 图标区里的聊天室图标
     var mounted = false;
 
     /** 首次打开时才挂载（组件脚本可能还没加载完，所以要重试） */
@@ -44,7 +44,7 @@
         else { pop.hidden = true; }
     }
 
-    if (widget) { widget.addEventListener('click', openPop); }
+    if (app) { app.addEventListener('click', openPop); }
     if (dock) { dock.addEventListener('click', openPop); }
     if (mask) { mask.addEventListener('click', closePop); }
     if (closeBtn) { closeBtn.addEventListener('click', closePop); }
@@ -55,14 +55,6 @@
             if (pop.hidden && dock) { dock.hidden = true; }
         }).observe(pop, { attributes: true, attributeFilter: ['hidden'] });
     }
-
-    // 顶部导航里的「聊天室」：在本页直接开弹层，不再跳到 /chat/
-    document.addEventListener('click', function (e) {
-        var a = e.target && e.target.closest ? e.target.closest('a[href$="/chat/"]') : null;
-        if (!a) { return; }
-        e.preventDefault();
-        openPop();
-    });
 
     // 弹层尺寸变化后，把消息区重新滚到底（避免打开时停在半路）
     window.addEventListener('resize', function () {
