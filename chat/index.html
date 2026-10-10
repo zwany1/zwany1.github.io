@@ -39,12 +39,14 @@
     if (document.documentElement.dataset.crAssets) { return; }
     document.documentElement.dataset.crAssets = '1';
     var base = '' || '';
+    /* ?v= 构建时间戳：每次构建都变，避免更新组件后浏览器还拿着旧缓存 */
+    var v = '1791596912';
     var l = document.createElement('link');
     l.rel = 'stylesheet';
-    l.href = base + '/assets/chat-room/chat-room.css';
+    l.href = base + '/assets/chat-room/chat-room.css?v=' + v;
     document.head.appendChild(l);
     var s = document.createElement('script');
-    s.src = base + '/assets/chat-room/chat-room.js';
+    s.src = base + '/assets/chat-room/chat-room.js?v=' + v;
     s.defer = true;
     document.head.appendChild(s);
 })();
@@ -112,10 +114,27 @@
             <button class="cr-icon cr-icon--btn" type="button" data-cr-jump-top="" title="回到最新">
                 <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M12 4 5 11l1.4 1.4L11 7.8V20h2V7.8l4.6 4.6L19 11 12 4Z" fill="currentColor" /></svg>
             </button>
+            <button class="cr-icon cr-icon--btn" type="button" data-cr-bgbtn="" title="更换聊天背景">
+                <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M21 19H3l5.5-8 3.5 4.8L14.5 12 21 19Z" fill="currentColor" /><circle cx="7.5" cy="7.5" r="2" fill="currentColor" /></svg>
+            </button>
             <button class="cr-icon cr-icon--btn" type="button" data-cr-link="" title="复制本页链接">
                 <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M10 13a4 4 0 0 0 5.7 0l3-3A4 4 0 0 0 13 4.3l-1.3 1.3 1.4 1.4L14.4 6A2 2 0 0 1 17.3 9l-3 3a2 2 0 0 1-2.8 0L10 13Zm4 2.7-1.3 1.3A2 2 0 0 1 9.8 14l3-3a2 2 0 0 1 2.8 0l1.4 1.4A4 4 0 0 0 11.3 6.6l-3 3a4 4 0 0 0 0 5.7L4 19.6 5.4 21l4.3-4.3Z" fill="currentColor" /></svg>
             </button>
         </header>
+
+        <!-- 聊天背景选择面板（纯前端：选择存 localStorage，每设备独立） -->
+        <div class="cr-bgpanel" data-cr-bgpanel="" hidden="">
+            <div class="cr-bgpanel-title">聊天背景</div>
+            <button type="button" class="cr-bgitem" data-cr-bgset="default">恢复默认</button>
+            <button type="button" class="cr-bgitem" data-cr-bgset="bing">必应每日一图</button>
+            <button type="button" class="cr-bgitem" data-cr-bgset="scenery">随机风景</button>
+            <button type="button" class="cr-bgitem" data-cr-bgset="anime">随机二次元</button>
+            <div class="cr-bgpanel-row">
+                <input class="cr-bginput" data-cr-bginput="" type="url" maxlength="500" placeholder="粘贴图片链接" />
+                <button type="button" class="cr-bgitem" data-cr-bgset="url">应用</button>
+            </div>
+            <p class="cr-bgpanel-err" data-cr-bgerr="" hidden=""></p>
+        </div>
 
         <div class="cr-stream" data-cr-stream=""></div>
 
