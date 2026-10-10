@@ -254,6 +254,29 @@ test('管理员 /unban 命令：解封后可重新进入', async () => {
     wsD.close();
 });
 
+test('跨房间封禁：被封者存留连接立即不能发言（核心封禁保证）', async () => {
+    // 用户场景：被封者 A 在房间 1 发言，管理员在房间 2 封禁他——
+    // 房间 2 的 DO 踢不到房间 1 的连接，所以房间 1 必须靠**每条消息实时校验**兜底。
+    const tAdmin = (await issueGithub(SECRET, 'uid-admin', '少帅', '', 'admin', 'zwany1')).token;
+    const tA = (await issueGithub(SECRET, 'uid-x', '坏人X', '', '', 'x')).token;
+    const { ws: wsX } = await connect(tA, '房跨房间');       // 坏人 X 在房间 1
+    const { ws: wsAdmin } = await connect(tAdmin, '房跨房间2'); // 管理员在另一个房间
+
+    // admin 直接按 uid 封禁（不依赖同房间可见性）
+    send(wsAdmin, { t: 'ban', uid: 'uid-x', name: '坏人X', hours: 1 });
+    await wait(300);   // 等 Accounts 写入
+
+    // X 的**存活连接**再发消息——必须被拒且被踢，而不是继续广播
+    send(wsX, { t: 'msg', id: 'm_x1', text: '封禁后我还想说' });
+    const banned = await nextOf(wsX, (p) => p.t === 'banned');
+    assert.match(banned.msg, /无法发言/);
+
+    // 其他任何人都收不到这条消息（它没有进入广播）
+    const leaked = (wsX.__queue || []).some((p) => p.t === 'msg' && p.id === 'm_x1');
+    assert.equal(leaked, false, '被封禁后的消息不应广播');
+    wsAdmin.close();
+});
+
 test('历史分页：hist 返回更早的 100 条内且带 hasMore', async () => {
     const tA = (await issueGithub(SECRET, 'uid-a', '用户A', '', '', 'a')).token;
     const { ws: wsA } = await connect(tA, '房分页');

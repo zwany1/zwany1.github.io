@@ -252,6 +252,27 @@ export class ChatRoom {
             return;
         }
 
+        // **实时封禁校验**：封禁可能发生在其他房间（那里的连接踢不到），
+        // 也可能在本连接 join 之后——所以每条消息都实时查一次全局封禁状态，
+        // 命中立即拒绝并踢出，确保「被封禁 = 彻底不能发言」。
+        // （每次消息一次跨 DO 查询，同位置通信 <1ms，配合限流成本可控；
+        //   查询失败按未封禁处理，可用性优先。）
+        let liveBan = { banned: false };
+        try {
+            const acct = this.env.ACCOUNTS.get(this.env.ACCOUNTS.idFromName('accounts-v1'));
+            const res = await acct.fetch('https://accounts/checkban?uid=' + encodeURIComponent(meta.uid));
+            if (res.ok) {
+                const d = JSON.parse(await res.text());
+                liveBan = d.banned ? { banned: true, until: d.until || 0, reason: d.reason || '' } : { banned: false };
+            }
+        } catch (e) { /* 查询失败不阻断发言 */ }
+        if (liveBan.banned) {
+            try { ws.serializeAttachment({ ...meta, banned: liveBan.until }); } catch (e) { /* 忽略 */ }
+            this._send(ws, { t: 'banned', msg: '你已被封禁，无法发言' + (liveBan.reason ? '（' + liveBan.reason + '）' : ''), until: liveBan.until });
+            try { ws.close(1008, 'banned'); } catch (e) { /* 忽略 */ }
+            return;
+        }
+
         const text = String(p.text || '').slice(0, MAX_TEXT).replace(/\s+$/, '');
         if (!text) { return; }
 
@@ -467,13 +488,13 @@ export class ChatRoom {
         this._broadcast({ t: 'presence', list: list }, null);
     }
 
-    /** 封禁状态查询（60s 内存缓存；Accounts DO 查询失败按未封禁处理，可用性优先） */
+    /** 封禁状态查询（结果缓存：未封禁 15s / 已封禁 10min——封禁要尽快生效，解封可以稍慢） */
     async _checkBan(uid) {
         if (!uid) { return { banned: false }; }
         const now = Date.now();
         this._banCache = this._banCache || {};
         const hit = this._banCache[uid];
-        if (hit && now - hit.at < 60000) {
+        if (hit && now - hit.at < hit.ttl) {
             return hit.until && hit.until > now ? { banned: true, until: hit.until, reason: hit.reason } : { banned: false };
         }
         let result = { banned: false };
@@ -486,7 +507,12 @@ export class ChatRoom {
                 result = d.banned ? { banned: true, until: d.until || 0, reason: d.reason || '' } : { banned: false };
             }
         } catch (e) { /* 查询失败按未封禁处理 */ }
-        this._banCache[uid] = { at: now, until: result.until || 0, reason: result.reason || '' };
+        this._banCache[uid] = {
+            at: now,
+            ttl: result.banned ? 600000 : 15000,   // 封禁缓存久些；未封禁短缓存让封禁尽快生效
+            until: result.until || 0,
+            reason: result.reason || ''
+        };
         return result;
     }
 
