@@ -44,14 +44,6 @@
   
   
     {
-      "title"    : "聊天室",
-      "url"      : "/chat/",
-      "keywords" : "聊天室,chat,在线聊天,实时聊天,群聊"
-    } ,
-  
-  
-  
-    {
       "title"    : "Fragments",
       "url"      : "/fragments/",
       "keywords" : "fragments"

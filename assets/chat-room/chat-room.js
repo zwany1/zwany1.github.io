@@ -668,7 +668,7 @@
 
     /** 消息正文渲染：转义 → @提及 → 链接 */
     function renderText(text) {
-        var parts = String(text).split(/(@[^\s@]{1,16})/g);
+        var parts = String(text).split(/([@\uff20][^\s@\uff20]{1,16})/g);
         var out = '';
         for (var i = 0; i < parts.length; i++) {
             var p = parts[i];
@@ -1393,7 +1393,8 @@
         if (!el) { return null; }
         var pos = el.selectionStart || 0;
         var before = el.value.slice(0, pos);
-        var mm = before.match(/(^|\s)@([^\s@]{0,16})$/);
+        // 兼容半角 @ 与中文输入法的全角 ＠
+        var mm = before.match(/(^|\s)[@＠]([^\s@＠]{0,16})$/);
         if (!mm) { return null; }
         return { start: pos - mm[2].length - 1, end: pos, query: mm[2] };
     };
@@ -1402,15 +1403,17 @@
         var ctx = this._mentionContext();
         if (!ctx) { this._closeMention(); return; }
         var self = this;
+        var isAdmin = !!(this.identity && this.identity.role === 'admin');
         var pool = [];
         var seen = {};
+        // 自己也可以被 @（测试方便、行为与 QQ 一致），不去重排除
         this.membersOnline.forEach(function (m) {
-            if (m.uid !== self.me.uid && !seen[m.uid]) { seen[m.uid] = 1; pool.push(m); }
+            if (!seen[m.uid]) { seen[m.uid] = 1; pool.push(m); }
         });
-        if (!pool.length) { this._closeMention(); return; }
         var q = ctx.query.toLowerCase();
         if (q) { pool = pool.filter(function (m) { return m.name.toLowerCase().indexOf(q) >= 0; }); }
-        if (!pool.length) { this._closeMention(); return; }
+        // 没有可 @ 的成员时，管理员的「所有人」选项仍然保留
+        if (!pool.length && !isAdmin) { this._closeMention(); return; }
         this._openMention(pool.slice(0, 8), ctx);
     };
 
