@@ -895,13 +895,19 @@
 .cr-refquote b { color: var(--cr-fg); }
 .cr-refquote:hover { background: rgba(255, 255, 255, .08); }
 
-/* 悬停出现的「引用」按钮：贴在消息右上角 */
+/* 悬停出现的操作按钮（引用 / 撤回）：并排贴在消息右上角 */
 .cr-msg { position: relative; }
-.cr-quote-btn {
+.cr-acts {
     position: absolute;
-    top: -8px;
+    top: -10px;
     right: 6px;
     display: none;
+    gap: 4px;
+    z-index: 5;
+}
+.cr-msg:hover .cr-acts { display: inline-flex; }
+.cr-act-btn {
+    display: inline-flex;
     align-items: center;
     justify-content: center;
     width: 24px;
@@ -912,8 +918,8 @@
     color: var(--cr-fg-dim);
     cursor: pointer;
 }
-.cr-msg:hover .cr-quote-btn { display: inline-flex; }
-.cr-quote-btn:hover { color: var(--cr-fg); border-color: var(--cr-accent); }
+.cr-act-btn:hover { color: var(--cr-fg); border-color: var(--cr-accent); }
+.cr-act-btn--del:hover { color: var(--cr-danger); border-color: var(--cr-danger); }
 
 /* 被 @ 的消息：整行淡金高亮 */
 .cr-msg.is-mention { background: rgba(247, 183, 51, .07); box-shadow: inset 2px 0 0 #f7b733; }
@@ -983,3 +989,11 @@
     cursor: pointer;
 }
 .cr-mention-item:hover, .cr-mention-item.is-pick { background: var(--cr-bg-active); }
+
+/* @面板里管理员的「所有人」项 */
+.cr-mention-alltag {
+    margin-left: auto;
+    font-size: 10px;
+    color: #f7b733;
+    flex-shrink: 0;
+}
