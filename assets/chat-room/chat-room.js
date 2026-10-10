@@ -718,6 +718,7 @@
         this._cacheDom();
         this._bind();
         this._applyOptions();
+        this._applyBg((bgRead() || {}).url || '');
 
         // 自建后端要登录才进；公共频道/本机模式没有账号体系，仍走昵称
         if (this.requiresLogin() && !this.loggedIn()) { this._showGate(); }
@@ -758,6 +759,10 @@
             sideToggle: q('[data-cr-side-toggle]'),
             jumpTop: q('[data-cr-jump-top]'),
             link: q('[data-cr-link]'),
+            bgBtn: q('[data-cr-bgbtn]'),
+            bgPanel: q('[data-cr-bgpanel]'),
+            bgInput: q('[data-cr-bginput]'),
+            bgErr: q('[data-cr-bgerr]'),
             stream: q('[data-cr-stream]'),
             hint: q('[data-cr-hint]'),
             hintText: q('[data-cr-hinttext]'),
@@ -985,6 +990,80 @@
         }
     };
 
+    /* ------------------------------------------------------------ 聊天背景 */
+
+    /** 图源：与首页壁纸一致的免费公开源；picsum 加随机 seed 每次都不同 */
+    var BG_SOURCES = {
+        scenery: { name: '随机风景', url: function () { return 'https://picsum.photos/seed/' + Math.random().toString(36).slice(2, 9) + '/1920/1080'; } },
+        anime: { name: '随机二次元', url: function () { return 'https://t.alcy.cc/ycy?' + Date.now(); } }
+    };
+
+    var BG_KEY = 'wb-chat:bg';
+
+    function bgRead() {
+        try { return JSON.parse(global.localStorage.getItem(BG_KEY) || 'null'); } catch (e) { return null; }
+    }
+
+    function bgWrite(v) {
+        try {
+            if (v) { global.localStorage.setItem(BG_KEY, JSON.stringify(v)); }
+            else { global.localStorage.removeItem(BG_KEY); }
+        } catch (e) { /* 隐私模式忽略 */ }
+    }
+
+    /** 应用/清除背景。加深色遮罩保证消息可读；图片预加载成功才生效 */
+    ChatRoom.prototype._applyBg = function (url) {
+        var root = this.root;
+        if (!url) {
+            root.classList.remove('has-bg');
+            root.style.backgroundImage = '';
+            return;
+        }
+        url = String(url).replace(/"/g, '%22');
+        var probe = new Image();
+        probe.onload = function () {
+            root.classList.add('has-bg');
+            root.style.backgroundImage =
+                'linear-gradient(rgba(19,19,22,.78), rgba(19,19,22,.78)), url("' + url + '")';
+        };
+        probe.onerror = function () { /* 加载失败：保持现状 */ };
+        probe.src = url;
+    };
+
+    /** 记住并应用一个背景：先探测能否加载，成功才记忆，避免存进坏链接 */
+    ChatRoom.prototype._setBg = function (url) {
+        var self = this;
+        if (!url) { return; }
+        var probe = new Image();
+        probe.onload = function () {
+            bgWrite({ url: url, ts: Date.now() });
+            self._applyBg(url);
+            if (self.dom.bgPanel) { self.dom.bgPanel.hidden = true; }
+        };
+        probe.onerror = function () { self._bgError('图片加载失败，换一张试试'); };
+        probe.src = url;
+    };
+
+    ChatRoom.prototype._bgFromBing = function () {
+        var self = this;
+        this._bgError('');
+        try {
+            fetch('https://peapix.com/bing/feed?country=cn')
+                .then(function (r) { return r.json(); })
+                .then(function (list) {
+                    if (!list || !list.length || !list[0].url) { throw new Error('empty'); }
+                    self._setBg(list[0].url);
+                })
+                .catch(function () { self._bgError('必应每日一图获取失败，请稍后再试'); });
+        } catch (e) { self._bgError('必应每日一图获取失败，请稍后再试'); }
+    };
+
+    ChatRoom.prototype._bgError = function (msg) {
+        if (!this.dom.bgErr) { return; }
+        this.dom.bgErr.hidden = !msg;
+        this.dom.bgErr.textContent = msg || '';
+    };
+
     /* ------------------------------------------------------------ 登录门禁 */
 
     /** 自建后端（ws）必须登录；公共频道与本机模式没有账号体系 */
@@ -1132,6 +1211,44 @@
         }
         if (this.dom.jumpTop) {
             this.dom.jumpTop.addEventListener('click', function () { self._scrollToBottom(true); });
+        }
+
+        /* ── 聊天背景：参考首页壁纸的选择方式，选择只存本机（localStorage） ── */
+        if (this.dom.bgBtn) {
+            this.dom.bgBtn.addEventListener('click', function () {
+                if (!self.dom.bgPanel) { return; }
+                self.dom.bgPanel.hidden = !self.dom.bgPanel.hidden;
+                if (!self.dom.bgPanel.hidden) {
+                    self.dom.bgErr.hidden = true;
+                    if (self.dom.bgInput) { self.dom.bgInput.value = (bgRead() || {}).url || ''; }
+                }
+            });
+        }
+        if (this.dom.bgPanel) {
+            this.dom.bgPanel.addEventListener('click', function (e) {
+                var btn = e.target && e.target.closest ? e.target.closest('[data-cr-bgset]') : null;
+                if (!btn) { return; }
+                var mode = btn.getAttribute('data-cr-bgset');
+                if (mode === 'default') {
+                    bgWrite(null);
+                    self._applyBg('');
+                    self.dom.bgPanel.hidden = true;
+                    return;
+                }
+                var url = '';
+                if (mode === 'url') {
+                    url = (self.dom.bgInput && self.dom.bgInput.value || '').trim();
+                    // 只允许 http(s):// 或站内绝对路径（挡掉 javascript: / data: 这类）
+                    if (!/^(https?:\/\/|\/)/i.test(url)) {
+                        return self._bgError('请输入图片链接（http(s):// 或站内 / 开头）');
+                    }
+                } else if (mode === 'bing') {
+                    return self._bgFromBing();
+                } else if (BG_SOURCES[mode]) {
+                    url = BG_SOURCES[mode].url();
+                }
+                self._setBg(url);
+            });
         }
         if (this.dom.link) {
             this.dom.link.addEventListener('click', function () {
@@ -1423,7 +1540,7 @@
             var m = this.messages[i];
             if (!m.uid || online[m.uid] || seen[m.uid]) { continue; }
             seen[m.uid] = 1;
-            out.push({ uid: m.uid, name: m.name });
+            out.push({ uid: m.uid, name: m.name, avatar: m.avatar || '' });
         }
         return out;
     };
@@ -1433,9 +1550,13 @@
         var self = this;
         var row = function (m, isOff) {
             var mine = m.uid === self.me.uid;
-            return '<div class="cr-member' + (isOff ? ' is-off' : '') + '">' +
-                '<span class="cr-avatar cr-avatar--xs" style="background:' +
-                avatarColor(m.uid || m.name) + '">' + esc(initial(m.name)) + '</span>' +
+            // 自己的行：消息/成员列表里可能没有头像，用自己的登录身份兜底
+            var av = m.avatar || (mine && self.identity && self.identity.avatar) || '';
+            var avHtml = av
+                ? '<span class="cr-avatar cr-avatar--xs"><img src="' + esc(av) + '" alt=""></span>'
+                : '<span class="cr-avatar cr-avatar--xs" style="background:' +
+                  avatarColor(m.uid || m.name) + '">' + esc(initial(m.name)) + '</span>';
+            return '<div class="cr-member' + (isOff ? ' is-off' : '') + '">' + avHtml +
                 '<span class="cr-member-name">' + esc(m.name) + '</span>' +
                 (mine ? '<span class="cr-member-tag">我</span>' : '') +
                 '</div>';
@@ -1473,8 +1594,17 @@
 
         var av = document.createElement('span');
         av.className = 'cr-avatar';
-        av.setAttribute('style', 'background:' + avatarColor(m.uid || m.name));
-        av.textContent = initial(m.name);
+        // 真实头像优先（消息自带；自己的消息再用登录身份兜底），没有才用字母色块
+        var mAv = m.avatar || ((m.uid === this.me.uid && this.identity) ? this.identity.avatar : '') || '';
+        if (mAv) {
+            var img = document.createElement('img');
+            img.src = mAv;
+            img.alt = '';
+            av.appendChild(img);
+        } else {
+            av.setAttribute('style', 'background:' + avatarColor(m.uid || m.name));
+            av.textContent = initial(m.name);
+        }
 
         var col = document.createElement('div');
         col.className = 'cr-msg-col';

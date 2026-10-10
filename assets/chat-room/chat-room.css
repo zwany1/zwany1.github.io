@@ -793,3 +793,60 @@
     .cr-dots i { animation: none; opacity: .6; }
     .cr-rail-item { transition: none; }
 }
+
+/* ==========================================================================
+   聊天背景（自定义图片）：选择面板 + 四栏半透明化
+   应用时 .chatroom 上有内联 background-image（深色遮罩 + 图片）+ .has-bg 类；
+   选择存 localStorage（wb-chat:bg），每设备独立，首页弹层与 /chat/ 页共享。
+   ========================================================================== */
+.cr-main { position: relative; }
+
+.cr-bgpanel {
+    position: absolute;
+    top: 46px;
+    right: 12px;
+    z-index: 40;
+    width: 224px;
+    padding: 12px;
+    background: var(--cr-bg-elev);
+    border: 1px solid var(--cr-line);
+    border-radius: 10px;
+    box-shadow: 0 12px 32px rgba(0, 0, 0, .45);
+}
+.cr-bgpanel[hidden] { display: none; }
+.cr-bgpanel-title { font-size: 12px; font-weight: 600; color: var(--cr-fg-dim); margin-bottom: 8px; }
+.cr-bgitem {
+    display: block;
+    width: 100%;
+    margin: 4px 0;
+    padding: 7px 10px;
+    text-align: left;
+    font-size: 13px;
+    color: var(--cr-fg);
+    background: rgba(255, 255, 255, .04);
+    border: 1px solid var(--cr-line);
+    border-radius: 7px;
+    cursor: pointer;
+}
+.cr-bgitem:hover { background: var(--cr-bg-hover); }
+.cr-bgpanel-row { display: flex; gap: 6px; margin-top: 8px; }
+.cr-bginput {
+    flex: 1;
+    min-width: 0;
+    padding: 6px 8px;
+    font-size: 12px;
+    color: var(--cr-fg);
+    background: rgba(0, 0, 0, .25);
+    border: 1px solid var(--cr-line);
+    border-radius: 7px;
+    outline: none;
+}
+.cr-bginput:focus { border-color: var(--cr-accent); }
+.cr-bgpanel-err { margin: 6px 0 0; font-size: 12px; color: var(--cr-danger); }
+.cr-bgpanel-err[hidden] { display: none; }
+
+/* 有背景图时：四栏底色改半透明，透出面板背景（遮罩已保证文字可读） */
+.chatroom.has-bg .cr-main { background: rgba(31, 31, 37, .42); }
+.chatroom.has-bg .cr-side { background: rgba(26, 26, 31, .6); }
+.chatroom.has-bg .cr-members { background: rgba(26, 26, 31, .6); }
+.chatroom.has-bg .cr-rail { background: rgba(19, 19, 22, .55); }

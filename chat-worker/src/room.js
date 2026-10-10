@@ -33,6 +33,10 @@ export class ChatRoom {
                 ts   INTEGER NOT NULL
             )`);
             this.sql.exec(`CREATE INDEX IF NOT EXISTS idx_messages_ts ON messages (ts)`);
+            // 轻量迁移：早期的表没有 avatar 列。重复执行会报 duplicate column，吞掉即可。
+            try {
+                this.sql.exec(`ALTER TABLE messages ADD COLUMN avatar TEXT NOT NULL DEFAULT ''`);
+            } catch (e) { /* 已有该列 */ }
             // 表情回应：谁对哪条消息点了哪个 emoji。用"存在即选中"的语义，
             // 同一个人对同一条消息同一个 emoji 只会有一行，重复点击就是取消。
             this.sql.exec(`CREATE TABLE IF NOT EXISTS reactions (
@@ -145,7 +149,7 @@ export class ChatRoom {
         try { ws.serializeAttachment(meta); } catch (e) { /* 忽略 */ }
 
         const rows = [...this.sql.exec(
-            'SELECT id, uid, name, kind, text, ts FROM messages ORDER BY ts DESC LIMIT ?', MAX_HISTORY
+            'SELECT id, uid, name, kind, avatar, text, ts FROM messages ORDER BY ts DESC LIMIT ?', MAX_HISTORY
         )];
         rows.reverse();
 
@@ -153,7 +157,7 @@ export class ChatRoom {
         const reacts = this._reactionsFor();
         for (const r of rows) { r.reactions = reacts[r.id] || []; }
 
-        this._send(ws, { t: 'history', list: rows, me: { uid: meta.uid, name: meta.name, kind: meta.kind } });
+        this._send(ws, { t: 'history', list: rows, me: { uid: meta.uid, name: meta.name, kind: meta.kind, avatar: meta.avatar } });
 
         this._presence();
     }
@@ -211,13 +215,14 @@ export class ChatRoom {
             uid: meta.uid,
             name: meta.name,          // 昵称以服务端记录为准
             kind: meta.kind || 'anon',
+            avatar: meta.avatar || '',// 头像随消息一起广播/入库，渲染端不必再查
             text: text,
             ts: now                   // 服务端时间戳
         };
 
         this.sql.exec(
-            'INSERT OR REPLACE INTO messages (id, uid, name, kind, text, ts) VALUES (?, ?, ?, ?, ?, ?)',
-            msg.id, msg.uid, msg.name, msg.kind, msg.text, msg.ts
+            'INSERT OR REPLACE INTO messages (id, uid, name, kind, avatar, text, ts) VALUES (?, ?, ?, ?, ?, ?, ?)',
+            msg.id, msg.uid, msg.name, msg.kind, msg.avatar, msg.text, msg.ts
         );
         this.sql.exec(
             'DELETE FROM messages WHERE id NOT IN (SELECT id FROM messages ORDER BY ts DESC LIMIT ?)',
@@ -226,7 +231,7 @@ export class ChatRoom {
         // 消息被裁掉后，挂在它上面的回应也一并清掉，别留孤儿行
         this.sql.exec('DELETE FROM reactions WHERE msg_id NOT IN (SELECT id FROM messages)');
 
-        this._broadcast({ t: 'msg', id: msg.id, uid: msg.uid, name: msg.name, kind: msg.kind, text: msg.text, ts: msg.ts }, null);
+        this._broadcast({ t: 'msg', id: msg.id, uid: msg.uid, name: msg.name, kind: msg.kind, avatar: msg.avatar, text: msg.text, ts: msg.ts }, null);
     }
 
     _typing(ws) {
@@ -288,7 +293,7 @@ export class ChatRoom {
             const m = this._meta(sockets[i]);
             if (!m.uid || seen[m.uid]) { continue; }
             seen[m.uid] = 1;
-            list.push({ uid: m.uid, name: m.name, kind: m.kind || 'anon' });
+            list.push({ uid: m.uid, name: m.name, kind: m.kind || 'anon', avatar: m.avatar || '' });
         }
         this._broadcast({ t: 'presence', list: list }, null);
     }
