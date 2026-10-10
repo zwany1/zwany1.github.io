@@ -27,6 +27,13 @@ export class Accounts {
             )`);
             this.sql.exec(`CREATE UNIQUE INDEX IF NOT EXISTS idx_users_provider
                            ON users (provider, provider_uid)`);
+            // 轻量迁移：补 login 列（GitHub 登录名，管理员判定用）。每条独立 try。
+            const MIGRATIONS = [
+                `ALTER TABLE users ADD COLUMN login TEXT NOT NULL DEFAULT ''`
+            ];
+            for (const stmt of MIGRATIONS) {
+                try { this.sql.exec(stmt); } catch (e) { /* 已有该列 */ }
+            }
         });
     }
 
@@ -41,29 +48,52 @@ export class Accounts {
             const providerUid = String(body.providerUid || '').slice(0, 64);
             const name = String(body.name || '').slice(0, 16) || '用户';
             const avatar = String(body.avatar || '').slice(0, 300);
+            const login = String(body.login || '').slice(0, 64);
             if (!provider || !providerUid) { return this._json({ error: 'missing provider' }, 400); }
 
             const now = Date.now();
             const found = [...this.sql.exec(
-                'SELECT uid, name, avatar FROM users WHERE provider = ? AND provider_uid = ?',
+                'SELECT uid, name, avatar, login FROM users WHERE provider = ? AND provider_uid = ?',
                 provider, providerUid
             )];
 
             if (found.length) {
-                // 老用户：刷新昵称/头像与最后登录时间，uid 保持不变
+                // 老用户：刷新昵称/头像与最后登录时间，uid 保持不变；login 缺失时补上
+                const newLogin = login || found[0].login || '';
                 this.sql.exec(
-                    'UPDATE users SET name = ?, avatar = ?, last_login = ? WHERE uid = ?',
-                    name, avatar, now, found[0].uid
+                    'UPDATE users SET name = ?, avatar = ?, login = ?, last_login = ? WHERE uid = ?',
+                    name, avatar, newLogin, now, found[0].uid
                 );
-                return this._json({ uid: found[0].uid, created: false });
+                return this._json({ uid: found[0].uid, login: newLogin, created: false });
             }
 
             const uid = 'g_' + now.toString(36) + Math.random().toString(36).slice(2, 10);
             this.sql.exec(
-                'INSERT INTO users (uid, provider, provider_uid, name, avatar, created_at, last_login) VALUES (?, ?, ?, ?, ?, ?, ?)',
-                uid, provider, providerUid, name, avatar, now, now
+                'INSERT INTO users (uid, provider, provider_uid, login, name, avatar, created_at, last_login) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
+                uid, provider, providerUid, login, name, avatar, now, now
             );
-            return this._json({ uid: uid, created: true });
+            return this._json({ uid: uid, login: login, created: true });
+        }
+
+        // 按 uid 查账号（续签身份时补 login 用）
+        if (request.method === 'GET' && url.pathname === '/get') {
+            const uid = url.searchParams.get('uid') || '';
+            const rows = [...this.sql.exec(
+                'SELECT uid, provider, provider_uid, login, name, avatar FROM users WHERE uid = ?', uid
+            )];
+            if (!rows.length) { return this._json({ error: 'not found' }, 404); }
+            return this._json(rows[0]);
+        }
+
+        // 回写 login（老记录补齐，来源：GitHub 公共 API 反查）
+        if (request.method === 'POST' && url.pathname === '/setlogin') {
+            let body;
+            try { body = await request.json(); } catch (e) { return this._json({ error: 'bad json' }, 400); }
+            const uid = String(body.uid || '').slice(0, 64);
+            const login = String(body.login || '').slice(0, 64);
+            if (!uid || !login) { return this._json({ error: 'missing fields' }, 400); }
+            this.sql.exec('UPDATE users SET login = ? WHERE uid = ?', login, uid);
+            return this._json({ ok: true });
         }
 
         if (request.method === 'GET' && url.pathname === '/count') {

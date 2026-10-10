@@ -17,6 +17,9 @@ const MAX_NAME = 16;
 const MAX_REF_TEXT = 120;   // 引用快照里保留的原文摘要长度
 const RATE_WINDOW = 10000;
 const RATE_MAX = 20;
+const RECALL_WINDOW = 3 * 60 * 1000;   // 普通成员只能撤回自己 3 分钟内的消息
+// 管理员（「凹凸曼」）名单：凭证里的 role 或 GitHub 登录名任一命中即为管理员
+const ADMIN_LOGINS = ['zwany1'];
 
 export class ChatRoom {
     constructor(ctx, env) {
@@ -151,7 +154,9 @@ export class ChatRoom {
             ip: this._meta(ws).ip || '',
             uid: payload.uid,                          // ← 只认凭证里的 uid
             kind: payload.kind || 'anon',
-            role: payload.role || '',                  // 'admin'（凹凸曼）—— 撤回等管理权限
+            // 双重判定：凭证 role 或 GitHub 登录名（老凭证没 login 就靠 role 字段）
+            role: (payload.role === 'admin' || ADMIN_LOGINS.indexOf(String(payload.login || '')) >= 0)
+                ? 'admin' : '',
             name: String(isGithub ? fallback : (wantedName || fallback)).slice(0, MAX_NAME),
             avatar: payload.avatar || '',
             sent: []
@@ -248,6 +253,18 @@ export class ChatRoom {
             const hit = nameToUid.get(match[1]);
             if (hit && !seenMention[hit]) { seenMention[hit] = 1; mentions.push(hit); }
         }
+        // @所有人（仅管理员）：提醒本房间全部在线成员（不含自己）
+        if (meta.role === 'admin' && text.indexOf('@所有人') >= 0) {
+            mentions.length = 0;
+            for (const s of this.ctx.getWebSockets()) {
+                if (s.readyState !== 1) { continue; }
+                const mm = this._meta(s);
+                if (mm.uid && mm.uid !== meta.uid && !seenMention[mm.uid]) {
+                    seenMention[mm.uid] = 1;
+                    mentions.push(mm.uid);
+                }
+            }
+        }
 
         const msg = {
             id: String(p.id || '').slice(0, 60) || ('s_' + now.toString(36) + Math.random().toString(36).slice(2, 6)),
@@ -279,17 +296,30 @@ export class ChatRoom {
         }, null);
     }
 
-    /** 管理员撤回：只有凭证里 role === 'admin' 的连接可以撤任意人的消息（软删除） */
+    /**
+     * 撤回消息（软删除）：
+     * - 管理员（凹凸曼）：可撤回任何人的任意消息
+     * - 普通成员：只能撤回自己 3 分钟内发的消息
+     */
     _delete(ws, p) {
         const meta = this._meta(ws);
-        if (meta.role !== 'admin') {
-            this._send(ws, { t: 'error', msg: '只有管理员（凹凸曼）可以撤回消息' });
-            return;
-        }
         const id = String(p.id || '').slice(0, 60);
         if (!id) { return; }
-        const ok = [...this.sql.exec('SELECT 1 AS ok FROM messages WHERE id = ?', id)];
-        if (!ok.length) { return; }
+
+        const row = [...this.sql.exec('SELECT uid, ts, deleted FROM messages WHERE id = ?', id)][0];
+        if (!row || row.deleted) { return; }
+
+        if (meta.role !== 'admin') {
+            if (row.uid !== meta.uid) {
+                this._send(ws, { t: 'error', msg: '只能撤回自己的消息' });
+                return;
+            }
+            if (Date.now() - row.ts > RECALL_WINDOW) {
+                this._send(ws, { t: 'error', msg: '发送超过 3 分钟的消息不能撤回了' });
+                return;
+            }
+        }
+
         this.sql.exec('UPDATE messages SET deleted = 1 WHERE id = ?', id);
         // 被撤回消息上的表情回应一并清掉
         this.sql.exec('DELETE FROM reactions WHERE msg_id = ?', id);

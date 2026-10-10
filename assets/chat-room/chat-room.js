@@ -722,6 +722,7 @@
         this._bind();
         this._applyOptions();
         this._applyBg((bgRead() || {}).url || '');
+        this._maybeRefreshIdentity();
 
         // 自建后端要登录才进；公共频道/本机模式没有账号体系，仍走昵称
         if (this.requiresLogin() && !this.loggedIn()) { this._showGate(); }
@@ -963,7 +964,8 @@
             kind: info.kind || 'anon',
             name: info.name || this.me.name,
             avatar: info.avatar || (this.identity && this.identity.avatar) || '',
-            role: info.role || (this.identity && this.identity.role) || ''
+            role: info.role || (this.identity && this.identity.role) || '',
+            login: info.login || (this.identity && this.identity.login) || ''
         };
         this.me.uid = info.uid;
         if (info.name) { this.me.name = info.name; }
@@ -998,8 +1000,32 @@
         }
     };
 
-    /* ------------------------------------------------------------ 聊天背景 */
+    /* ------------------------------------------------------------ 身份续签 */
 
+    /**
+     * 老格式凭证（没有 login 字段）静默换发新格式：
+     * 服务端会补齐 GitHub 登录名并重判管理员，成功后写入并刷新页面。
+     * 只在「GitHub 登录 + 凭证里没有 login」时触发一次；失败静默，不影响当前使用。
+     */
+    ChatRoom.prototype._maybeRefreshIdentity = function () {
+        if (!this.opts.ws || !this.identity || this.identity.kind !== 'github') { return; }
+        if (this.identity.login) { return; }                        // 已是新格式
+        if (this._refreshTried) { return; }
+        this._refreshTried = true;
+        var origin = wsOrigin(this.opts.ws);
+        var token = getToken();
+        if (!origin || !token) { return; }
+        fetch(origin + '/auth/refresh?token=' + encodeURIComponent(token))
+            .then(function (r) { return r.ok ? r.json() : null; })
+            .then(function (d) {
+                if (!d || !d.token) { return; }
+                setToken(d.token);
+                global.location.reload();                           // 用新凭证重来一遍
+            })
+            .catch(function () { /* 静默失败 */ });
+    };
+
+    /* ------------------------------------------------------------ 聊天背景 */
     /** 图源：与首页壁纸一致的免费公开源；picsum 加随机 seed 每次都不同 */
     var BG_SOURCES = {
         scenery: { name: '随机风景', url: function () { return 'https://picsum.photos/seed/' + Math.random().toString(36).slice(2, 9) + '/1920/1080'; } },
@@ -1389,19 +1415,28 @@
     };
 
     ChatRoom.prototype._openMention = function (pool, ctx) {
-        this.mentionPool = pool;
+        var self = this;
+        // 管理员独有：@所有人（服务端会给全员发提醒）
+        var isAdmin = !!(self.identity && self.identity.role === 'admin');
+        this.mentionPool = isAdmin ? [{ uid: '__all__', name: '所有人', isAll: true }].concat(pool) : pool;
         this.mentionCtx = ctx;
         this.mentionPick = 0;
         if (!this.dom.mentionPanel) { return; }
-        var self = this;
-        var html = '<div class="cr-bgpanel-title">选择要提醒的成员</div>';
-        pool.forEach(function (m, i) {
-            var av = m.avatar || (m.uid === self.me.uid && self.identity ? self.identity.avatar : '') || '';
-            var avHtml = av
-                ? '<span class="cr-avatar cr-avatar--xs"><img src="' + esc(av) + '" alt=""></span>'
-                : '<span class="cr-avatar cr-avatar--xs" style="background:' + avatarColor(m.uid || m.name) + '">' + esc(initial(m.name)) + '</span>';
+        var html = '<div class="cr-bgpanel-title">' + (isAdmin ? '提醒谁？（可 @ 所有人）' : '选择要提醒的成员') + '</div>';
+        this.mentionPool.forEach(function (m, i) {
+            var avHtml;
+            if (m.isAll) {
+                avHtml = '<span class="cr-avatar cr-avatar--xs" style="background:linear-gradient(135deg,#f7b733,#fc4a1a)">' +
+                    '<svg viewBox="0 0 24 24" width="12" height="12" aria-hidden="true"><path d="M20 4 6 8H3a1 1 0 0 0-1 1v6a1 1 0 0 0 1 1h3l14 4V4ZM6 17.5V19a2 2 0 0 0 4 0v-.9L6 17.5Z" fill="currentColor"/></svg></span>';
+            } else {
+                var av = m.avatar || (m.uid === self.me.uid && self.identity ? self.identity.avatar : '') || '';
+                avHtml = av
+                    ? '<span class="cr-avatar cr-avatar--xs"><img src="' + esc(av) + '" alt=""></span>'
+                    : '<span class="cr-avatar cr-avatar--xs" style="background:' + avatarColor(m.uid || m.name) + '">' + esc(initial(m.name)) + '</span>';
+            }
             html += '<button type="button" class="cr-mention-item' + (i === 0 ? ' is-pick' : '') +
-                '" data-cr-mention="' + i + '">' + avHtml + '<span>' + esc(m.name) + '</span></button>';
+                '" data-cr-mention="' + i + '">' + avHtml + '<span>' + esc(m.name) + '</span>' +
+                (m.isAll ? '<span class="cr-mention-alltag">全员提醒</span>' : '') + '</button>';
         });
         this.dom.mentionPanel.innerHTML = html;
         this.dom.mentionPanel.hidden = false;
@@ -1419,7 +1454,7 @@
         if (!pool || !pool[i] || !ctx) { this._closeMention(); return; }
         var el = this.dom.input;
         var val = el.value;
-        var inserted = '@' + pool[i].name + ' ';
+        var inserted = pool[i].isAll ? '@所有人 ' : ('@' + pool[i].name + ' ');
         el.value = val.slice(0, ctx.start) + inserted + val.slice(ctx.end);
         var pos = ctx.start + inserted.length;
         el.setSelectionRange(pos, pos);
@@ -1884,18 +1919,44 @@
         row.appendChild(av);
         row.appendChild(col);
 
-        // 悬停出现「引用」按钮（已撤回的消息不给引用）
+        // 悬停出现操作按钮：引用（所有人）+ 撤回（管理员撤任意；成员撤自己 3 分钟内）
         if (!m.deleted) {
+            var acts = document.createElement('div');
+            acts.className = 'cr-acts';
+
             var qb = document.createElement('button');
             qb.type = 'button';
-            qb.className = 'cr-quote-btn';
+            qb.className = 'cr-act-btn';
             qb.title = '引用这条消息';
             qb.innerHTML = '<svg viewBox="0 0 24 24" width="13" height="13" aria-hidden="true"><path d="M10 8H6a4 4 0 0 0 0 8h1v2l-3 3-1.4-1.4L5.2 17H6a6 6 0 0 1 0-12h4V8Zm4 0h4a4 4 0 0 1 0 8h-1v2l3 3 1.4-1.4L18.8 17H18a6 6 0 0 1 0-12h-4V8Z" transform="rotate(180 12 12)" fill="currentColor"/></svg>';
             qb.addEventListener('click', function (e) {
                 e.stopPropagation();
                 self._startReply(m);
             });
-            row.appendChild(qb);
+            acts.appendChild(qb);
+
+            var isAdmin = !!(self.identity && self.identity.role === 'admin');
+            var fresh = Date.now() - m.ts <= 180000;
+            if (self.opts.ws && (isAdmin || (m.uid === self.me.uid && fresh))) {
+                var db = document.createElement('button');
+                db.type = 'button';
+                db.className = 'cr-act-btn cr-act-btn--del';
+                db.title = isAdmin ? '撤回这条消息' : '撤回';
+                db.innerHTML = '<svg viewBox="0 0 24 24" width="13" height="13" aria-hidden="true"><path d="M9 3h6l1 2h4v2H4V5h4l1-2Zm-3 6h12l-1 12a1 1 0 0 1-1 1H8a1 1 0 0 1-1-1L6 9Zm4 2v9h2v-9h-2Z" fill="currentColor"/></svg>';
+                db.addEventListener('click', function (e) {
+                    e.stopPropagation();
+                    if (!isAdmin && Date.now() - m.ts > 180000) {
+                        self._flash('发送超过 3 分钟的消息不能撤回了');
+                        return;
+                    }
+                    if (self.transport && self.transport._tx) {
+                        self.transport._tx({ t: 'del', id: m.id });
+                    }
+                });
+                acts.appendChild(db);
+            }
+
+            if (acts.children.length) { row.appendChild(acts); }
         }
 
         frag.appendChild(row);

@@ -138,7 +138,6 @@ export default {
                 });
                 const gh = await userRes.json();
                 if (!gh || !gh.id) { return fail('读取 GitHub 用户失败'); }
-                const isAdmin = ADMIN_LOGINS.indexOf(String(gh.login || '')) >= 0;
 
                 const acct = env.ACCOUNTS.get(env.ACCOUNTS.idFromName(ACCOUNTS_NAME));
                 const up = await acct.fetch('https://accounts/upsert', {
@@ -147,24 +146,76 @@ export default {
                     body: JSON.stringify({
                         provider: 'github',
                         providerUid: String(gh.id),
+                        login: String(gh.login || ''),
                         name: String(gh.name || gh.login || '用户').slice(0, 16),
                         avatar: gh.avatar_url || ''
                     })
                 });
                 const mapped = await up.json();
                 if (!mapped || !mapped.uid) { return fail('账号写入失败'); }
+                const login = mapped.login || String(gh.login || '');
+                const isAdmin = ADMIN_LOGINS.indexOf(login) >= 0;
 
                 const issued = await issueGithub(
                     env.IDENTITY_SECRET, mapped.uid,
                     String(gh.name || gh.login || '用户').slice(0, 16),
                     gh.avatar_url || '',
-                    isAdmin ? 'admin' : ''
+                    isAdmin ? 'admin' : '',
+                    login
                 );
                 // 用 fragment 回传：不会进服务端日志，也不会被 Referer 带出去
                 return Response.redirect(back + '#chat_token=' + encodeURIComponent(issued.token), 302);
             } catch (e) {
                 return fail('登录过程出错：' + (e && e.message ? e.message : e));
             }
+        }
+
+        // 身份续签：老格式凭证（没有 login/role 字段）换发新格式，前端静默调用。
+        // 拿不到 login 时用 GitHub 公共 API 按 provider_uid 反查一次并回写账号库。
+        if (url.pathname === '/auth/refresh') {
+            const old = url.searchParams.get('token') || '';
+            const v = await verifyToken(old, env.IDENTITY_SECRET);
+            if (!v || v.kind !== 'github') {
+                return new Response(JSON.stringify({ error: 'bad token' }), {
+                    status: 401,
+                    headers: { 'content-type': 'application/json; charset=utf-8' }
+                });
+            }
+            let login = String(v.login || '');
+            const acct = env.ACCOUNTS.get(env.ACCOUNTS.idFromName(ACCOUNTS_NAME));
+            if (!login) {
+                const info = JSON.parse(await (await acct.fetch('/get?uid=' + encodeURIComponent(v.uid))).text());
+                if (info.login) {
+                    login = info.login;
+                } else if (info.provider_uid) {
+                    try {
+                        const r = await fetch('https://api.github.com/user/' + info.provider_uid, {
+                            headers: { 'user-agent': 'zwy-chat', accept: 'application/vnd.github+json' }
+                        });
+                        if (r.ok) {
+                            const gh = await r.json();
+                            login = String(gh.login || '');
+                            await acct.fetch('https://accounts/setlogin', {
+                                method: 'POST',
+                                headers: { 'content-type': 'application/json' },
+                                body: JSON.stringify({ uid: v.uid, login: login })
+                            });
+                        }
+                    } catch (e) { /* 反查失败就保持无 login，下次再试 */ }
+                }
+            }
+            const isAdmin = ADMIN_LOGINS.indexOf(login) >= 0;
+            const issued = await issueGithub(
+                env.IDENTITY_SECRET, v.uid, v.name, v.avatar,
+                isAdmin ? 'admin' : '', login
+            );
+            return new Response(JSON.stringify({
+                token: issued.token,
+                role: isAdmin ? 'admin' : '',
+                login: login
+            }), {
+                headers: { 'content-type': 'application/json; charset=utf-8' }
+            });
         }
 
         return new Response('聊天室服务端。\nWebSocket: /ws?room=<房间名>\n状态: /status', {
