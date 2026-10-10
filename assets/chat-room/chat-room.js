@@ -585,6 +585,7 @@
                 return;
             }
             if (p.t === 'msg') { self.onMessage(p); return; }   // 自己发的也会回来，靠 id 幂等去重
+            if (p.t === 'msgdel') { if (self.onDeleted) { self.onDeleted(p); } return; } // 管理员撤回广播
             if (p.t === 'presence') { self.onPresence(p.list || []); return; }
             if (p.t === 'typing') { self.onTyping(p.name); return; }
             if (p.t === 'reaction') { if (self.onReaction) { self.onReaction(p); } return; }
@@ -621,7 +622,9 @@
     };
 
     WsTransport.prototype.send = function (msg) {
-        return this._tx({ t: 'msg', id: msg.id, text: msg.text });
+        var out = { t: 'msg', id: msg.id, text: msg.text };
+        if (msg.ref && msg.ref.id) { out.ref = msg.ref; }   // 引用回复：只传被引消息 id
+        return this._tx(out);
     };
 
     WsTransport.prototype.typing = function () { this._tx({ t: 'typing' }); };
@@ -773,6 +776,9 @@
             emojiPanel: q('[data-cr-emoji]'),
             plus: q('[data-cr-emoji-btn]'),
             emojis: q('[data-cr-emojis]'),
+            replyBar: q('[data-cr-replybar]'),
+            replyCancel: q('[data-cr-replycancel]'),
+            mentionPanel: q('[data-cr-mentionpanel]'),
             memberPanel: q('[data-cr-memberpanel]'),
             members: q('[data-cr-members]'),
             gate: q('[data-cr-gate]'),
@@ -932,6 +938,7 @@
         this.transport.onTyping = function (n) { self._showTyping(n); };
         this.transport.onIdentity = function (i) { self._onIdentity(i); };
         this.transport.onReaction = function (p) { self._onReaction(p); };
+        this.transport.onDeleted = function (p) { self.onDeleted(p); };
         this.transport.onNeedLogin = function (msg) { self._onNeedLogin(msg); };
         this.transport.connect();
     };
@@ -955,7 +962,8 @@
             uid: info.uid,
             kind: info.kind || 'anon',
             name: info.name || this.me.name,
-            avatar: info.avatar || (this.identity && this.identity.avatar) || ''
+            avatar: info.avatar || (this.identity && this.identity.avatar) || '',
+            role: info.role || (this.identity && this.identity.role) || ''
         };
         this.me.uid = info.uid;
         if (info.name) { this.me.name = info.name; }
@@ -1184,6 +1192,7 @@
 
         this.dom.send.addEventListener('click', function () { self._submit(); });
         this.dom.input.addEventListener('keydown', function (e) {
+            if (self._mentionKeys(e)) { return; }   // @面板打开时接管方向键/回车
             if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); self._submit(); }
         });
         this.dom.input.addEventListener('input', function () { self._onInput(); });
@@ -1213,8 +1222,22 @@
             this.dom.jumpTop.addEventListener('click', function () { self._scrollToBottom(true); });
         }
 
-        /* ── 聊天背景：参考首页壁纸的选择方式，选择只存本机（localStorage） ── */
-        if (this.dom.bgBtn) {
+        /* ── 引用回复条：× 取消本次引用 ── */
+        if (this.dom.replyCancel) {
+            this.dom.replyCancel.addEventListener('click', function () { self._clearReply(); });
+        }
+        /* ── @成员面板：点击选项即选中（mousedown 防止输入框先失焦） ── */
+        if (this.dom.mentionPanel) {
+            this.dom.mentionPanel.addEventListener('mousedown', function (e) {
+                if (e.target.closest && e.target.closest('[data-cr-mention]')) { e.preventDefault(); }
+            });
+            this.dom.mentionPanel.addEventListener('click', function (e) {
+                var b = e.target && e.target.closest ? e.target.closest('[data-cr-mention]') : null;
+                if (b) { self._pickMention(Number(b.getAttribute('data-cr-mention'))); }
+            });
+        }
+
+        /* ── 聊天背景：参考首页壁纸的选择方式，选择只存本机（localStorage） ── */        if (this.dom.bgBtn) {
             this.dom.bgBtn.addEventListener('click', function () {
                 if (!self.dom.bgPanel) { return; }
                 self.dom.bgPanel.hidden = !self.dom.bgPanel.hidden;
@@ -1327,11 +1350,106 @@
         this.dom.input.style.height = '21px';
         this.dom.input.style.height = Math.min(110, this.dom.input.scrollHeight) + 'px';
 
+        this._detectMention();
+
         var now = Date.now();
         if (len > 0 && this.transport && this.transport.typing && now - this.lastTypingSent > 3000) {
             this.lastTypingSent = now;
             this.transport.typing();
         }
+    };
+
+    /* ------------------------------------------------------------ @成员选择 */
+
+    /** 光标前若正在输入「@xxx」就弹出成员选择面板；返回 {start,end,query} 或 null */
+    ChatRoom.prototype._mentionContext = function () {
+        var el = this.dom.input;
+        if (!el) { return null; }
+        var pos = el.selectionStart || 0;
+        var before = el.value.slice(0, pos);
+        var mm = before.match(/(^|\s)@([^\s@]{0,16})$/);
+        if (!mm) { return null; }
+        return { start: pos - mm[2].length - 1, end: pos, query: mm[2] };
+    };
+
+    ChatRoom.prototype._detectMention = function () {
+        var ctx = this._mentionContext();
+        if (!ctx) { this._closeMention(); return; }
+        var self = this;
+        var pool = [];
+        var seen = {};
+        this.membersOnline.forEach(function (m) {
+            if (m.uid !== self.me.uid && !seen[m.uid]) { seen[m.uid] = 1; pool.push(m); }
+        });
+        if (!pool.length) { this._closeMention(); return; }
+        var q = ctx.query.toLowerCase();
+        if (q) { pool = pool.filter(function (m) { return m.name.toLowerCase().indexOf(q) >= 0; }); }
+        if (!pool.length) { this._closeMention(); return; }
+        this._openMention(pool.slice(0, 8), ctx);
+    };
+
+    ChatRoom.prototype._openMention = function (pool, ctx) {
+        this.mentionPool = pool;
+        this.mentionCtx = ctx;
+        this.mentionPick = 0;
+        if (!this.dom.mentionPanel) { return; }
+        var self = this;
+        var html = '<div class="cr-bgpanel-title">选择要提醒的成员</div>';
+        pool.forEach(function (m, i) {
+            var av = m.avatar || (m.uid === self.me.uid && self.identity ? self.identity.avatar : '') || '';
+            var avHtml = av
+                ? '<span class="cr-avatar cr-avatar--xs"><img src="' + esc(av) + '" alt=""></span>'
+                : '<span class="cr-avatar cr-avatar--xs" style="background:' + avatarColor(m.uid || m.name) + '">' + esc(initial(m.name)) + '</span>';
+            html += '<button type="button" class="cr-mention-item' + (i === 0 ? ' is-pick' : '') +
+                '" data-cr-mention="' + i + '">' + avHtml + '<span>' + esc(m.name) + '</span></button>';
+        });
+        this.dom.mentionPanel.innerHTML = html;
+        this.dom.mentionPanel.hidden = false;
+    };
+
+    ChatRoom.prototype._closeMention = function () {
+        this.mentionPool = null;
+        this.mentionCtx = null;
+        if (this.dom.mentionPanel) { this.dom.mentionPanel.hidden = true; }
+    };
+
+    /** 选中第 i 个成员：把输入框里正在打的「@词」替换成「@名字␣」，光标落在末尾 */
+    ChatRoom.prototype._pickMention = function (i) {
+        var pool = this.mentionPool, ctx = this.mentionCtx;
+        if (!pool || !pool[i] || !ctx) { this._closeMention(); return; }
+        var el = this.dom.input;
+        var val = el.value;
+        var inserted = '@' + pool[i].name + ' ';
+        el.value = val.slice(0, ctx.start) + inserted + val.slice(ctx.end);
+        var pos = ctx.start + inserted.length;
+        el.setSelectionRange(pos, pos);
+        el.focus();
+        this._closeMention();
+        this._onInput();
+    };
+
+    /** 面板打开时接管 ↑/↓/Enter/Esc/Tab；返回 true 表示已消费 */
+    ChatRoom.prototype._mentionKeys = function (e) {
+        if (!this.mentionPool || !this.mentionPool.length) { return false; }
+        var items = this.dom.mentionPanel
+            ? this.dom.mentionPanel.querySelectorAll('.cr-mention-item')
+            : [];
+        function paint(idx) {
+            items.forEach(function (b, i) { b.classList.toggle('is-pick', i === idx); });
+        }
+        if (e.key === 'Escape') { this._closeMention(); return true; }
+        if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
+            e.preventDefault();
+            this.mentionPick = (this.mentionPick + (e.key === 'ArrowDown' ? 1 : this.mentionPool.length - 1)) % this.mentionPool.length;
+            paint(this.mentionPick);
+            return true;
+        }
+        if (e.key === 'Enter' || e.key === 'Tab') {
+            e.preventDefault();
+            this._pickMention(this.mentionPick);
+            return true;
+        }
+        return false;
     };
 
     ChatRoom.prototype._syncSend = function () {
@@ -1352,16 +1470,40 @@
             room: this.room,
             uid: this.me.uid,
             name: this.me.name,
+            role: (this.identity && this.identity.role) || '',   // 本地乐观渲染也要带徽章
             text: text,
             ts: Date.now()
         };
+        if (this.pendingRef && this.pendingRef.id) { msg.ref = this.pendingRef; }
         if (!this.transport.send(msg)) {
             this._flash('发送失败：通道未连接');
             return;
         }
         this._receive(msg, true);
         this.dom.input.value = '';
+        this._clearReply();
         this._onInput();
+    };
+
+    /* ------------------------------------------------------------ 引用回复 */
+
+    /** 把某条消息设为「正在引用」：输入区上方出现引用条，随下一条消息一起发出 */
+    ChatRoom.prototype._startReply = function (m) {
+        if (!m || m.deleted) { return; }
+        this.pendingRef = { id: m.id, name: m.name, text: String(m.text || '').slice(0, 120) };
+        if (this.dom.replyBar) {
+            var who = this.dom.replyBar.querySelector('[data-cr-replyname]');
+            var what = this.dom.replyBar.querySelector('[data-cr-replytext]');
+            if (who) { who.textContent = m.name; }
+            if (what) { what.textContent = this.pendingRef.text; }
+            this.dom.replyBar.hidden = false;
+        }
+        if (this.dom.input) { this.dom.input.focus(); }
+    };
+
+    ChatRoom.prototype._clearReply = function () {
+        this.pendingRef = null;
+        if (this.dom.replyBar) { this.dom.replyBar.hidden = true; }
     };
 
     /* ---------------------------------------------------------------- 提示 */
@@ -1413,6 +1555,12 @@
         m.name = String(m.name || '匿名').slice(0, 16);
         m.text = m.text.slice(0, MAX_LEN);
 
+        // 引用快照：服务端可能给的是 JSON 串（历史）或对象（实时广播）
+        if (m.ref && typeof m.ref === 'string') {
+            try { m.ref = JSON.parse(m.ref); } catch (e) { m.ref = null; }
+        }
+        if (m.ref && !m.ref.id) { m.ref = null; }
+
         if (m.reactions && m.reactions.length) {
             this.reactions[m.id] = m.reactions;
         }
@@ -1420,6 +1568,10 @@
         var atBottom = this._nearBottom();
         var idx = this.messages.length;
         while (idx > 0 && this.messages[idx - 1].ts > m.ts) { idx--; }
+
+        // 被艾特：服务端解析过 mentions（uid 列表），命中自己就提醒
+        var mentioned = !!(m.mentions && m.mentions.length &&
+            m.mentions.indexOf(this.me.uid) >= 0 && m.uid !== this.me.uid);
 
         if (idx === this.messages.length) {
             this.messages.push(m);
@@ -1429,15 +1581,72 @@
             this._renderAll();
         }
 
+        if (mentioned) {
+            var mrow = this.nodes[m.id];
+            if (mrow) { mrow.classList.add('is-mention'); }
+            this._notifyMention(m);
+        }
+
         this._paintInfo();
         this._saveHistory();
 
         if (!atBottom && !(isSelf || m.uid === this.me.uid)) {
             this.unread++;
             this._refreshHint();
+            if (mentioned) { this._flashTitle(); }
         } else {
             this._scrollToBottom(false);
         }
+    };
+
+    /** 被 @ 的提醒：提示音一下 + 标签页标题闪烁（仅在后台时） */
+    ChatRoom.prototype._notifyMention = function (m) {
+        try {
+            var ac = new (global.AudioContext || global.webkitAudioContext)();
+            var o = ac.createOscillator(), g = ac.createGain();
+            o.connect(g); g.connect(ac.destination);
+            o.type = 'sine'; o.frequency.value = 880;
+            g.gain.setValueAtTime(0.0001, ac.currentTime);
+            g.gain.exponentialRampToValueAtTime(0.12, ac.currentTime + 0.02);
+            g.gain.exponentialRampToValueAtTime(0.0001, ac.currentTime + 0.35);
+            o.start(ac.currentTime); o.stop(ac.currentTime + 0.4);
+        } catch (e) { /* 无声环境忽略 */ }
+        if (global.document && global.document.hidden) {
+            var self = this;
+            this._titleTimer = this._titleTimer || 0;
+            if (!this._titleTimer) {
+                var flip = false, base = global.document.title;
+                this._titleTimer = global.setInterval(function () {
+                    flip = !flip;
+                    global.document.title = flip ? '【有人@我】' + base : base;
+                }, 900);
+                global.document.addEventListener('visibilitychange', function () {
+                    if (!global.document.hidden && self._titleTimer) {
+                        global.clearInterval(self._titleTimer);
+                        self._titleTimer = 0;
+                        global.document.title = base;
+                    }
+                });
+            }
+        }
+    };
+
+    /** 管理员撤回广播：把对应消息就地变成「已撤回」样式 */
+    ChatRoom.prototype.onDeleted = function (p) {
+        if (!p || !p.id) { return; }
+        for (var i = 0; i < this.messages.length; i++) {
+            if (this.messages[i].id === p.id) { this.messages[i].deleted = 1; break; }
+        }
+        delete this.reactions[p.id];
+        this._renderReactions(p.id);
+        var row = this.nodes[p.id];
+        if (!row) { return; }
+        row.classList.add('is-deleted');
+        row.classList.remove('is-mention');
+        var body = row.querySelector('.cr-msg-body');
+        if (body) { body.innerHTML = '<div class="cr-deleted">该消息已被管理员撤回</div>'; }
+        var refEl = row.querySelector('.cr-refquote');
+        if (refEl) { refEl.remove(); }
     };
 
     ChatRoom.prototype._saveHistory = function () {
@@ -1577,6 +1786,7 @@
     /* ---------------------------------------------------------------- 渲染 */
 
     ChatRoom.prototype._node = function (m, prev) {
+        var self = this;
         var frag = document.createDocumentFragment();
 
         if (!prev || fmtDay(prev.ts) !== fmtDay(m.ts)) {
@@ -1623,6 +1833,12 @@
 
         head.appendChild(nm);
         head.appendChild(tm);
+        if (m.role === 'admin') {
+            var badge = document.createElement('span');
+            badge.className = 'cr-admin-badge';
+            badge.textContent = '凹凸曼';
+            head.appendChild(badge);           // 管理员头衔（类似群主标识），放名字旁
+        }
         if (m.kind === 'github') {
             var tag = document.createElement('span');
             tag.className = 'cr-member-tag';
@@ -1630,14 +1846,58 @@
             head.appendChild(tag);
         }
 
+        // 引用块：点击跳到被引消息
+        if (m.ref && m.ref.id && !m.deleted) {
+            var refq = document.createElement('div');
+            refq.className = 'cr-refquote';
+            var rn = document.createElement('b');
+            rn.textContent = m.ref.name;
+            var rt = document.createElement('span');
+            rt.textContent = '：' + String(m.ref.text || '').slice(0, 120);
+            refq.appendChild(rn);
+            refq.appendChild(rt);
+            var refTarget = m.ref.id;
+            refq.addEventListener('click', function () {
+                var el = document.querySelector('.cr-msg[data-id="' + refTarget + '"]');
+                if (el) {
+                    el.scrollIntoView({ block: 'center', behavior: 'smooth' });
+                    el.classList.add('is-flash');
+                    global.setTimeout(function () { el.classList.remove('is-flash'); }, 1400);
+                }
+            });
+            col.appendChild(refq);
+        }
+
         var body = document.createElement('div');
         body.className = 'cr-msg-body';
-        this._fillBody(body, m.text);
+        if (m.deleted) {
+            var del = document.createElement('div');
+            del.className = 'cr-deleted';
+            del.textContent = '该消息已被管理员撤回';
+            body.appendChild(del);
+        } else {
+            this._fillBody(body, m.text);
+        }
 
         col.appendChild(head);
         col.appendChild(body);
         row.appendChild(av);
         row.appendChild(col);
+
+        // 悬停出现「引用」按钮（已撤回的消息不给引用）
+        if (!m.deleted) {
+            var qb = document.createElement('button');
+            qb.type = 'button';
+            qb.className = 'cr-quote-btn';
+            qb.title = '引用这条消息';
+            qb.innerHTML = '<svg viewBox="0 0 24 24" width="13" height="13" aria-hidden="true"><path d="M10 8H6a4 4 0 0 0 0 8h1v2l-3 3-1.4-1.4L5.2 17H6a6 6 0 0 1 0-12h4V8Zm4 0h4a4 4 0 0 1 0 8h-1v2l3 3 1.4-1.4L18.8 17H18a6 6 0 0 1 0-12h-4V8Z" transform="rotate(180 12 12)" fill="currentColor"/></svg>';
+            qb.addEventListener('click', function (e) {
+                e.stopPropagation();
+                self._startReply(m);
+            });
+            row.appendChild(qb);
+        }
+
         frag.appendChild(row);
 
         return { frag: frag, row: row };
