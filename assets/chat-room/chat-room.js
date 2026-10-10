@@ -586,6 +586,7 @@
                 return;
             }
             if (p.t === 'histmore') { if (self.onHistMore) { self.onHistMore(p); } return; }
+            if (p.t === 'banlist') { if (self.onBanList) { self.onBanList(p.uids || []); } return; }
             if (p.t === 'banned') {
                 self.onStatus('error', p.msg || '你已被封禁');
                 self._flash(p.msg || '你已被封禁');
@@ -718,7 +719,8 @@
         this.reactions = {};        // msgId -> [{emoji, count, users}]
         this.nodes = {};            // msgId -> 消息行元素
         this.membersOnline = [];
-        this.knownMembers = {};     // uid -> true（用来识别"新加入"）
+        this.knownMembers = {};
+        this.bannedUids = {};     // uid -> true（用来识别"新加入"）
         this.presenceReady = false;
         this.typingUntil = 0;
         this.typingTimer = null;
@@ -967,6 +969,7 @@
         this.transport.onReaction = function (p) { self._onReaction(p); };
         this.transport.onSys = function (t) { self._sysLine('ℹ️', t); };
         this.transport.onHistMore = function (p) { self.onHistMore(p); };
+        this.transport.onBanList = function (uids) { self.onBanList(uids); };
         this.transport.onDeleted = function (p) { self.onDeleted(p); };
         this.transport.onNeedLogin = function (msg) { self._onNeedLogin(msg); };
         this.transport.connect();
@@ -1039,15 +1042,9 @@
         if (!this.opts.ws || !this.identity || this.identity.kind !== 'github') { return; }
         if (this.identity.login) { return; }                        // 已是新格式
         if (this._refreshTried) { return; }
-        // 循环防护：每次浏览器会话只尝试一次；且只有新凭证**确实带来了升级**
-        // （多了 login/role）才刷新页面——服务端反查失败时新凭证仍是老格式，
-        // 此时刷新只会陷入「续签→刷新→再续签」的死循环。
-        var marked = false;
-        try {
-            marked = global.sessionStorage.getItem('wb-chat:refreshed') === '1';
-            global.sessionStorage.setItem('wb-chat:refreshed', '1');
-        } catch (e) { /* 隐私模式忽略 */ }
-        if (marked) { return; }
+        // 循环防护：只有新凭证**确实带来了升级**（多了 login/role）才刷新页面；
+        // 服务端反查失败时新凭证仍是老格式 → 不刷新 → 自然不会死循环。
+        // 因此这里**不需要**「本会话只试一次」的标记：失败后用户刷新页面即可重试。
         this._refreshTried = true;
         var origin = wsOrigin(this.opts.ws);
         var token = getToken();
@@ -1072,7 +1069,7 @@
                 setToken(d.token);
                 global.location.reload();                           // 用新凭证重来一遍
             })
-            .catch(function () { /* 静默失败 */ });
+            .catch(function () { /* 静默失败，用户下次刷新页面时会重试 */ });
     };
 
     /* ------------------------------------------------------------ 聊天背景 */
@@ -1711,6 +1708,63 @@
         if (global.document && global.document.hidden) { this._flashTitle('有人@我'); }
     };
 
+    /** 管理员：接收当前封禁名单，并刷新成员列表（操作菜单据此显示封禁/解封） */
+    ChatRoom.prototype.onBanList = function (uids) {
+        this.bannedUids = {};
+        for (var i = 0; i < uids.length; i++) { this.bannedUids[uids[i]] = 1; }
+        this._renderMembers();
+    };
+
+    /** 管理员：点成员弹出封禁/解封操作菜单（在线、离线都可操作） */
+    ChatRoom.prototype._openMemberMenu = function (m) {
+        if (!this.dom.memberPanel) { return; }
+        var self = this;
+        var banned = !!this.bannedUids[m.uid];
+        var menu = this.dom.memberPanel.querySelector('[data-cr-membermenu]');
+        if (!menu) {
+            menu = document.createElement('div');
+            menu.className = 'cr-membermenu';
+            menu.setAttribute('data-cr-membermenu', '');
+            this.dom.memberPanel.appendChild(menu);
+        }
+        menu.hidden = false;
+        var stateLine = (m.uid === this.me.uid ? '（你自己）' : (banned ? '已封禁' : '正常'));
+        menu.innerHTML = '<div class="cr-bgpanel-title">' + esc(m.name) +
+            ' <span class="cr-mm-state">' + stateLine + '</span></div>';
+        function item(label, fn) {
+            var b = document.createElement('button');
+            b.type = 'button';
+            b.className = 'cr-mention-item';
+            b.textContent = label;
+            b.addEventListener('click', fn);
+            menu.appendChild(b);
+        }
+        if (m.uid === this.me.uid) {
+            item('这是你自己', function () { menu.hidden = true; });
+        } else if (banned) {
+            item('解除封禁', function () {
+                self.transport._tx({ t: 'unban', uid: m.uid, name: m.name });
+                delete self.bannedUids[m.uid];
+                menu.hidden = true;
+                self._renderMembers();
+            });
+        } else {
+            item('封禁 24 小时', function () {
+                self.transport._tx({ t: 'ban', uid: m.uid, name: m.name, hours: 24 });
+                self.bannedUids[m.uid] = 1;
+                menu.hidden = true;
+                self._renderMembers();
+            });
+            item('封禁 7 天', function () {
+                self.transport._tx({ t: 'ban', uid: m.uid, name: m.name, hours: 168 });
+                self.bannedUids[m.uid] = 1;
+                menu.hidden = true;
+                self._renderMembers();
+            });
+        }
+        item('关闭', function () { menu.hidden = true; });
+    };
+
     /** 「加载更早」：把分页历史插到消息列表头部并保持视口位置 */
     ChatRoom.prototype.onHistMore = function (p) {
         var list = p.list || [];
@@ -1887,13 +1941,17 @@
                 ? '<span class="cr-avatar cr-avatar--xs"><img src="' + esc(av) + '" alt=""></span>'
                 : '<span class="cr-avatar cr-avatar--xs" style="background:' +
                   avatarColor(m.uid || m.name) + '">' + esc(initial(m.name)) + '</span>';
-            return '<div class="cr-member' + (isOff ? ' is-off' : '') + '">' + avHtml +
+            var clickable = self.identity && self.identity.role === 'admin' && self.opts.ws;
+            return '<div class="cr-member' + (isOff ? ' is-off' : '') + (clickable ? ' is-clickable' : '') + '"' +
+                (clickable ? ' data-cr-member-uid="' + esc(m.uid) + '"' : '') + '>' + avHtml +
                 '<span class="cr-member-name">' + esc(m.name) + '</span>' +
+                (self.bannedUids && self.bannedUids[m.uid] ? '<span class="cr-member-tag is-banned">封</span>' : '') +
                 (mine ? '<span class="cr-member-tag">我</span>' : '') +
                 '</div>';
         };
 
-        var html = '<div class="cr-members-title">在线 — ' + this.membersOnline.length + '</div>';
+        var html = '<div class="cr-members-title">在线 — ' + this.membersOnline.length + '</div>' +
+            (this.identity && this.identity.role === 'admin' ? '<div class="cr-members-hint">点击成员可封禁/解封</div>' : '');
         this.membersOnline.forEach(function (m) { html += row(m, false); });
 
         var off = this._offlineMembers();
@@ -1903,6 +1961,21 @@
         }
 
         this.dom.members.innerHTML = html;
+
+        // 管理员：成员行点击 → 封禁/解封操作菜单（事件委托，在线/离线都支持）
+        if (this.identity && this.identity.role === 'admin' && this.opts.ws) {
+            this.dom.members.querySelectorAll('[data-cr-member-uid]').forEach(function (el) {
+                el.addEventListener('click', function () {
+                    var uid = el.getAttribute('data-cr-member-uid');
+                    var m = null;
+                    self.membersOnline.concat(self._offlineMembers()).some(function (x) {
+                        if (x.uid === uid) { m = x; return true; }
+                        return false;
+                    });
+                    if (m) { self._openMemberMenu(m); }
+                });
+            });
+        }
     };
 
     /* ---------------------------------------------------------------- 渲染 */
