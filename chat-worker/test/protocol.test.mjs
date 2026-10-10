@@ -231,6 +231,29 @@ test('封禁：被 ban 的用户立即被踢且无法再进入', async () => {
     wsAdmin.close();
 });
 
+test('管理员 /unban 命令：解封后可重新进入', async () => {
+    const tAdmin = (await issueGithub(SECRET, 'uid-admin', '少帅', '', 'admin', 'zwany1')).token;
+    const tD = (await issueGithub(SECRET, 'uid-d', '用户D', '', '', 'd')).token;
+    // 先封禁
+    const { ws: wsC0 } = await connect(tD, '房解封');
+    const { ws: wsAdmin0 } = await connect(tAdmin, '房解封');
+    send(wsAdmin0, { t: 'ban', uid: 'uid-d', name: '用户D', hours: 1 });
+    await nextOf(wsC0, (p) => p.t === 'banned');
+    wsC0.close(); wsAdmin0.close();
+
+    // /unban 命令解封
+    const { ws: wsAdmin1 } = await connect(tAdmin, '房解封');
+    send(wsAdmin1, { t: 'msg', id: 'm_unban1', text: '/unban 用户D' });
+    const sys = await nextOf(wsAdmin1, (p) => p.t === 'sys');
+    assert.match(sys.text, /解除封禁/);
+    wsAdmin1.close();
+
+    // 解封后可正常进房
+    const { ws: wsD, history } = await connect(tD, '房解封');
+    assert.equal(history.t, 'history', '解封后应能正常进入');
+    wsD.close();
+});
+
 test('历史分页：hist 返回更早的 100 条内且带 hasMore', async () => {
     const tA = (await issueGithub(SECRET, 'uid-a', '用户A', '', '', 'a')).token;
     const { ws: wsA } = await connect(tA, '房分页');

@@ -260,6 +260,11 @@ export class ChatRoom {
             await this._handleBanCommand(ws, meta, text);
             return;
         }
+        // 管理命令：/unban 昵称（仅管理员），解封（按名字从账号库反查 uid）
+        if (meta.role === 'admin' && text.startsWith('/unban ')) {
+            await this._handleUnbanCommand(ws, meta, text);
+            return;
+        }
 
         // 服务端限流：客户端限流可被绕过，这里不行。
         // 计数按 **uid 持久化**（SQLite 分桶），断线重连也不会清零。
@@ -485,6 +490,51 @@ export class ChatRoom {
         return result;
     }
 
+    /** 管理命令：/unban 昵称（仅管理员）。被封者通常已离线，按名字从账号库反查 uid 解封 */
+    async _handleUnbanCommand(ws, meta, text) {
+        const mm = text.match(/^\/unban\s+(\S{1,16})$/);
+        if (!mm) {
+            this._send(ws, { t: 'error', msg: '用法：/unban 昵称，例如 /unban 张三' });
+            return;
+        }
+        const targetName = mm[1];
+        let uids = [];
+        try {
+            const acct = this.env.ACCOUNTS.get(this.env.ACCOUNTS.idFromName('accounts-v1'));
+            const res = await acct.fetch('https://accounts/uidbybanname?name=' + encodeURIComponent(targetName));
+            if (res.ok) {
+                uids = (JSON.parse(await res.text()).uids) || [];
+            }
+        } catch (e) {
+            this._send(ws, { t: 'error', msg: '账号查询失败，请稍后再试' });
+            return;
+        }
+        if (!uids.length) {
+            this._send(ws, { t: 'error', msg: '账号库里没有叫「' + targetName + '」的用户' });
+            return;
+        }
+        try {
+            const acct = this.env.ACCOUNTS.get(this.env.ACCOUNTS.idFromName('accounts-v1'));
+            for (const uid of uids) {
+                await acct.fetch('https://accounts/unban', {
+                    method: 'POST',
+                    headers: { 'content-type': 'application/json' },
+                    body: JSON.stringify({ uid: uid })
+                });
+                this._invalidateBanCache(uid);
+            }
+        } catch (e) {
+            this._send(ws, { t: 'error', msg: '解封失败，请稍后再试' });
+            return;
+        }
+        this.sql.exec(
+            'INSERT INTO audit (action, actor, target, ts) VALUES (?, ?, ?, ?)',
+            'unban', meta.name, uids.join(','), Date.now()
+        );
+        this._broadcast({ t: 'sys', text: '「' + targetName + '」已被管理员解除封禁' }, null);
+        this._send(ws, { t: 'error', msg: '已解封 ' + uids.length + ' 个账号' });
+    }
+
     /** 管理命令：/ban 昵称 [小时]（默认 24h，最长 720h）。成功后目标连接被踢出并全员公告 */
     async _handleBanCommand(ws, meta, text) {
         const mm = text.match(/^\/ban\s+(\S{1,16})(?:\s+(\d{1,4}))?$/);
@@ -520,7 +570,7 @@ export class ChatRoom {
             await acct.fetch('https://accounts/ban', {
                 method: 'POST',
                 headers: { 'content-type': 'application/json' },
-                body: JSON.stringify({ uid: targetUid, reason: 'by ' + meta.name, until: until })
+                body: JSON.stringify({ uid: targetUid, name: targetName, reason: 'by ' + meta.name, until: until })
             });
         } catch (e) {
             this._send(ws, { t: 'error', msg: '封禁写入失败，请稍后再试' });

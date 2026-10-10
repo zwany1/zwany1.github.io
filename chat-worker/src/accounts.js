@@ -37,10 +37,13 @@ export class Accounts {
             // 封禁名单：全局生效（跨房间、跨连接），until 为 0/过去时间即未封禁
             this.sql.exec(`CREATE TABLE IF NOT EXISTS bans (
                 uid        TEXT PRIMARY KEY,
+                name       TEXT NOT NULL DEFAULT '',
                 reason     TEXT NOT NULL DEFAULT '',
                 until      INTEGER NOT NULL,
                 created_at INTEGER NOT NULL
             )`);
+            // 老的 bans 表没有 name 列（解封按名字反查用），独立补
+            try { this.sql.exec(`ALTER TABLE bans ADD COLUMN name TEXT NOT NULL DEFAULT ''`); } catch (e) { /* 已有该列 */ }
         });
     }
 
@@ -87,13 +90,14 @@ export class Accounts {
             let body;
             try { body = await request.json(); } catch (e) { return this._json({ error: 'bad json' }, 400); }
             const uid = String(body.uid || '').slice(0, 64);
+            const bname = String(body.name || '').slice(0, 16);
             const reason = String(body.reason || '').slice(0, 100);
             const until = Number(body.until) || 0;
             if (!uid) { return this._json({ error: 'missing uid' }, 400); }
             if (until > Date.now()) {
                 this.sql.exec(
-                    'INSERT OR REPLACE INTO bans (uid, reason, until, created_at) VALUES (?, ?, ?, ?)',
-                    uid, reason, until, Date.now()
+                    'INSERT OR REPLACE INTO bans (uid, name, reason, until, created_at) VALUES (?, ?, ?, ?, ?)',
+                    uid, bname, reason, until, Date.now()
                 );
             } else {
                 this.sql.exec('DELETE FROM bans WHERE uid = ?', uid);
@@ -109,6 +113,20 @@ export class Accounts {
             if (!uid) { return this._json({ error: 'missing uid' }, 400); }
             this.sql.exec('DELETE FROM bans WHERE uid = ?', uid);
             return this._json({ ok: true });
+        }
+
+        // 按昵称查 uid（解封用：被封者已离线，只能按名字反查；重名时全部返回）
+        if (request.method === 'GET' && url.pathname === '/uidbyname') {
+            const name = url.searchParams.get('name') || '';
+            const rows = [...this.sql.exec('SELECT uid, name, login FROM users WHERE name = ?', name)];
+            return this._json({ uids: rows.map(function (r) { return r.uid; }) });
+        }
+
+        // 按封禁时记录的名字查 uid（解封用：被封者已离线）
+        if (request.method === 'GET' && url.pathname === '/uidbybanname') {
+            const bname = url.searchParams.get('name') || '';
+            const rows = [...this.sql.exec('SELECT uid FROM bans WHERE name = ?', bname)];
+            return this._json({ uids: rows.map(function (r) { return r.uid; }) });
         }
 
         // 封禁状态查询（房间 DO 在用户 join 时调用）
