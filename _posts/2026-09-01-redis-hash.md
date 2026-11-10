@@ -1,7 +1,7 @@
 ---
 layout: post
 title: "Redis hash"
-date: 2026-09-01 16:16:39 +0800
+date: 2026-09-01 16:00:00 +0800
 cover: /assets/images/avatar.jpg
 categories: [Redis]
 tags: [redis, redishash]
